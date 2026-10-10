@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reztroid Sales Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
+    .card-bg { background-color: #1e293b; border: 1px solid #334155; }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-cyan-400 text-slate-900 font-bold flex items-center justify-center rounded-lg">R</div>
+      <div>
+        <h1 class="text-xl font-bold tracking-wide">REZTROID SALES MANAGER</h1>
+        <p class="text-sm text-slate-400">Dashboard privat owner</p>
+      </div>
+    </div>
+    <button class="text-slate-400 hover:text-white">Keluar</button>
+  </div>
+
+  <!-- Statistik -->
+  <div class="grid grid-cols-4 gap-4 mb-6" id="stats-container">
+    <!-- Diisi otomatis oleh JS -->
+  </div>
+
+  <!-- Pengingat -->
+  <div class="card-bg rounded-xl p-6">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="p-2 bg-cyan-400 rounded-lg text-slate-900">🔔</div>
+      <div>
+        <h2 class="font-bold">PENGINGAT HARI INI</h2>
+        <p class="text-sm text-slate-400">Otomatis muncul mulai H-2 sebelum masa aktif berakhir.</p>
+      </div>
+    </div>
+    
+    <div id="reminder-list" class="space-y-4">
+      <p class="text-slate-400 italic">Memuat data dari Google Sheets...</p>
+    </div>
+  </div>
+
+  <script>
+    // MASUKKAN LINK GOOGLE APPS SCRIPT DI SINI NANTI
+    const SCRIPT_URL = 'TARUH_LINK_ANDA_DI_SINI';
+
+    async function fetchData() {
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        processDashboard(data);
+      } catch (error) {
+        document.getElementById('reminder-list').innerHTML = `<p class="text-red-400">Gagal memuat data. Pastikan link Apps Script benar.</p>`;
+      }
+    }
+
+    function processDashboard(data) {
+      let totalOmzet = 0;
+      let totalProfit = 0;
+      const totalOrder = data.length;
+      let perluDiingatkan = [];
+
+      const hariIni = new Date();
+      hariIni.setHours(0,0,0,0);
+
+      data.forEach(order => {
+        totalOmzet += Number(order.Omzet) || 0;
+        totalProfit += Number(order.Profit) || 0;
+
+        // Logika H-2
+        const tglBerakhir = new Date(order.Tgl_Berakhir);
+        const selisihWaktu = tglBerakhir.getTime() - hariIni.getTime();
+        const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
+
+        if (selisihHari >= 0 && selisihHari <= 2) {
+          perluDiingatkan.push(order);
+        }
+      });
+
+      renderStats(totalOmzet, totalProfit, totalOrder, perluDiingatkan.length);
+      renderReminders(perluDiingatkan);
+    }
+
+    function renderStats(omzet, profit, order, reminderCount) {
+      const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+      
+      document.getElementById('stats-container').innerHTML = `
+        <div class="card-bg p-4 rounded-xl">
+          <p class="text-sm text-slate-400 mb-1">Total omzet</p>
+          <p class="text-2xl font-bold text-white">${formatRp(omzet)}</p>
+        </div>
+        <div class="card-bg p-4 rounded-xl">
+          <p class="text-sm text-slate-400 mb-1">Total profit</p>
+          <p class="text-2xl font-bold text-green-400">${formatRp(profit)}</p>
+        </div>
+        <div class="card-bg p-4 rounded-xl">
+          <p class="text-sm text-slate-400 mb-1">Jumlah order</p>
+          <p class="text-2xl font-bold text-white">${order}</p>
+        </div>
+        <div class="card-bg p-4 rounded-xl">
+          <p class="text-sm text-slate-400 mb-1">Perlu diingatkan</p>
+          <p class="text-2xl font-bold text-cyan-400">${reminderCount}</p>
+        </div>
+      `;
+    }
+
+    function renderReminders(reminders) {
+      const container = document.getElementById('reminder-list');
+      if (reminders.length === 0) {
+        container.innerHTML = `<p class="text-slate-400">Tidak ada pelanggan yang perlu diingatkan hari ini.</p>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      reminders.forEach(order => {
+        const tglString = new Date(order.Tgl_Berakhir).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        
+        const templatePesan = `Halo Kak ${order.Nama_Pelanggan} 👋
+
+Mau mengingatkan bahwa masa aktif ${order.Layanan} akan berakhir pada ${tglString}.
+
+Jika ingin diperpanjang, boleh balas chat ini ya Kak supaya layanan tetap aktif tanpa terputus ✨
+
+— Admin Reztroid`;
+        
+        const waLink = `https://wa.me/${order.No_WA}?text=${encodeURIComponent(templatePesan)}`;
+
+        container.innerHTML += `
+          <div class="card-bg p-5 rounded-lg mb-4">
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <p class="text-xs text-cyan-400 font-bold mb-1">${order.ID_Order}</p>
+                <p class="font-bold text-lg">${order.Nama_Pelanggan} <span class="text-slate-400 font-normal">· ${order.Layanan}</span></p>
+              </div>
+              <div class="bg-emerald-900/50 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-800">
+                Berakhir ${tglString}
+              </div>
+            </div>
+            
+            <div class="bg-slate-800 p-4 rounded text-sm text-slate-300 whitespace-pre-wrap mb-4">${templatePesan}</div>
+            
+            <div class="flex gap-2">
+              <button onclick="navigator.clipboard.writeText(\`${templatePesan}\`); alert('Teks disalin!')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg text-sm font-bold border border-slate-700 transition">
+                📄 Salin teks
+              </button>
+              <a href="${waLink}" target="_blank" class="flex-1 bg-green-500 hover:bg-green-400 text-slate-900 py-2 rounded-lg text-sm font-bold text-center transition flex items-center justify-center gap-2">
+                💬 Buka WhatsApp
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>
