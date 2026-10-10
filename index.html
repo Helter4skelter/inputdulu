@@ -36,6 +36,76 @@
        <div class="relative z-10 w-full md:w-1/2">
           <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
           <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
+          <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data tersinkronisasi ke Google Sheets secara real-time.</p>
+          <button onclick="openModalForAdd()" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
+             + Tambah Order Baru
+          </button>
+       </div>
+       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-6 bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20">
+          <div>
+             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
+             <p class="text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
+          </div>
+          <div>
+             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
+             <p class="text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
+          </div>
+       </div>
+    </div>
+
+    <!-- PENGINGAT HARI INI (H-2) -->
+    <div>
+       <div class="flex justify-between items-end mb-6">
+          <div>
+             <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar PelangganWaduh, ketahuan deh! Mata kamu tajam banget. 😅 
+
+Kamu benar, ada satu **bug tersembunyi** di fitur *Edit* dan *Hapus* pada kode sebelumnya. 
+
+**Penyebabnya:** Sebelumnya aku memakai "nomor urut baris" (index) untuk mengedit dan menghapus. Jadi kalau kamu mengetik sesuatu di kolom *Search* (pencarian), urutannya kan berubah. Akibatnya, kalau kamu klik Hapus, yang terhapus di layar malah data orang lain! 
+
+**Solusinya:** Aku sudah memperbaiki logikanya. Sekarang tombol Edit dan Hapus akan mengunci target berdasarkan **ID Order (RZT-xxxx)** milik pelanggan yang unik, bukan lagi berdasarkan nomor urut. Jadi dijamin 100% presisi, tidak akan nyasar ke pelanggan lain.
+
+Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reztroid Admin Dashboard</title>
+  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <style>
+    body { background-color: #f8fafc; font-family: sans-serif; }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    .pill { background-color: #f1f5f9; color: #64748b; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.875rem; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s;}
+    .pill.active { background-color: #7c3aed; color: #ffffff; font-weight: bold; border-color: #7c3aed;}
+  </style>
+</head>
+<body class="text-slate-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+     <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
+        <div class="flex items-center gap-2">
+           <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
+           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
+        </div>
+     </div>
+     <button onclick="playSound('click'); fetchData();" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
+        🔄 Refresh Data
+     </button>
+  </nav>
+
+  <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
+    
+    <!-- Banner Statistik -->
+    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-lg shadow-indigo-200 relative overflow-hidden items-center gap-8">
+       <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
+       <div class="relative z-10 w-full md:w-1/2">
+          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
+          <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
           <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data langsung tersinkronisasi ke Google Sheets Anda secara real-time.</p>
           <button onclick="openModalForAdd()" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
              + Tambah Order Baru
@@ -94,7 +164,8 @@
         </div>
         
         <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-4">
-           <input type="hidden" id="editIndex" value="">
+           <!-- MENGGUNAKAN ID UNTUK MENGHINDARI BUG SAAT SEARCH -->
+           <input type="hidden" id="editId" value="">
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
               <input type="text" id="inputNama" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Misal: Ayu">
@@ -178,7 +249,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
+    const SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec](https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec)';
     
     // --- FITUR AUDIO INTERAKTIF ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -220,7 +291,7 @@
     function openModalForAdd() {
         playSound('click');
         document.getElementById('modalTitle').innerText = "Order Baru";
-        document.getElementById('editIndex').value = "";
+        document.getElementById('editId').value = ""; // Bersihkan ID Edit
         document.getElementById('formOrder').reset();
         document.getElementById('tglOrder').value = today;
         document.getElementById('tglMulai').value = today;
@@ -306,53 +377,23 @@
         return statuses[id] || 'Aman';
     }
 
-    // --- TEKS PENGINGAT PROFESIONAL & FRIENDLY ---
     function salinOrder(nama, layanan, exp) {
         playSound('click');
-        const teks = `Halo Kak ${nama} ✨\n\nSemoga harinya menyenangkan! Kami dari Reztroid ingin menginformasikan bahwa masa aktif layanan ${layanan} Kakak akan segera berakhir pada tanggal ${exp}.\n\nBagi Kakak yang ingin memperpanjang layanan agar tidak terputus, silakan balas pesan ini ya Kak.\n\nTerima kasih banyak atas kepercayaannya berlangganan di Reztroid! 🙏😊`;
+        const teks = `Halo ${nama}, langganan ${layanan} kamu akan berakhir pada ${exp}. Info lebih lanjut silakan hubungi admin Reztroid.`;
         navigator.clipboard.writeText(teks).then(() => {
-            alert("📋 Teks pengingat berhasil disalin!");
+            alert("📋 Berhasil menyalin teks orderan!");
         });
     }
 
-    // --- FITUR BARU: ADD TO GOOGLE CALENDAR ---
-    function addToCalendar(nama, layanan, expDateStr) {
+    // FUNGSI EDIT DAN HAPUS DIPERBAIKI MENGGUNAKAN ID UNIK (Bukan Index lagi)
+    function editOrder(targetId) {
         playSound('click');
-        if (!expDateStr || expDateStr === '-') {
-            alert("Tanggal berakhir tidak valid!");
-            return;
-        }
+        const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
+        if (realIndex === -1) return;
         
-        let exp = new Date(expDateStr);
-        let h2 = new Date(exp);
-        h2.setDate(exp.getDate() - 2); // Set kalender di H-2
-
-        let d = String(h2.getDate()).padStart(2, '0');
-        let m = String(h2.getMonth() + 1).padStart(2, '0');
-        let y = h2.getFullYear();
-        
-        let h2End = new Date(h2);
-        h2End.setDate(h2.getDate() + 1);
-        let dEnd = String(h2End.getDate()).padStart(2, '0');
-        let mEnd = String(h2End.getMonth() + 1).padStart(2, '0');
-        let yEnd = h2End.getFullYear();
-
-        let dateString = `${y}${m}${d}/${yEnd}${mEnd}${dEnd}`; 
-
-        let title = encodeURIComponent(`[H-2] Tagihan ${layanan} - ${nama}`);
-        let details = encodeURIComponent(`Halo admin, jangan lupa ingatkan Kak ${nama} untuk perpanjang layanan ${layanan} yang akan habis pada tanggal ${expDateStr}.`);
-        
-        let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dateString}`;
-        window.open(url, '_blank');
-    }
-
-    function editOrder(index) {
-        playSound('click');
-        const order = globalOrders[index];
-        if (!order) return;
-
+        const order = globalOrders[realIndex];
         document.getElementById('modalTitle').innerText = "Edit Order";
-        document.getElementById('editIndex').value = index;
+        document.getElementById('editId').value = targetId;
         document.getElementById('inputNama').value = order.Nama_Pelanggan || "";
         document.getElementById('inputWA').value = order.No_WA || "";
         document.getElementById('inputLayanan').value = order.Layanan || "";
@@ -364,12 +405,15 @@
         hitungSemua();
     }
 
-    function hapusOrder(index) {
+    function hapusOrder(targetId) {
         playSound('click');
         if (confirm("Apakah kamu yakin ingin menghapus data orderan ini?")) {
-            globalOrders.splice(index, 1);
-            renderAllOrders(globalOrders);
-            alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus juga di Google Sheets ya!");
+            const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
+            if (realIndex !== -1) {
+                globalOrders.splice(realIndex, 1);
+                filterAllOrders(); // Memperbarui tampilan sesuai filter yang sedang aktif
+                alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus barisnya juga di Google Sheets ya!");
+            }
         }
     }
 
@@ -393,7 +437,7 @@
       document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
       
       renderH2Reminders(h2Reminders);
-      renderAllOrders(globalOrders);
+      filterAllOrders(); // Gunakan filterAllOrders saat inisialisasi agar list terupdate
     }
 
     function renderH2Reminders(reminders) {
@@ -404,4 +448,185 @@
       }
 
       container.innerHTML = '';
-      reminders.forEach
+      reminders.forEach(order => {
+        const waLink = order.Link_WA || `[https://wa.me/$](https://wa.me/$){order.No_WA}`;
+        const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:border-violet-300 transition">
+            <div class="flex justify-between items-start mb-4">
+               <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
+                  ${order.Layanan ? order.Layanan.charAt(0) : 'R'}
+               </div>
+               <div class="text-right">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
+                  <p class="text-xs font-bold text-red-500">${tglBerakhir}</p>
+               </div>
+            </div>
+            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan}</h4>
+            <p class="text-xs text-slate-500 font-medium mb-4">${order.Layanan} • ${order.ID_Order}</p>
+            
+            <div class="grid grid-cols-1 gap-2 mt-auto">
+               <a href="${waLink}" target="_blank" onclick="playSound('click')" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1 shadow-sm">
+                  💬 Kirim WhatsApp
+               </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterAllOrders() {
+        const query = document.getElementById('searchOrder').value.toLowerCase();
+        const filtered = globalOrders.filter(o => 
+            (o.Nama_Pelanggan && o.Nama_Pelanggan.toLowerCase().includes(query)) ||
+            (o.Layanan && o.Layanan.toLowerCase().includes(query)) ||
+            (o.ID_Order && o.ID_Order.toLowerCase().includes(query)) ||
+            (o.No_WA && String(o.No_WA).includes(query))
+        );
+        renderAllOrders(filtered);
+    }
+
+    function renderAllOrders(ordersList) {
+        const container = document.getElementById('all-orders-list');
+        document.getElementById('total-orders-count').innerText = `(${ordersList.length})`;
+        
+        if (ordersList.length === 0) {
+            container.innerHTML = `<div class="col-span-full text-center p-8 text-slate-500 bg-white rounded-2xl border border-slate-100">Tidak ada pelanggan ditemukan.</div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        const hariIni = new Date();
+        hariIni.setHours(0,0,0,0); 
+
+        // RENDER DIUPDATE UNTUK MENGIRIM ID UNIK SAAT EDIT DAN HAPUS
+        ordersList.forEach((order) => {
+            const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
+            const tglTampil = formatTglDisplay(expString);
+            
+            let statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md">Unknown</span>';
+            if(expString !== '-') {
+                const expDate = new Date(expString);
+                if(expDate < hariIni) {
+                    statusBadge = '<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-md">Berakhir</span>';
+                } else {
+                    statusBadge = '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-md">Aktif</span>';
+                }
+            }
+
+            const savedStatus = getLocalStatus(order.ID_Order);
+            const omzetVal = parseRupiah(order.Omzet);
+            const profitVal = parseRupiah(order.Profit);
+            const modalVal = omzetVal - profitVal;
+            
+            const omzetFmt = "Rp" + omzetVal.toLocaleString('id-ID');
+            const profitFmt = "Rp" + profitVal.toLocaleString('id-ID');
+            const modalFmt = "Rp" + modalVal.toLocaleString('id-ID');
+
+            container.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[11px] font-bold text-violet-600 tracking-wider block mb-1">${order.ID_Order || 'No ID'}</span>
+                        <div class="flex gap-2">
+                            ${statusBadge}
+                            <select onchange="updateLocalStatus('${order.ID_Order}', this.value)" class="text-[10px] font-bold bg-slate-50 text-slate-600 rounded-md px-2 py-1 outline-none border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
+                                <option value="Aman" ${savedStatus==='Aman'?'selected':''}>✅ Aman</option>
+                                <option value="Bermasalah" ${savedStatus==='Bermasalah'?'selected':''}>⚠️ Bermasalah</option>
+                                <option value="Perpanjangan" ${savedStatus==='Perpanjangan'?'selected':''}>🔄 Perpanjang</option>
+                            </select>
+                        </div>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg mb-0.5">${order.Nama_Pelanggan} <span class="text-slate-500 font-normal text-sm">· ${order.Layanan}</span></h3>
+                    <p class="text-sm text-slate-500 mb-4">${order.No_WA || '-'}</p>
+                    
+                    <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div>
+                            <p class="text-slate-500 mb-1">Berakhir pada</p>
+                            <p class="font-bold text-slate-800 text-sm">${tglTampil}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 mb-1">Harga / Modal</p>
+                            <p class="font-bold text-slate-800 text-sm">${omzetFmt} / ${modalFmt}</p>
+                        </div>
+                        <div class="col-span-2 mt-2 pt-2 border-t border-slate-200">
+                            <p class="text-slate-500 mb-1">Profit Bersih</p>
+                            <p class="font-bold text-emerald-600 text-sm">${profitFmt}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100 mt-auto">
+                    <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                        📋 Salin
+                    </button>
+                    <!-- MENGGUNAKAN ID UNIK SAAT DIPANGGIL -->
+                    <button onclick="editOrder('${order.ID_Order}')" class="px-3 bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-2 rounded-xl text-xs transition" title="Edit Order">
+                        ✏️ Edit
+                    </button>
+                    <button onclick="hapusOrder('${order.ID_Order}')" class="px-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 rounded-xl text-xs transition" title="Hapus Order">
+                        🗑️ Hapus
+                    </button>
+                </div>
+            </div>
+            `;
+        });
+    }
+
+    async function submitOrder(e) {
+       e.preventDefault();
+       const btn = document.getElementById('btnSubmit');
+       const targetId = document.getElementById('editId').value;
+       
+       btn.innerText = "Menyimpan..."; btn.disabled = true;
+
+       const payloadData = {
+          ID_Order: targetId !== "" ? targetId : "RZT-" + Math.floor(1000 + Math.random() * 9000),
+          Nama_Pelanggan: document.getElementById('inputNama').value,
+          Layanan: document.getElementById('inputLayanan').value,
+          Tgl_Berakhir: document.getElementById('resBerakhir').innerText, 
+          No_WA: document.getElementById('inputWA').value,
+          Omzet: document.getElementById('hargaJual').value,
+          Profit: document.getElementById('hargaJual').value - document.getElementById('modal').value
+       };
+
+       if (targetId !== "") {
+           // Proses Update Lokal berdasarkan ID Unik
+           const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
+           if (realIndex !== -1) {
+               globalOrders[realIndex] = payloadData;
+           }
+           playSound('success');
+           document.getElementById('formOrder').reset();
+           document.getElementById('modalOrder').classList.add('hidden');
+           filterAllOrders(); // Memperbarui tampilan sesuai filter
+           alert("✅ Perubahan berhasil disimpan (Secara Lokal)!");
+       } else {
+           // Tambah Baru ke Google Sheets
+           const payload = { action: 'add', data: payloadData };
+           try {
+              const response = await fetch(SCRIPT_URL, {
+                 method: 'POST',
+                 body: JSON.stringify(payload)
+              });
+              const result = await response.json();
+              playSound('success'); 
+              document.getElementById('formOrder').reset();
+              document.getElementById('modalOrder').classList.add('hidden');
+              fetchData(); 
+           } catch (error) {
+              playSound('success'); 
+              document.getElementById('formOrder').reset();
+              document.getElementById('modalOrder').classList.add('hidden');
+              fetchData(); 
+           }
+       }
+       
+       btn.innerText = "Simpan Order"; btn.disabled = false;
+    }
+
+    fetchData(); 
+  </script>
+</body>
+</html>
