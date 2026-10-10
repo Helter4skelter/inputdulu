@@ -3,269 +3,303 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reztroid Admin Dashboard</title>
+  <title>Reztroid Admin Dashboard Clone</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    body { background-color: #0b1426; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .glass-panel { background-color: #111d35; border: 1px solid #1e293b; }
+    .input-field { background-color: #0b1426; border: 1px solid #1e293b; color: white; width: 100%; padding: 0.75rem; border-radius: 0.5rem; outline: none; transition: border-color 0.2s; font-size: 0.875rem;}
+    .input-field:focus { border-color: #61d89f; }
+    .btn-green { background-color: #61d89f; color: #064e3b; font-weight: bold; padding: 0.85rem; border-radius: 0.5rem; width: 100%; transition: opacity 0.2s; }
+    .btn-green:hover { opacity: 0.9; }
+    .pill { background-color: #1e293b; color: #9ca3af; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.875rem; cursor: pointer; }
+    .pill.active { background-color: #38bdf8; color: #0b1426; font-weight: bold; }
   </style>
 </head>
-<body class="text-slate-800">
+<body class="flex justify-center p-4 min-h-screen">
 
-  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-     <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
-        <div class="flex items-center gap-2">
-           <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
-           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
-        </div>
-     </div>
-     <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
-        🔄 Refresh Data
-     </button>
-  </nav>
-
-  <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
+  <div class="w-full max-w-md space-y-6 pb-20">
     
-    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-lg shadow-indigo-200 relative overflow-hidden items-center gap-8">
-       <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
-       <div class="relative z-10 w-full md:w-1/2">
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
-          <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
-          <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data langsung tersinkronisasi ke Google Sheets Anda secara real-time.</p>
-          <button onclick="document.getElementById('modalOrder').classList.remove('hidden')" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
-             + Tambah Order Baru
-          </button>
-       </div>
-       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-6 bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20">
-          <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
-             <p class="text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
-          </div>
-          <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
-             <p class="text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
-          </div>
-       </div>
-    </div>
+    <!-- HEADER ORDER BARU -->
+    <div class="glass-panel rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+            <h2 class="font-extrabold text-lg uppercase tracking-wider text-white">Order Baru</h2>
+            <span class="text-[#61d89f] text-[10px] font-bold tracking-widest uppercase">Hitung Otomatis</span>
+        </div>
 
-    <div>
-       <div class="flex justify-between items-end mb-6">
-          <div>
-             <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar Pelanggan H-2</h3>
-             <p class="text-sm text-slate-500">Perlu Diingatkan: <span id="ui-reminder-count" class="font-bold text-violet-600">0</span> Pelanggan</p>
-          </div>
-          <select id="filterLayanan" onchange="applyFilter()" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500">
-             <option value="Semua">Semua Layanan</option>
-             <option value="Canva">Canva</option>
-             <option value="Viu">Viu</option>
-             <option value="Spotify">Spotify</option>
-             <option value="Netflix">Netflix</option>
-             <option value="Capcut">Capcut</option>
-          </select>
-       </div>
-       <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <p class="text-slate-400 text-sm col-span-full">Mengambil data dari server...</p>
-       </div>
-    </div>
-  </div>
+        <form class="space-y-4" onsubmit="event.preventDefault(); alert('Ini preview. Data simulasi siap disimpan!');">
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Nama pelanggan *</label>
+                <input type="text" class="input-field" placeholder="Contoh: Ayu" required>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Nomor WhatsApp</label>
+                <input type="number" class="input-field" placeholder="08xxxxxxxxxx">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Produk *</label>
+                <input type="text" class="input-field" placeholder="Contoh: Netflix Private" required>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2">Tanggal order *</label>
+                    <input type="date" id="tglOrder" class="input-field" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2">Tanggal mulai *</label>
+                    <input type="date" id="tglMulai" class="input-field" onchange="hitungSemua()" required>
+                </div>
+            </div>
 
-  <div id="modalOrder" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-     <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-xl relative max-h-[90vh] overflow-y-auto">
-        <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
-        <h3 class="text-2xl font-bold text-slate-800 mb-6">Order Baru</h3>
-        
-        <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-4">
-           <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan</label>
-              <input type="text" id="inputNama" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Misal: Budi">
-           </div>
-           
-           <div class="grid grid-cols-2 gap-4">
-              <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Layanan</label>
-                 <select id="inputLayanan" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                    <option value="Canva">Canva</option>
-                    <option value="Viu">Viu</option>
-                    <option value="Spotify">Spotify</option>
-                    <option value="Netflix">Netflix</option>
-                    <option value="Capcut">Capcut</option>
-                 </select>
-              </div>
-              <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">No. WhatsApp</label>
-                 <input type="number" id="inputWA" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="62812...">
-              </div>
-           </div>
-           <div class="grid grid-cols-2 gap-4">
-              <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Omzet (Rp)</label>
-                 <input type="number" id="inputOmzet" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="50000">
-              </div>
-              <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Profit (Rp)</label>
-                 <input type="number" id="inputProfit" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="25000">
-              </div>
-           </div>
-           
-           <button type="submit" id="btnSubmit" class="w-full py-3 mt-4 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition">
-              Simpan Data
-           </button>
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Durasi (hari) *</label>
+                <input type="number" id="durasi" class="input-field mb-3" value="30" oninput="hitungSemua()" required>
+                <div class="flex flex-wrap gap-2">
+                    <div class="pill" onclick="setDurasi(27, this)">27</div>
+                    <div class="pill" onclick="setDurasi(28, this)">28</div>
+                    <div class="pill active" onclick="setDurasi(30, this)">30</div>
+                    <div class="pill" onclick="setDurasi(90, this)">90</div>
+                    <div class="pill" onclick="setDurasi(180, this)">180</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2">Harga jual *</label>
+                    <input type="number" id="hargaJual" class="input-field" placeholder="39000" value="39000" oninput="hitungSemua()" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-2">Modal *</label>
+                    <input type="number" id="modal" class="input-field" placeholder="31000" value="31000" oninput="hitungSemua()" required>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Pembayaran</label>
+                <input type="text" class="input-field" placeholder="DANA / QRIS / Bank">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-2">Catatan</label>
+                <input type="text" class="input-field" placeholder="PIN, profil, atau catatan lain">
+            </div>
+
+            <!-- Kalkulasi Otomatis (Like Image 2 bottom) -->
+            <div class="grid grid-cols-2 gap-y-4 gap-x-2 pt-4">
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400">Berakhir</p>
+                    <p class="font-bold text-white text-sm mt-1" id="resBerakhir">8 Nov 2026</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400">Pengingat H-2</p>
+                    <p class="font-bold text-white text-sm mt-1" id="resH2">6 Nov 2026</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400">Profit</p>
+                    <p class="font-bold text-white text-sm mt-1" id="resProfit">Rp0</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400">Margin</p>
+                    <p class="font-bold text-white text-sm mt-1" id="resMargin">0.0%</p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-green mt-8">
+                Simpan order
+            </button>
         </form>
-     </div>
+    </div>
+
+    <!-- PENGINGAT HARI INI (Like Image 3) -->
+    <div class="glass-panel rounded-2xl p-5">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-2">
+                <div class="bg-sky-500 p-1.5 rounded-xl text-slate-900">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <h2 class="font-extrabold text-base text-white tracking-wide">PENGINGAT HARI INI</h2>
+            </div>
+            <div class="text-right">
+                <span class="text-sky-400 text-sm font-bold">4</span>
+                <p class="text-sky-400 text-[10px]">pelanggan</p>
+            </div>
+        </div>
+        <p class="text-xs text-slate-400 mb-6 font-medium leading-relaxed">Otomatis muncul mulai H-2 sebelum masa aktif berakhir.</p>
+
+        <!-- Card Template Pengingat -->
+        <div class="border border-slate-700/50 rounded-2xl p-4 bg-[#0b1426] mb-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-[11px] font-bold text-sky-400 tracking-wider">RZT-260912-8BA4</span>
+                <span class="text-[10px] font-bold bg-[#1a382e] text-[#61d89f] px-2 py-1.5 rounded-md">Berakhir 11 Okt 2026</span>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-3">Ja <span class="text-slate-400 font-normal text-sm">· YouTube</span></h3>
+            
+            <div class="bg-[#111d35] rounded-xl p-4 mb-4 text-[13px] text-slate-300 leading-relaxed border border-slate-700/50">
+                <p>Halo Kak Ja 👋</p><br>
+                <p>Mau mengingatkan bahwa masa aktif YouTube akan berakhir pada 11 Okt 2026.</p><br>
+                <p>Jika ingin diperpanjang, boleh balas chat ini ya Kak supaya layanan tetap aktif tanpa terputus ✨</p><br>
+                <p class="text-slate-500">— Admin Reztroid</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2">
+                <button class="bg-[#111d35] border border-slate-700/50 text-[#61d89f] font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    Salin teks
+                </button>
+                <button class="bg-[#24d366] text-white font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 hover:opacity-90 transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.002.262-.04.415.326.158.386.533 1.305.58 1.402.05.094.079.204.014.333-.065.13-.102.208-.204.326-.101.116-.222.259-.311.353-.101.108-.208.228-.089.434.116.204.521.864 1.114 1.392.766.683 1.411.892 1.614.993.204.101.326.087.442-.043.116-.13.507-.594.636-.796.13-.204.26-.173.448-.101.188.072 1.185.557 1.388.666.204.108.339.166.389.26.051.094.051.542-.093.947z"/></svg>
+                    Buka WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <div class="border border-slate-700/50 rounded-2xl p-4 bg-[#0b1426] mb-4">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-[11px] font-bold text-sky-400 tracking-wider">RZT-260912-E7F2</span>
+                <span class="text-[10px] font-bold bg-[#1a382e] text-[#61d89f] px-2 py-1.5 rounded-md">Berakhir 11 Okt 2026</span>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-3">Dimsum mentai <span class="text-slate-400 font-normal text-sm">· Spotify</span></h3>
+            <div class="bg-[#111d35] rounded-xl p-4 text-[13px] text-slate-300 leading-relaxed border border-slate-700/50">
+                <p>Halo Kak Dimsum mentai 👋</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIST SEMUA STATUS (Like Image 4) -->
+    <div class="glass-panel rounded-2xl p-5">
+        <input type="text" class="input-field mb-4" placeholder="Cari nama, kode order, produk...">
+        <select class="input-field mb-6 appearance-none">
+            <option>Semua status</option>
+            <option>Aktif</option>
+            <option>Berakhir</option>
+        </select>
+
+        <div class="space-y-4">
+            <!-- Card List 1 -->
+            <div class="border border-slate-700/50 rounded-2xl p-5 bg-[#0b1426]">
+                <span class="text-[11px] font-bold text-sky-400 tracking-wider block mb-1">RZT-260922-2F31</span>
+                <h3 class="font-bold text-white text-lg mb-0.5">Nazifah <span class="text-slate-400 font-normal text-sm">· Capcut Sharing</span></h3>
+                <p class="text-sm text-slate-400 mb-4">0823-8950-6625</p>
+                <select class="input-field mb-5 text-sm font-bold bg-[#111d35] border-slate-700"><option>Aktif</option></select>
+                
+                <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-5">
+                    <div>
+                        <p class="text-slate-400 mb-1">Tanggal order</p>
+                        <p class="font-bold text-white text-sm">22 Sep 2026</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Berakhir</p>
+                        <p class="font-bold text-white text-sm">21 Okt 2026</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Harga / Modal</p>
+                        <p class="font-bold text-white text-sm">Rp18.000 / Rp0</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Profit</p>
+                        <p class="font-bold text-white text-sm">Rp18.000</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center pt-4 border-t border-slate-700/50">
+                    <span class="text-xs text-slate-400">Ingatkan: <strong class="text-white">19 Okt 2026</strong></span>
+                    <button class="ml-auto bg-[#111d35] text-[#61d89f] font-bold px-3 py-2 rounded-lg text-[11px] hover:bg-slate-800 transition mr-2">Salin pengingat</button>
+                    <button class="bg-[#111d35] text-sky-400 px-3 py-2 rounded-lg hover:bg-slate-800 transition mr-2 border border-slate-700/50">✏️</button>
+                    <button class="bg-[#111d35] text-red-400 px-3 py-2 rounded-lg hover:bg-slate-800 transition border border-slate-700/50">🗑️</button>
+                </div>
+            </div>
+
+            <!-- Card List 2 -->
+            <div class="border border-slate-700/50 rounded-2xl p-5 bg-[#0b1426]">
+                <span class="text-[11px] font-bold text-sky-400 tracking-wider block mb-1">RZT-260917-3308</span>
+                <h3 class="font-bold text-white text-lg mb-0.5">0112 <span class="text-slate-400 font-normal text-sm">· Netflix 1P1U</span></h3>
+                <p class="text-sm text-slate-400 mb-4">082373990112</p>
+                <select class="input-field mb-5 text-sm font-bold bg-[#111d35] border-slate-700"><option>Aktif</option></select>
+                
+                <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-5">
+                    <div>
+                        <p class="text-slate-400 mb-1">Tanggal order</p>
+                        <p class="font-bold text-white text-sm">17 Sep 2026</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Berakhir</p>
+                        <p class="font-bold text-white text-sm">16 Okt 2026</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Harga / Modal</p>
+                        <p class="font-bold text-white text-sm">Rp39.000 / Rp31.000</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 mb-1">Profit</p>
+                        <p class="font-bold text-white text-sm">Rp8.000</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
   </div>
 
   <script>
-    // MASUKKAN LINK APPS SCRIPT BARU KAMU DI BAWAH INI (JANGAN LUPA TANDA KUTIP)
-    const SCRIPT_URL = 'TARUH_LINK_BARU_DI_SINI';
+    // Inisialisasi Tanggal Hari Ini (10 Oct 2026)
+    document.getElementById('tglOrder').value = "2026-10-10";
+    document.getElementById('tglMulai').value = "2026-10-10";
     
-    let allReminders = [];
-
-    async function fetchData() {
-      const container = document.getElementById('reminder-list');
-      container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mensinkronkan data dengan Google Sheets...</p>';
-      
-      try {
-        const response = await fetch(SCRIPT_URL, {
-            method: 'GET',
-            mode: 'cors'
-        });
+    function setDurasi(hari, el) {
+        document.getElementById('durasi').value = hari;
         
-        const data = await response.json();
-        processDashboard(data);
-      } catch (error) {
-        container.innerHTML = `<p class="text-red-500 text-sm col-span-full font-bold">Gagal memuat data: Google memblokir koneksi atau link salah. Coba refresh.</p>`;
-        console.error("Error Fetch:", error);
-      }
+        // Update styling pill
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active', 'bg-[#38bdf8]', 'text-[#0b1426]'));
+        el.classList.add('active', 'bg-[#38bdf8]', 'text-[#0b1426]');
+        
+        hitungSemua();
     }
 
-    function parseRupiah(str) {
-        if (!str) return 0;
-        let num = String(str).replace(/[^0-9]/g, '');
-        return Number(num) || 0;
+    function formatTgl(dateStr) {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "-";
+        const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
 
-    function processDashboard(orders) {
-      let totalOmzet = 0;
-      let totalProfit = 0;
-      allReminders = [];
+    function hitungSemua() {
+        const tglMulai = document.getElementById('tglMulai').value;
+        const durasi = parseInt(document.getElementById('durasi').value) || 0;
+        const hargaJual = parseInt(document.getElementById('hargaJual').value) || 0;
+        const modal = parseInt(document.getElementById('modal').value) || 0;
 
-      const hariIni = new Date();
-      hariIni.setHours(0,0,0,0);
-
-      orders.forEach(order => {
-        if(order.Omzet) totalOmzet += parseRupiah(order.Omzet);
-        if(order.Profit) totalProfit += parseRupiah(order.Profit);
-
-        if (order.Status_H2 && String(order.Status_H2).includes("H-2")) {
-             allReminders.push(order);
-        }
-      });
-
-      const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
-      document.getElementById('ui-profit').innerText = formatRp(totalProfit);
-      
-      applyFilter();
-    }
-
-    function applyFilter() {
-       const filterValue = document.getElementById('filterLayanan').value;
-       let filteredData = allReminders;
-       
-       if (filterValue !== 'Semua') {
-          filteredData = allReminders.filter(order => order.Layanan && order.Layanan.toLowerCase().includes(filterValue.toLowerCase()));
-       }
-       
-       document.getElementById('ui-reminder-count').innerText = filteredData.length;
-       renderReminders(filteredData);
-    }
-
-    function renderReminders(reminders) {
-      const container = document.getElementById('reminder-list');
-      if (reminders.length === 0) {
-        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100 shadow-sm"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500 font-bold">Aman! Tidak ada antrian H-2 hari ini.</p></div>`;
-        return;
-      }
-
-      container.innerHTML = '';
-      reminders.forEach(order => {
-        const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
-        const tglBerakhir = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split(' ')[0] : '-';
-
-        container.innerHTML += `
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col relative group">
-            <div class="flex justify-between items-start mb-4">
-               <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
-                  ${order.Layanan ? order.Layanan.charAt(0) : '📦'}
-               </div>
-               <div class="text-right">
-                  <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
-                  <p class="text-xs font-bold text-red-500">${tglBerakhir}</p>
-               </div>
-            </div>
-            <h4 class="font-bold text-slate-800 text-lg line-clamp-1">${order.Nama_Pelanggan}</h4>
-            <p class="text-xs text-slate-500 mb-6">${order.Layanan} • ${order.ID_Order}</p>
+        // Hitung Tanggal
+        if (tglMulai && durasi > 0) {
+            let start = new Date(tglMulai);
             
-            <div class="flex gap-2 mt-auto">
-               <a href="${waLink}" target="_blank" class="flex-1 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800 transition flex items-center justify-center">
-                  💬 Kirim WA
-               </a>
-            </div>
-          </div>
-        `;
-      });
+            // Berakhir
+            let end = new Date(start);
+            end.setDate(start.getDate() + durasi);
+            document.getElementById('resBerakhir').innerText = formatTgl(end);
+            
+            // Pengingat H-2
+            let h2 = new Date(end);
+            h2.setDate(end.getDate() - 2);
+            document.getElementById('resH2').innerText = formatTgl(h2);
+        } else {
+            document.getElementById('resBerakhir').innerText = "-";
+            document.getElementById('resH2').innerText = "-";
+        }
+
+        // Hitung Keuangan
+        const profit = hargaJual - modal;
+        document.getElementById('resProfit').innerText = "Rp" + profit.toLocaleString('id-ID');
+        
+        if (hargaJual > 0) {
+            const margin = (profit / hargaJual) * 100;
+            document.getElementById('resMargin').innerText = margin.toFixed(1) + "%";
+        } else {
+            document.getElementById('resMargin').innerText = "0.0%";
+        }
     }
-
-    async function submitOrder(e) {
-       e.preventDefault();
-       const btn = document.getElementById('btnSubmit');
-       btn.innerText = "Menyimpan ke Sheets..."; btn.disabled = true;
-
-       const idOrder = "RZT-" + Math.floor(1000 + Math.random() * 9000);
-       
-       // Format Tanggal 1 Bulan ke Depan
-       const tgl = new Date();
-       tgl.setMonth(tgl.getMonth() + 1); 
-       const dd = String(tgl.getDate()).padStart(2, '0');
-       const mm = String(tgl.getMonth() + 1).padStart(2, '0'); 
-       const yyyy = tgl.getFullYear();
-       const tglBerakhir = dd + '/' + mm + '/' + yyyy;
-       
-       const payload = {
-          action: 'add',
-          data: {
-             ID_Order: idOrder,
-             Nama_Pelanggan: document.getElementById('inputNama').value,
-             Layanan: document.getElementById('inputLayanan').value,
-             Tgl_Berakhir: tglBerakhir,
-             No_WA: document.getElementById('inputWA').value,
-             Omzet: document.getElementById('inputOmzet').value,
-             Profit: document.getElementById('inputProfit').value
-          }
-       };
-
-       try {
-          const response = await fetch(SCRIPT_URL, {
-             method: 'POST',
-             body: JSON.stringify(payload)
-             // Sengaja tidak pakai headers Content-Type agar tembus CORS Google
-          });
-          const result = await response.json();
-          if(result.success) {
-             document.getElementById('formOrder').reset();
-             document.getElementById('modalOrder').classList.add('hidden');
-             fetchData(); // Refresh UI langsung
-          }
-       } catch (error) {
-          alert("Gagal menyimpan ke Sheets. Periksa koneksi atau link SCRIPT_URL.");
-       }
-       
-       btn.innerText = "Simpan Data"; btn.disabled = false;
-    }
-
-    // Panggil data pertama kali
-    fetchData();
+    
+    // Panggil kalkulasi awal
+    hitungSemua();
   </script>
 </body>
 </html>
