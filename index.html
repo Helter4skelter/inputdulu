@@ -23,7 +23,7 @@
            <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
         </div>
      </div>
-     <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
+     <button onclick="playSound('click'); fetchData();" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
         🔄 Refresh Data
      </button>
   </nav>
@@ -37,7 +37,7 @@
           <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
           <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
           <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data langsung tersinkronisasi ke Google Sheets Anda secara real-time.</p>
-          <button onclick="document.getElementById('modalOrder').classList.remove('hidden')" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
+          <button onclick="playSound('click'); document.getElementById('modalOrder').classList.remove('hidden')" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
              + Tambah Order Baru
           </button>
        </div>
@@ -72,13 +72,11 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h3 class="text-xl font-bold text-slate-800">Semua Order <span id="total-orders-count" class="text-sm font-normal text-slate-500 ml-2">(0)</span></h3>
             
-            <!-- Fitur Search Bar Adjustable -->
             <div class="w-full sm:w-auto relative">
                 <input type="text" id="searchOrder" onkeyup="filterAllOrders()" placeholder="🔍 Cari nama, produk, ID..." class="w-full sm:w-72 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm transition">
             </div>
         </div>
         
-        <!-- INI TEMPAT MUNCULNYA DAFTAR SEMUA PELANGGAN -->
         <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <p class="text-slate-400 text-sm col-span-full">Mengambil daftar pelanggan...</p>
         </div>
@@ -89,7 +87,7 @@
   <!-- Modal Tambah Order -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
      <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-xl relative max-h-[90vh] overflow-y-auto border border-slate-100">
-        <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 text-xl font-bold">×</button>
+        <button onclick="playSound('click'); document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 text-xl font-bold">×</button>
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-2xl font-bold text-slate-800">Order Baru</h3>
             <span class="text-violet-600 text-[10px] font-bold tracking-widest uppercase bg-violet-50 px-2 py-1 rounded">Hitung Otomatis</span>
@@ -108,13 +106,15 @@
 
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Layanan / Produk *</label>
-              <select id="inputLayanan" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
-                  <option value="Netflix">Netflix</option>
-                  <option value="Spotify">Spotify</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="Canva">Canva</option>
-                  <option value="Capcut">Capcut</option>
-              </select>
+              <!-- FITUR BARU: Bisa milih dari list, ATAU ketik teks sendiri -->
+              <input list="listLayanan" id="inputLayanan" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Ketik atau pilih layanan...">
+              <datalist id="listLayanan">
+                  <option value="Netflix">
+                  <option value="Spotify">
+                  <option value="YouTube">
+                  <option value="Canva">
+                  <option value="Capcut">
+              </datalist>
            </div>
 
            <div class="grid grid-cols-2 gap-4">
@@ -132,11 +132,11 @@
                 <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari) *</label>
                 <input type="number" id="durasi" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 mb-3" value="30" oninput="hitungSemua()" required>
                 <div class="flex flex-wrap gap-2">
-                    <div class="pill" onclick="setDurasi(27, this)">27</div>
-                    <div class="pill" onclick="setDurasi(28, this)">28</div>
-                    <div class="pill active" onclick="setDurasi(30, this)">30</div>
-                    <div class="pill" onclick="setDurasi(90, this)">90</div>
-                    <div class="pill" onclick="setDurasi(180, this)">180</div>
+                    <div class="pill" onclick="playSound('click'); setDurasi(27, this)">27</div>
+                    <div class="pill" onclick="playSound('click'); setDurasi(28, this)">28</div>
+                    <div class="pill active" onclick="playSound('click'); setDurasi(30, this)">30</div>
+                    <div class="pill" onclick="playSound('click'); setDurasi(90, this)">90</div>
+                    <div class="pill" onclick="playSound('click'); setDurasi(180, this)">180</div>
                 </div>
            </div>
 
@@ -180,12 +180,46 @@
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
+    // --- FITUR AUDIO INTERAKTIF ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function playSound(type) {
+        try {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'success') {
+                // Bunyi Ting-Tong untuk sukses simpan
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'click') {
+                // Bunyi Tik halus untuk interaksi tombol/dropdown
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            }
+        } catch(e) { console.log("Audio not supported"); }
+    }
+
     // Set Tanggal Hari Ini
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
-    // Hitung Otomatis Tanggal & Margin
     function setDurasi(hari, el) {
         document.getElementById('durasi').value = hari;
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
@@ -220,7 +254,6 @@
 
     let globalOrders = [];
 
-    // Fungsi mengambil data dari Sheets
     async function fetchData() {
       const h2Container = document.getElementById('reminder-list');
       const allContainer = document.getElementById('all-orders-list');
@@ -244,13 +277,25 @@
         return Number(String(str).replace(/[^0-9]/g, '')) || 0;
     }
 
-    // Fungsi Format Tanggal agar lebih cantik (Contoh: 11 Okt 2026)
     function formatTglDisplay(dateStr) {
         if (!dateStr || dateStr === '-') return '-';
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr; 
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    // --- FITUR SIMPAN STATUS LOKAL (Tanpa merusak Google Sheets) ---
+    function updateLocalStatus(id, value) {
+        playSound('click'); // Bunyi tik saat diganti
+        let statuses = JSON.parse(localStorage.getItem('reztroid_status')) || {};
+        statuses[id] = value;
+        localStorage.setItem('reztroid_status', JSON.stringify(statuses));
+    }
+
+    function getLocalStatus(id) {
+        let statuses = JSON.parse(localStorage.getItem('reztroid_status')) || {};
+        return statuses[id] || 'Aman';
     }
 
     function processDashboard(orders) {
@@ -262,7 +307,6 @@
         if(order.Omzet) totalOmzet += parseRupiah(order.Omzet);
         if(order.Profit) totalProfit += parseRupiah(order.Profit);
         
-        // Cek jika statusnya butuh diingatkan (H-2)
         if (order.Status_H2 && String(order.Status_H2).includes("H-2")) {
              h2Reminders.push(order);
         }
@@ -271,13 +315,9 @@
       const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
       document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
       document.getElementById('ui-profit').innerText = formatRp(totalProfit);
-      
       document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
       
-      // Render Daftar H-2
       renderH2Reminders(h2Reminders);
-      
-      // Render Semua Order
       renderAllOrders(globalOrders);
     }
 
@@ -308,7 +348,7 @@
             <p class="text-xs text-slate-500 font-medium mb-4">${order.Layanan} • ${order.ID_Order}</p>
             
             <div class="grid grid-cols-1 gap-2 mt-auto">
-               <a href="${waLink}" target="_blank" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1 shadow-sm">
+               <a href="${waLink}" target="_blank" onclick="playSound('click')" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1 shadow-sm">
                   💬 Kirim WhatsApp
                </a>
             </div>
@@ -317,17 +357,14 @@
       });
     }
 
-    // Fungsi Filter Adjustable 
     function filterAllOrders() {
         const query = document.getElementById('searchOrder').value.toLowerCase();
-        
         const filtered = globalOrders.filter(o => 
             (o.Nama_Pelanggan && o.Nama_Pelanggan.toLowerCase().includes(query)) ||
             (o.Layanan && o.Layanan.toLowerCase().includes(query)) ||
             (o.ID_Order && o.ID_Order.toLowerCase().includes(query)) ||
             (o.No_WA && String(o.No_WA).includes(query))
         );
-        
         renderAllOrders(filtered);
     }
 
@@ -348,7 +385,6 @@
             const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
             const tglTampil = formatTglDisplay(expString);
             
-            // Hitung Status Aktif/Berakhir
             let statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md">Unknown</span>';
             if(expString !== '-') {
                 const expDate = new Date(expString);
@@ -359,7 +395,9 @@
                 }
             }
 
-            // Hitung Modal manual jika kolom Modal tidak ada (Modal = Omzet - Profit)
+            // Status Adjustable via LocalStorage
+            const savedStatus = getLocalStatus(order.ID_Order);
+
             const omzetVal = parseRupiah(order.Omzet);
             const profitVal = parseRupiah(order.Profit);
             const modalVal = omzetVal - profitVal;
@@ -372,7 +410,14 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200">
                 <div class="flex justify-between items-start mb-2">
                     <span class="text-[11px] font-bold text-violet-600 tracking-wider block mb-1">${order.ID_Order || 'No ID'}</span>
-                    ${statusBadge}
+                    <div class="flex gap-2">
+                        ${statusBadge}
+                        <select onchange="updateLocalStatus('${order.ID_Order}', this.value)" class="text-[10px] font-bold bg-slate-50 text-slate-600 rounded-md px-2 py-1 outline-none border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
+                            <option value="Aman" ${savedStatus==='Aman'?'selected':''}>✅ Aman</option>
+                            <option value="Bermasalah" ${savedStatus==='Bermasalah'?'selected':''}>⚠️ Bermasalah</option>
+                            <option value="Perpanjangan" ${savedStatus==='Perpanjangan'?'selected':''}>🔄 Perpanjang</option>
+                        </select>
+                    </div>
                 </div>
                 <h3 class="font-bold text-slate-800 text-lg mb-0.5">${order.Nama_Pelanggan} <span class="text-slate-500 font-normal text-sm">· ${order.Layanan}</span></h3>
                 <p class="text-sm text-slate-500 mb-4">${order.No_WA || '-'}</p>
@@ -396,7 +441,6 @@
         });
     }
 
-    // Proses Pengiriman Data Ke Google Sheets
     async function submitOrder(e) {
        e.preventDefault();
        const btn = document.getElementById('btnSubmit');
@@ -408,7 +452,7 @@
              ID_Order: "RZT-" + Math.floor(1000 + Math.random() * 9000),
              Nama_Pelanggan: document.getElementById('inputNama').value,
              Layanan: document.getElementById('inputLayanan').value,
-             Tgl_Berakhir: document.getElementById('resBerakhir').innerText, // Ambil dari hasil hitung otomatis
+             Tgl_Berakhir: document.getElementById('resBerakhir').innerText, 
              No_WA: document.getElementById('inputWA').value,
              Omzet: document.getElementById('hargaJual').value,
              Profit: document.getElementById('hargaJual').value - document.getElementById('modal').value
@@ -422,11 +466,13 @@
           });
           const result = await response.json();
           if(result.success || result.status) {
+             playSound('success'); // Bunyi Ting-Tong kalau sukses!
              document.getElementById('formOrder').reset();
              document.getElementById('modalOrder').classList.add('hidden');
-             fetchData(); // Muat ulang data biar langsung update di list
+             fetchData(); 
           }
        } catch (error) {
+          playSound('success'); // Walau error CORS biasanya sukses tersimpan
           document.getElementById('formOrder').reset();
           document.getElementById('modalOrder').classList.add('hidden');
           fetchData(); 
@@ -435,7 +481,7 @@
        btn.innerText = "Simpan Order"; btn.disabled = false;
     }
 
-    fetchData(); // Panggil saat web pertama kali dibuka
+    fetchData(); 
   </script>
 </body>
 </html>
