@@ -3,127 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reztroid Sales Manager - Light Mode</title>
+  <title>Reztroid Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #f8fafc; font-family: sans-serif; }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
   </style>
 </head>
 <body class="text-slate-800">
 
-  <!-- Navbar Atas -->
+  <!-- Navbar -->
   <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
      <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
         <div class="flex items-center gap-2">
            <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
-           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">SALES MANAGER</span>
+           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
         </div>
      </div>
-     <div class="flex items-center gap-4">
-        <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
-           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-           Refresh
-        </button>
-        <button class="px-5 py-2 bg-violet-600 text-white rounded-full text-sm font-bold hover:bg-violet-700 transition">Dashboard Admin ↗</button>
-     </div>
+     <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
+        🔄 Refresh Data
+     </button>
   </nav>
 
-  <!-- Konten Utama -->
   <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
     
-    <!-- Bagian Atas (Banner & Card Putih) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       
-       <!-- Banner Kiri (Warna Ungu Gradient) -->
-       <div class="lg:col-span-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col justify-between shadow-lg shadow-indigo-200 relative overflow-hidden">
-          <!-- Hiasan Background -->
-          <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
-          
-          <div class="relative z-10">
-             <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">
-                🎁 RINGKASAN PENJUALAN
-             </span>
-             <h2 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">Pantau Omzet &<br>Profit Secara Real-Time.</h2>
-             <p class="text-indigo-100 mb-8 max-w-md text-sm md:text-base leading-relaxed">Data langsung terhubung dari Google Sheets Anda. Kelola pelanggan dan pastikan semua perpanjangan terpantau.</p>
-             
-             <div class="grid grid-cols-2 gap-6 mb-4">
-                <div>
-                   <p class="text-sm text-indigo-200 font-medium mb-1">Total Omzet</p>
-                   <p class="text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
-                </div>
-                <div>
-                   <p class="text-sm text-indigo-200 font-medium mb-1">Total Profit</p>
-                   <p class="text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
-                </div>
-             </div>
-          </div>
-          
-          <div class="flex gap-4 relative z-10 mt-6">
-             <button class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
-                Tambah Order ↗
-             </button>
-             <button class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-full backdrop-blur-sm transition">
-                Data Lengkap
-             </button>
-          </div>
+    <!-- Banner Statistik -->
+    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-lg shadow-indigo-200 relative overflow-hidden items-center gap-8">
+       <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
+       <div class="relative z-10 w-full md:w-1/2">
+          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
+          <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
+          <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data tersinkronisasi otomatis dari Google Sheets.</p>
+          <button onclick="document.getElementById('modalOrder').classList.remove('hidden')" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
+             + Tambah Order Baru
+          </button>
        </div>
-
-       <!-- Card Kanan (Putih) -->
-       <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 flex flex-col relative">
-          <div class="flex justify-between items-start mb-4">
-             <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Status Pengingat H-2</p>
-             <span class="text-xl">🎯</span>
+       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-6 bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20">
+          <div>
+             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
+             <p class="text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
           </div>
-          
-          <h3 class="text-2xl font-bold mb-2 text-slate-800">Pelanggan Aktif</h3>
-          <p class="text-sm text-slate-500 mb-8 leading-relaxed">Cek pelanggan yang masa aktifnya akan segera berakhir hari ini atau esok hari agar bisa segera di follow-up.</p>
-          
-          <div class="mt-auto space-y-4">
-             <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between">
-                <span class="text-slate-500 text-sm font-medium">Perlu Diingatkan:</span>
-                <span class="text-2xl font-bold text-violet-600" id="ui-reminder-count">0</span>
-             </div>
-             <button onclick="fetchData()" class="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition shadow-md shadow-violet-200 flex justify-center items-center gap-2">
-                Cek Sekarang 🚀
-             </button>
-          </div>
-          
-          <!-- Indikator Bawah Card -->
-          <div class="absolute bottom-4 left-0 w-full px-8 flex justify-between items-center text-[10px] text-slate-400">
-             <div class="flex items-center gap-1.5">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Validasi Database Terverifikasi
-             </div>
-             <div class="flex items-center gap-1.5 text-emerald-500 font-bold">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Sinkron Aktif
-             </div>
+          <div>
+             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
+             <p class="text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
           </div>
        </div>
     </div>
 
-    <!-- Bagian Bawah (Daftar Pengingat Grid) -->
+    <!-- Filter & Daftar Pengingat -->
     <div>
        <div class="flex justify-between items-end mb-6">
           <div>
              <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar Pelanggan H-2</h3>
-             <p class="text-sm text-slate-500">Kirim template chat WhatsApp ke pelanggan dengan satu klik.</p>
+             <p class="text-sm text-slate-500">Perlu Diingatkan: <span id="ui-reminder-count" class="font-bold text-violet-600">0</span> Pelanggan</p>
           </div>
-          <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100 hidden sm:inline-block">Auto Template Chat Aktif</span>
+          <select id="filterLayanan" onchange="applyFilter()" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500">
+             <option value="Semua">Semua Layanan</option>
+             <option value="Canva">Canva</option>
+             <option value="Viu">Viu</option>
+             <option value="Spotify">Spotify</option>
+             <option value="Netflix">Netflix</option>
+             <option value="Capcut">Capcut</option>
+          </select>
        </div>
-       
        <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <!-- Area ini akan diisi oleh JavaScript -->
           <p class="text-slate-400 text-sm col-span-full">Memuat data dari Google Sheets...</p>
        </div>
     </div>
 
   </div>
 
+  <!-- Modal Tambah Order -->
+  <div id="modalOrder" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+     <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
+        <h3 class="text-2xl font-bold text-slate-800 mb-6">Order Baru</h3>
+        
+        <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-4">
+           <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan</label>
+              <input type="text" id="inputNama" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Misal: Budi">
+           </div>
+           
+           <div class="grid grid-cols-2 gap-4">
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Layanan</label>
+                 <select id="inputLayanan" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    <option value="Canva">Canva</option>
+                    <option value="Viu">Viu</option>
+                    <option value="Spotify">Spotify</option>
+                    <option value="Netflix">Netflix</option>
+                    <option value="Capcut">Capcut</option>
+                 </select>
+              </div>
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">No. WhatsApp</label>
+                 <input type="number" id="inputWA" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="62812...">
+              </div>
+           </div>
+           <div class="grid grid-cols-2 gap-4">
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Omzet (Rp)</label>
+                 <input type="number" id="inputOmzet" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="50000">
+              </div>
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Profit (Rp)</label>
+                 <input type="number" id="inputProfit" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="25000">
+              </div>
+           </div>
+           
+           <button type="submit" id="btnSubmit" class="w-full py-3 mt-4 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition">
+              Simpan Data
+           </button>
+        </form>
+     </div>
+  </div>
+
   <script>
     // MASUKKAN LINK GOOGLE APPS SCRIPT DI SINI
     const SCRIPT_URL = 'TARUH_LINK_ANDA_DI_SINI';
+    
+    let allReminders = [];
 
     async function fetchData() {
       const container = document.getElementById('reminder-list');
@@ -134,55 +135,54 @@
         const data = await response.json();
         processDashboard(data);
       } catch (error) {
-        container.innerHTML = `<p class="text-red-500 text-sm col-span-full bg-red-50 p-4 rounded-lg">Gagal memuat data. Pastikan link Apps Script sudah benar.</p>`;
+        container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Gagal memuat data. Pastikan link Apps Script benar.</p>`;
       }
     }
 
-    function processDashboard(data) {
+    function processDashboard(orders) {
       let totalOmzet = 0;
       let totalProfit = 0;
-      let perluDiingatkan = [];
+      allReminders = [];
 
       const hariIni = new Date();
       hariIni.setHours(0,0,0,0);
 
-      data.forEach(order => {
+      orders.forEach(order => {
         totalOmzet += Number(order.Omzet) || 0;
         totalProfit += Number(order.Profit) || 0;
 
-        // Logika H-2
         if (order.Tgl_Berakhir) {
            const tglBerakhir = new Date(order.Tgl_Berakhir);
-           const selisihWaktu = tglBerakhir.getTime() - hariIni.getTime();
-           const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
-
+           const selisihHari = Math.ceil((tglBerakhir.getTime() - hariIni.getTime()) / (1000 * 3600 * 24));
            if (selisihHari >= 0 && selisihHari <= 2) {
-             perluDiingatkan.push(order);
+             allReminders.push(order);
            }
         }
       });
 
-      // Update Statistik Angka
       const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-      
       document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
       document.getElementById('ui-profit').innerText = formatRp(totalProfit);
-      document.getElementById('ui-reminder-count').innerText = perluDiingatkan.length;
+      
+      applyFilter();
+    }
 
-      // Render Cards H-2
-      renderReminders(perluDiingatkan);
+    function applyFilter() {
+       const filterValue = document.getElementById('filterLayanan').value;
+       let filteredData = allReminders;
+       
+       if (filterValue !== 'Semua') {
+          filteredData = allReminders.filter(order => order.Layanan.toLowerCase().includes(filterValue.toLowerCase()));
+       }
+       
+       document.getElementById('ui-reminder-count').innerText = filteredData.length;
+       renderReminders(filteredData);
     }
 
     function renderReminders(reminders) {
       const container = document.getElementById('reminder-list');
       if (reminders.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100 text-center">
-             <span class="text-4xl mb-3">🎉</span>
-             <h4 class="font-bold text-slate-700">Semua Aman!</h4>
-             <p class="text-sm text-slate-500">Tidak ada pelanggan yang mendekati batas waktu H-2 hari ini.</p>
-          </div>
-        `;
+        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500">Aman! Tidak ada antrian H-2 untuk filter ini.</p></div>`;
         return;
       }
 
@@ -191,46 +191,29 @@
         const tglBerakhir = new Date(order.Tgl_Berakhir);
         const tglString = tglBerakhir.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         
-        // Logika Status Hari
-        const hariIni = new Date();
-        hariIni.setHours(0,0,0,0);
-        const selisihHari = Math.ceil((tglBerakhir.getTime() - hariIni.getTime()) / (1000 * 3600 * 24));
-        
-        let badgeText = selisihHari === 0 ? "HARI INI" : `H-${selisihHari}`;
-        let badgeClass = selisihHari === 0 ? "bg-red-50 text-red-600" : "bg-orange-50 text-orange-600";
-
-        const templatePesan = `Halo Kak ${order.Nama_Pelanggan} 👋
-
-Mau mengingatkan bahwa masa aktif ${order.Layanan} akan berakhir pada ${tglString}.
-
-Jika ingin diperpanjang, boleh balas chat ini ya Kak supaya layanan tetap aktif tanpa terputus ✨
-
-— Admin Reztroid`;
+        // Teks WA yang rapi
+        const templatePesan = `Halo Kak ${order.Nama_Pelanggan} 👋\nMau mengingatkan masa aktif ${order.Layanan} akan berakhir pada ${tglString}.\nJika ingin diperpanjang, boleh balas chat ini ya Kak ✨`;
         const waLink = `https://wa.me/${order.No_WA}?text=${encodeURIComponent(templatePesan)}`;
 
         container.innerHTML += `
-          <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-slate-100 flex flex-col items-center text-center relative transition duration-300">
-            <!-- Badge Status -->
-            <span class="absolute top-4 right-4 px-2 py-1 ${badgeClass} text-[10px] font-bold rounded-full tracking-wide">
-               ${badgeText}
-            </span>
-            
-            <!-- Ikon Tengah (Inisial Layanan) -->
-            <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center text-xl mb-4 shadow-sm border border-slate-100 font-bold text-slate-600 mt-2">
-               ${order.Layanan ? order.Layanan.charAt(0).toUpperCase() : '📦'}
-            </div>
-            
-            <!-- Nama & Layanan -->
-            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan}</h4>
-            <p class="text-xs text-slate-500 mb-6">${order.Layanan} • <span class="font-medium text-slate-400">${order.ID_Order || '#-'}</span></p>
-            
-            <!-- Info Bawah & Tombol -->
-            <div class="w-full flex justify-between items-center mt-auto border-t border-slate-50 pt-5">
-               <div class="text-left">
-                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Berakhir Tgl</p>
-                  <p class="text-sm font-bold text-indigo-600">${tglString}</p>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col relative group">
+            <div class="flex justify-between items-start mb-4">
+               <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
+                  ${order.Layanan ? order.Layanan.charAt(0) : '📦'}
                </div>
-               <a href="${waLink}" target="_blank" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800 transition shadow-sm">
+               <div class="text-right">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
+                  <p class="text-xs font-bold text-red-500">${tglString}</p>
+               </div>
+            </div>
+            <h4 class="font-bold text-slate-800 text-lg line-clamp-1">${order.Nama_Pelanggan}</h4>
+            <p class="text-xs text-slate-500 mb-6">${order.Layanan} • ${order.ID_Order}</p>
+            
+            <div class="flex gap-2 mt-auto">
+               <button onclick="extendOrder('${order.ID_Order}')" class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center hover:bg-green-100 transition" title="Tandai Sudah Perpanjang">
+                  ✓
+               </button>
+               <a href="${waLink}" target="_blank" class="flex-1 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800 transition flex items-center justify-center">
                   Kirim WA
                </a>
             </div>
@@ -239,8 +222,59 @@ Jika ingin diperpanjang, boleh balas chat ini ya Kak supaya layanan tetap aktif 
       });
     }
 
-    // Load data otomatis
-    fetchData();
+    async function submitOrder(e) {
+       e.preventDefault();
+       const btn = document.getElementById('btnSubmit');
+       btn.innerText = "Menyimpan..."; btn.disabled = true;
+
+       const idOrder = "RZT-" + Math.floor(1000 + Math.random() * 9000);
+       const tglBerakhir = new Date();
+       tglBerakhir.setMonth(tglBerakhir.getMonth() + 1); // Otomatis aktif 1 bulan
+       
+       const payload = {
+          action: 'add',
+          data: {
+             ID_Order: idOrder,
+             Nama_Pelanggan: document.getElementById('inputNama').value,
+             Layanan: document.getElementById('inputLayanan').value,
+             Tgl_Berakhir: tglBerakhir.toISOString().split('T')[0],
+             No_WA: document.getElementById('inputWA').value,
+             Omzet: document.getElementById('inputOmzet').value,
+             Profit: document.getElementById('inputProfit').value
+          }
+       };
+
+       await sendPostData(payload);
+       document.getElementById('formOrder').reset();
+       document.getElementById('modalOrder').classList.add('hidden');
+       btn.innerText = "Simpan Data"; btn.disabled = false;
+    }
+
+    async function extendOrder(id) {
+       if(!confirm('Tandai pelanggan ini sudah membayar perpanjangan? (Masa aktif akan ditambah 30 hari otomatis di Sheets)')) return;
+       const payload = { action: 'extend', id: id };
+       await sendPostData(payload);
+    }
+
+    async function sendPostData(payload) {
+       try {
+          const response = await fetch(SCRIPT_URL, {
+             method: 'POST',
+             body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          if(result.success) {
+             alert(result.message);
+             fetchData(); // Refresh UI biar langsung update
+          } else {
+             alert("Error: " + result.message);
+          }
+       } catch (error) {
+          alert("Koneksi gagal. Cek link script.");
+       }
+    }
+
+    fetchData(); // Menarik data pertama kali web dibuka
   </script>
 </body>
 </html>
