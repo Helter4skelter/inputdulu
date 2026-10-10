@@ -36,76 +36,6 @@
        <div class="relative z-10 w-full md:w-1/2">
           <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
           <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
-          <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data tersinkronisasi ke Google Sheets secara real-time.</p>
-          <button onclick="openModalForAdd()" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
-             + Tambah Order Baru
-          </button>
-       </div>
-       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-6 bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20">
-          <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
-             <p class="text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
-          </div>
-          <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
-             <p class="text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
-          </div>
-       </div>
-    </div>
-
-    <!-- PENGINGAT HARI INI (H-2) -->
-    <div>
-       <div class="flex justify-between items-end mb-6">
-          <div>
-             <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar PelangganWaduh, ketahuan deh! Mata kamu tajam banget. 😅 
-
-Kamu benar, ada satu **bug tersembunyi** di fitur *Edit* dan *Hapus* pada kode sebelumnya. 
-
-**Penyebabnya:** Sebelumnya aku memakai "nomor urut baris" (index) untuk mengedit dan menghapus. Jadi kalau kamu mengetik sesuatu di kolom *Search* (pencarian), urutannya kan berubah. Akibatnya, kalau kamu klik Hapus, yang terhapus di layar malah data orang lain! 
-
-**Solusinya:** Aku sudah memperbaiki logikanya. Sekarang tombol Edit dan Hapus akan mengunci target berdasarkan **ID Order (RZT-xxxx)** milik pelanggan yang unik, bukan lagi berdasarkan nomor urut. Jadi dijamin 100% presisi, tidak akan nyasar ke pelanggan lain.
-
-Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
-
-```html
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reztroid Admin Dashboard</title>
-  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-  <style>
-    body { background-color: #f8fafc; font-family: sans-serif; }
-    ::-webkit-scrollbar { width: 0px; background: transparent; }
-    .pill { background-color: #f1f5f9; color: #64748b; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.875rem; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s;}
-    .pill.active { background-color: #7c3aed; color: #ffffff; font-weight: bold; border-color: #7c3aed;}
-  </style>
-</head>
-<body class="text-slate-800">
-
-  <!-- Navbar -->
-  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-     <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
-        <div class="flex items-center gap-2">
-           <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
-           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
-        </div>
-     </div>
-     <button onclick="playSound('click'); fetchData();" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
-        🔄 Refresh Data
-     </button>
-  </nav>
-
-  <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
-    
-    <!-- Banner Statistik -->
-    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-lg shadow-indigo-200 relative overflow-hidden items-center gap-8">
-       <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
-       <div class="relative z-10 w-full md:w-1/2">
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">📊 RINGKASAN PENJUALAN</span>
-          <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
           <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data langsung tersinkronisasi ke Google Sheets Anda secara real-time.</p>
           <button onclick="openModalForAdd()" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
              + Tambah Order Baru
@@ -164,7 +94,7 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
         </div>
         
         <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-4">
-           <!-- MENGGUNAKAN ID UNTUK MENGHINDARI BUG SAAT SEARCH -->
+           <!-- ID untuk Edit Data -->
            <input type="hidden" id="editId" value="">
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
@@ -249,7 +179,7 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
   </div>
 
   <script>
-    const SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec](https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec)';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
     // --- FITUR AUDIO INTERAKTIF ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -342,12 +272,13 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
       allContainer.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mempersiapkan daftar pelanggan...</p>';
       
       try {
-        const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
+        // PERBAIKAN: Mengembalikan ke bentuk asli agar tidak ditolak CORS Google
+        const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         globalOrders = data; 
         processDashboard(data);
       } catch (error) {
-        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal.</p>`;
+        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal. Silakan coba lagi.</p>`;
         allContainer.innerHTML = '';
       }
     }
@@ -385,7 +316,6 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
         });
     }
 
-    // FUNGSI EDIT DAN HAPUS DIPERBAIKI MENGGUNAKAN ID UNIK (Bukan Index lagi)
     function editOrder(targetId) {
         playSound('click');
         const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
@@ -411,8 +341,8 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
             const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
             if (realIndex !== -1) {
                 globalOrders.splice(realIndex, 1);
-                filterAllOrders(); // Memperbarui tampilan sesuai filter yang sedang aktif
-                alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus barisnya juga di Google Sheets ya!");
+                filterAllOrders(); 
+                alert("🗑️ Orderan berhasil dihapus dari tampilan. (Ingat: Hapus juga barisnya secara manual di Google Sheets ya!)");
             }
         }
     }
@@ -437,7 +367,7 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
       document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
       
       renderH2Reminders(h2Reminders);
-      filterAllOrders(); // Gunakan filterAllOrders saat inisialisasi agar list terupdate
+      filterAllOrders(); 
     }
 
     function renderH2Reminders(reminders) {
@@ -449,7 +379,7 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
 
       container.innerHTML = '';
       reminders.forEach(order => {
-        const waLink = order.Link_WA || `[https://wa.me/$](https://wa.me/$){order.No_WA}`;
+        const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
         const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
 
         container.innerHTML += `
@@ -500,7 +430,6 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
         const hariIni = new Date();
         hariIni.setHours(0,0,0,0); 
 
-        // RENDER DIUPDATE UNTUK MENGIRIM ID UNIK SAAT EDIT DAN HAPUS
         ordersList.forEach((order) => {
             const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
             const tglTampil = formatTglDisplay(expString);
@@ -561,7 +490,6 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
                     <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         📋 Salin
                     </button>
-                    <!-- MENGGUNAKAN ID UNIK SAAT DIPANGGIL -->
                     <button onclick="editOrder('${order.ID_Order}')" class="px-3 bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-2 rounded-xl text-xs transition" title="Edit Order">
                         ✏️ Edit
                     </button>
@@ -592,7 +520,6 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
        };
 
        if (targetId !== "") {
-           // Proses Update Lokal berdasarkan ID Unik
            const realIndex = globalOrders.findIndex(o => o.ID_Order === targetId);
            if (realIndex !== -1) {
                globalOrders[realIndex] = payloadData;
@@ -600,10 +527,9 @@ Silakan **Copy-Paste** ulang kode yang sudah bebas *bug* ini:
            playSound('success');
            document.getElementById('formOrder').reset();
            document.getElementById('modalOrder').classList.add('hidden');
-           filterAllOrders(); // Memperbarui tampilan sesuai filter
+           filterAllOrders(); 
            alert("✅ Perubahan berhasil disimpan (Secara Lokal)!");
        } else {
-           // Tambah Baru ke Google Sheets
            const payload = { action: 'add', data: payloadData };
            try {
               const response = await fetch(SCRIPT_URL, {
