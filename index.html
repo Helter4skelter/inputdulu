@@ -3,65 +3,144 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reztroid Sales Manager</title>
+  <title>Reztroid Sales Manager - Light Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
-    .card-bg { background-color: #1e293b; border: 1px solid #334155; }
+    body { background-color: #f8fafc; font-family: sans-serif; }
   </style>
 </head>
-<body class="p-6">
+<body class="text-slate-800">
 
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-8">
-    <div class="flex items-center gap-4">
-      <div class="w-10 h-10 bg-cyan-400 text-slate-900 font-bold flex items-center justify-center rounded-lg">R</div>
-      <div>
-        <h1 class="text-xl font-bold tracking-wide">REZTROID SALES MANAGER</h1>
-        <p class="text-sm text-slate-400">Dashboard privat owner</p>
-      </div>
-    </div>
-    <button class="text-slate-400 hover:text-white">Keluar</button>
-  </div>
+  <!-- Navbar Atas -->
+  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+     <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
+        <div class="flex items-center gap-2">
+           <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
+           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">SALES MANAGER</span>
+        </div>
+     </div>
+     <div class="flex items-center gap-4">
+        <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+           Refresh
+        </button>
+        <button class="px-5 py-2 bg-violet-600 text-white rounded-full text-sm font-bold hover:bg-violet-700 transition">Dashboard Admin ↗</button>
+     </div>
+  </nav>
 
-  <!-- Statistik -->
-  <div class="grid grid-cols-4 gap-4 mb-6" id="stats-container">
-    <!-- Diisi otomatis oleh JS -->
-  </div>
-
-  <!-- Pengingat -->
-  <div class="card-bg rounded-xl p-6">
-    <div class="flex items-center gap-3 mb-6">
-      <div class="p-2 bg-cyan-400 rounded-lg text-slate-900">🔔</div>
-      <div>
-        <h2 class="font-bold">PENGINGAT HARI INI</h2>
-        <p class="text-sm text-slate-400">Otomatis muncul mulai H-2 sebelum masa aktif berakhir.</p>
-      </div>
-    </div>
+  <!-- Konten Utama -->
+  <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
     
-    <div id="reminder-list" class="space-y-4">
-      <p class="text-slate-400 italic">Memuat data dari Google Sheets...</p>
+    <!-- Bagian Atas (Banner & Card Putih) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+       
+       <!-- Banner Kiri (Warna Ungu Gradient) -->
+       <div class="lg:col-span-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col justify-between shadow-lg shadow-indigo-200 relative overflow-hidden">
+          <!-- Hiasan Background -->
+          <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
+          
+          <div class="relative z-10">
+             <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm">
+                🎁 RINGKASAN PENJUALAN
+             </span>
+             <h2 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">Pantau Omzet &<br>Profit Secara Real-Time.</h2>
+             <p class="text-indigo-100 mb-8 max-w-md text-sm md:text-base leading-relaxed">Data langsung terhubung dari Google Sheets Anda. Kelola pelanggan dan pastikan semua perpanjangan terpantau.</p>
+             
+             <div class="grid grid-cols-2 gap-6 mb-4">
+                <div>
+                   <p class="text-sm text-indigo-200 font-medium mb-1">Total Omzet</p>
+                   <p class="text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
+                </div>
+                <div>
+                   <p class="text-sm text-indigo-200 font-medium mb-1">Total Profit</p>
+                   <p class="text-3xl font-bold text-lime-300 tracking-tight" id="ui-profit">Rp0</p>
+                </div>
+             </div>
+          </div>
+          
+          <div class="flex gap-4 relative z-10 mt-6">
+             <button class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] transition shadow-md flex items-center gap-2">
+                Tambah Order ↗
+             </button>
+             <button class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-full backdrop-blur-sm transition">
+                Data Lengkap
+             </button>
+          </div>
+       </div>
+
+       <!-- Card Kanan (Putih) -->
+       <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 flex flex-col relative">
+          <div class="flex justify-between items-start mb-4">
+             <p class="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Status Pengingat H-2</p>
+             <span class="text-xl">🎯</span>
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-2 text-slate-800">Pelanggan Aktif</h3>
+          <p class="text-sm text-slate-500 mb-8 leading-relaxed">Cek pelanggan yang masa aktifnya akan segera berakhir hari ini atau esok hari agar bisa segera di follow-up.</p>
+          
+          <div class="mt-auto space-y-4">
+             <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between">
+                <span class="text-slate-500 text-sm font-medium">Perlu Diingatkan:</span>
+                <span class="text-2xl font-bold text-violet-600" id="ui-reminder-count">0</span>
+             </div>
+             <button onclick="fetchData()" class="w-full py-3.5 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 transition shadow-md shadow-violet-200 flex justify-center items-center gap-2">
+                Cek Sekarang 🚀
+             </button>
+          </div>
+          
+          <!-- Indikator Bawah Card -->
+          <div class="absolute bottom-4 left-0 w-full px-8 flex justify-between items-center text-[10px] text-slate-400">
+             <div class="flex items-center gap-1.5">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Validasi Database Terverifikasi
+             </div>
+             <div class="flex items-center gap-1.5 text-emerald-500 font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Sinkron Aktif
+             </div>
+          </div>
+       </div>
     </div>
+
+    <!-- Bagian Bawah (Daftar Pengingat Grid) -->
+    <div>
+       <div class="flex justify-between items-end mb-6">
+          <div>
+             <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar Pelanggan H-2</h3>
+             <p class="text-sm text-slate-500">Kirim template chat WhatsApp ke pelanggan dengan satu klik.</p>
+          </div>
+          <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100 hidden sm:inline-block">Auto Template Chat Aktif</span>
+       </div>
+       
+       <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Area ini akan diisi oleh JavaScript -->
+          <p class="text-slate-400 text-sm col-span-full">Memuat data dari Google Sheets...</p>
+       </div>
+    </div>
+
   </div>
 
   <script>
-    // MASUKKAN LINK GOOGLE APPS SCRIPT DI SINI NANTI
+    // MASUKKAN LINK GOOGLE APPS SCRIPT DI SINI
     const SCRIPT_URL = 'TARUH_LINK_ANDA_DI_SINI';
 
     async function fetchData() {
+      const container = document.getElementById('reminder-list');
+      container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mensinkronkan data...</p>';
+      
       try {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         processDashboard(data);
       } catch (error) {
-        document.getElementById('reminder-list').innerHTML = `<p class="text-red-400">Gagal memuat data. Pastikan link Apps Script benar.</p>`;
+        container.innerHTML = `<p class="text-red-500 text-sm col-span-full bg-red-50 p-4 rounded-lg">Gagal memuat data. Pastikan link Apps Script sudah benar.</p>`;
       }
     }
 
     function processDashboard(data) {
       let totalOmzet = 0;
       let totalProfit = 0;
-      const totalOrder = data.length;
       let perluDiingatkan = [];
 
       const hariIni = new Date();
@@ -72,53 +151,54 @@
         totalProfit += Number(order.Profit) || 0;
 
         // Logika H-2
-        const tglBerakhir = new Date(order.Tgl_Berakhir);
-        const selisihWaktu = tglBerakhir.getTime() - hariIni.getTime();
-        const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
+        if (order.Tgl_Berakhir) {
+           const tglBerakhir = new Date(order.Tgl_Berakhir);
+           const selisihWaktu = tglBerakhir.getTime() - hariIni.getTime();
+           const selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
 
-        if (selisihHari >= 0 && selisihHari <= 2) {
-          perluDiingatkan.push(order);
+           if (selisihHari >= 0 && selisihHari <= 2) {
+             perluDiingatkan.push(order);
+           }
         }
       });
 
-      renderStats(totalOmzet, totalProfit, totalOrder, perluDiingatkan.length);
-      renderReminders(perluDiingatkan);
-    }
-
-    function renderStats(omzet, profit, order, reminderCount) {
+      // Update Statistik Angka
       const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
       
-      document.getElementById('stats-container').innerHTML = `
-        <div class="card-bg p-4 rounded-xl">
-          <p class="text-sm text-slate-400 mb-1">Total omzet</p>
-          <p class="text-2xl font-bold text-white">${formatRp(omzet)}</p>
-        </div>
-        <div class="card-bg p-4 rounded-xl">
-          <p class="text-sm text-slate-400 mb-1">Total profit</p>
-          <p class="text-2xl font-bold text-green-400">${formatRp(profit)}</p>
-        </div>
-        <div class="card-bg p-4 rounded-xl">
-          <p class="text-sm text-slate-400 mb-1">Jumlah order</p>
-          <p class="text-2xl font-bold text-white">${order}</p>
-        </div>
-        <div class="card-bg p-4 rounded-xl">
-          <p class="text-sm text-slate-400 mb-1">Perlu diingatkan</p>
-          <p class="text-2xl font-bold text-cyan-400">${reminderCount}</p>
-        </div>
-      `;
+      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
+      document.getElementById('ui-profit').innerText = formatRp(totalProfit);
+      document.getElementById('ui-reminder-count').innerText = perluDiingatkan.length;
+
+      // Render Cards H-2
+      renderReminders(perluDiingatkan);
     }
 
     function renderReminders(reminders) {
       const container = document.getElementById('reminder-list');
       if (reminders.length === 0) {
-        container.innerHTML = `<p class="text-slate-400">Tidak ada pelanggan yang perlu diingatkan hari ini.</p>`;
+        container.innerHTML = `
+          <div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100 text-center">
+             <span class="text-4xl mb-3">🎉</span>
+             <h4 class="font-bold text-slate-700">Semua Aman!</h4>
+             <p class="text-sm text-slate-500">Tidak ada pelanggan yang mendekati batas waktu H-2 hari ini.</p>
+          </div>
+        `;
         return;
       }
 
       container.innerHTML = '';
       reminders.forEach(order => {
-        const tglString = new Date(order.Tgl_Berakhir).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        const tglBerakhir = new Date(order.Tgl_Berakhir);
+        const tglString = tglBerakhir.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
         
+        // Logika Status Hari
+        const hariIni = new Date();
+        hariIni.setHours(0,0,0,0);
+        const selisihHari = Math.ceil((tglBerakhir.getTime() - hariIni.getTime()) / (1000 * 3600 * 24));
+        
+        let badgeText = selisihHari === 0 ? "HARI INI" : `H-${selisihHari}`;
+        let badgeClass = selisihHari === 0 ? "bg-red-50 text-red-600" : "bg-orange-50 text-orange-600";
+
         const templatePesan = `Halo Kak ${order.Nama_Pelanggan} 👋
 
 Mau mengingatkan bahwa masa aktif ${order.Layanan} akan berakhir pada ${tglString}.
@@ -126,36 +206,40 @@ Mau mengingatkan bahwa masa aktif ${order.Layanan} akan berakhir pada ${tglStrin
 Jika ingin diperpanjang, boleh balas chat ini ya Kak supaya layanan tetap aktif tanpa terputus ✨
 
 — Admin Reztroid`;
-        
         const waLink = `https://wa.me/${order.No_WA}?text=${encodeURIComponent(templatePesan)}`;
 
         container.innerHTML += `
-          <div class="card-bg p-5 rounded-lg mb-4">
-            <div class="flex justify-between items-center mb-4">
-              <div>
-                <p class="text-xs text-cyan-400 font-bold mb-1">${order.ID_Order}</p>
-                <p class="font-bold text-lg">${order.Nama_Pelanggan} <span class="text-slate-400 font-normal">· ${order.Layanan}</span></p>
-              </div>
-              <div class="bg-emerald-900/50 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-800">
-                Berakhir ${tglString}
-              </div>
+          <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-slate-100 flex flex-col items-center text-center relative transition duration-300">
+            <!-- Badge Status -->
+            <span class="absolute top-4 right-4 px-2 py-1 ${badgeClass} text-[10px] font-bold rounded-full tracking-wide">
+               ${badgeText}
+            </span>
+            
+            <!-- Ikon Tengah (Inisial Layanan) -->
+            <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center text-xl mb-4 shadow-sm border border-slate-100 font-bold text-slate-600 mt-2">
+               ${order.Layanan ? order.Layanan.charAt(0).toUpperCase() : '📦'}
             </div>
             
-            <div class="bg-slate-800 p-4 rounded text-sm text-slate-300 whitespace-pre-wrap mb-4">${templatePesan}</div>
+            <!-- Nama & Layanan -->
+            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan}</h4>
+            <p class="text-xs text-slate-500 mb-6">${order.Layanan} • <span class="font-medium text-slate-400">${order.ID_Order || '#-'}</span></p>
             
-            <div class="flex gap-2">
-              <button onclick="navigator.clipboard.writeText(\`${templatePesan}\`); alert('Teks disalin!')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg text-sm font-bold border border-slate-700 transition">
-                📄 Salin teks
-              </button>
-              <a href="${waLink}" target="_blank" class="flex-1 bg-green-500 hover:bg-green-400 text-slate-900 py-2 rounded-lg text-sm font-bold text-center transition flex items-center justify-center gap-2">
-                💬 Buka WhatsApp
-              </a>
+            <!-- Info Bawah & Tombol -->
+            <div class="w-full flex justify-between items-center mt-auto border-t border-slate-50 pt-5">
+               <div class="text-left">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Berakhir Tgl</p>
+                  <p class="text-sm font-bold text-indigo-600">${tglString}</p>
+               </div>
+               <a href="${waLink}" target="_blank" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800 transition shadow-sm">
+                  Kirim WA
+               </a>
             </div>
           </div>
         `;
       });
     }
 
+    // Load data otomatis
     fetchData();
   </script>
 </body>
