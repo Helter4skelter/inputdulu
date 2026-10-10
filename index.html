@@ -78,8 +78,8 @@
             </div>
         </div>
         
+        <!-- INI TEMPAT MUNCULNYA DAFTAR SEMUA PELANGGAN -->
         <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <!-- Data semua pelanggan akan dimuat di sini secara otomatis -->
             <p class="text-slate-400 text-sm col-span-full">Mengambil daftar pelanggan...</p>
         </div>
     </div>
@@ -218,7 +218,6 @@
     }
     hitungSemua();
 
-    // VARIABEL GLOBAL UNTUK MENYIMPAN SEMUA DATA DARI SHEETS
     let globalOrders = [];
 
     // Fungsi mengambil data dari Sheets
@@ -232,7 +231,7 @@
       try {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
-        globalOrders = data; // Simpan semua data
+        globalOrders = data; 
         processDashboard(data);
       } catch (error) {
         h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal. Cek jaringan atau script Google.</p>`;
@@ -249,7 +248,7 @@
     function formatTglDisplay(dateStr) {
         if (!dateStr || dateStr === '-') return '-';
         const d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr; // kembalikan asli jika gagal format
+        if (isNaN(d.getTime())) return dateStr; 
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
@@ -295,7 +294,7 @@
         const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
 
         container.innerHTML += `
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative group">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:border-violet-300 transition">
             <div class="flex justify-between items-start mb-4">
                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
                   ${order.Layanan ? order.Layanan.charAt(0) : 'R'}
@@ -343,7 +342,7 @@
 
         container.innerHTML = '';
         const hariIni = new Date();
-        hariIni.setHours(0,0,0,0); // Set waktu ke 00:00 untuk perbandingan akurat
+        hariIni.setHours(0,0,0,0); 
 
         ordersList.forEach(order => {
             const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
@@ -380,7 +379,7 @@
                 
                 <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <div>
-                        <p class="text-slate-500 mb-1">Berakhir</p>
+                        <p class="text-slate-500 mb-1">Berakhir pada</p>
                         <p class="font-bold text-slate-800 text-sm">${tglTampil}</p>
                     </div>
                     <div>
