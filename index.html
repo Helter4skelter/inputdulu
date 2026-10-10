@@ -271,7 +271,6 @@
       allContainer.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mempersiapkan daftar pelanggan...</p>';
       
       try {
-        // --- KODE ANTI-CACHE DITAMBAHKAN DI SINI ---
         const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
         const data = await response.json();
         globalOrders = data; 
@@ -307,12 +306,44 @@
         return statuses[id] || 'Aman';
     }
 
-    function salinOrder(nama, layanan, exp, wa) {
+    // --- TEKS PENGINGAT PROFESIONAL & FRIENDLY ---
+    function salinOrder(nama, layanan, exp) {
         playSound('click');
-        const teks = `Halo ${nama}, langganan ${layanan} kamu akan berakhir pada ${exp}. Info lebih lanjut silakan hubungi admin Reztroid.`;
+        const teks = `Halo Kak ${nama} ✨\n\nSemoga harinya menyenangkan! Kami dari Reztroid ingin menginformasikan bahwa masa aktif layanan ${layanan} Kakak akan segera berakhir pada tanggal ${exp}.\n\nBagi Kakak yang ingin memperpanjang layanan agar tidak terputus, silakan balas pesan ini ya Kak.\n\nTerima kasih banyak atas kepercayaannya berlangganan di Reztroid! 🙏😊`;
         navigator.clipboard.writeText(teks).then(() => {
-            alert("📋 Berhasil menyalin teks orderan!");
+            alert("📋 Teks pengingat berhasil disalin!");
         });
+    }
+
+    // --- FITUR BARU: ADD TO GOOGLE CALENDAR ---
+    function addToCalendar(nama, layanan, expDateStr) {
+        playSound('click');
+        if (!expDateStr || expDateStr === '-') {
+            alert("Tanggal berakhir tidak valid!");
+            return;
+        }
+        
+        let exp = new Date(expDateStr);
+        let h2 = new Date(exp);
+        h2.setDate(exp.getDate() - 2); // Set kalender di H-2
+
+        let d = String(h2.getDate()).padStart(2, '0');
+        let m = String(h2.getMonth() + 1).padStart(2, '0');
+        let y = h2.getFullYear();
+        
+        let h2End = new Date(h2);
+        h2End.setDate(h2.getDate() + 1);
+        let dEnd = String(h2End.getDate()).padStart(2, '0');
+        let mEnd = String(h2End.getMonth() + 1).padStart(2, '0');
+        let yEnd = h2End.getFullYear();
+
+        let dateString = `${y}${m}${d}/${yEnd}${mEnd}${dEnd}`; 
+
+        let title = encodeURIComponent(`[H-2] Tagihan ${layanan} - ${nama}`);
+        let details = encodeURIComponent(`Halo admin, jangan lupa ingatkan Kak ${nama} untuk perpanjang layanan ${layanan} yang akan habis pada tanggal ${expDateStr}.`);
+        
+        let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${dateString}`;
+        window.open(url, '_blank');
     }
 
     function editOrder(index) {
@@ -338,7 +369,7 @@
         if (confirm("Apakah kamu yakin ingin menghapus data orderan ini?")) {
             globalOrders.splice(index, 1);
             renderAllOrders(globalOrders);
-            alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus juga di Google Sheets kamu ya!");
+            alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus juga di Google Sheets ya!");
         }
     }
 
@@ -373,178 +404,4 @@
       }
 
       container.innerHTML = '';
-      reminders.forEach(order => {
-        const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
-        const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
-
-        container.innerHTML += `
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:border-violet-300 transition">
-            <div class="flex justify-between items-start mb-4">
-               <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
-                  ${order.Layanan ? order.Layanan.charAt(0) : 'R'}
-               </div>
-               <div class="text-right">
-                  <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
-                  <p class="text-xs font-bold text-red-500">${tglBerakhir}</p>
-               </div>
-            </div>
-            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan}</h4>
-            <p class="text-xs text-slate-500 font-medium mb-4">${order.Layanan} • ${order.ID_Order}</p>
-            
-            <div class="grid grid-cols-1 gap-2 mt-auto">
-               <a href="${waLink}" target="_blank" onclick="playSound('click')" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1 shadow-sm">
-                  💬 Kirim WhatsApp
-               </a>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function filterAllOrders() {
-        const query = document.getElementById('searchOrder').value.toLowerCase();
-        const filtered = globalOrders.filter(o => 
-            (o.Nama_Pelanggan && o.Nama_Pelanggan.toLowerCase().includes(query)) ||
-            (o.Layanan && o.Layanan.toLowerCase().includes(query)) ||
-            (o.ID_Order && o.ID_Order.toLowerCase().includes(query)) ||
-            (o.No_WA && String(o.No_WA).includes(query))
-        );
-        renderAllOrders(filtered);
-    }
-
-    function renderAllOrders(ordersList) {
-        const container = document.getElementById('all-orders-list');
-        document.getElementById('total-orders-count').innerText = `(${ordersList.length})`;
-        
-        if (ordersList.length === 0) {
-            container.innerHTML = `<div class="col-span-full text-center p-8 text-slate-500 bg-white rounded-2xl border border-slate-100">Tidak ada pelanggan ditemukan.</div>`;
-            return;
-        }
-
-        container.innerHTML = '';
-        const hariIni = new Date();
-        hariIni.setHours(0,0,0,0); 
-
-        ordersList.forEach((order, index) => {
-            const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
-            const tglTampil = formatTglDisplay(expString);
-            
-            let statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md">Unknown</span>';
-            if(expString !== '-') {
-                const expDate = new Date(expString);
-                if(expDate < hariIni) {
-                    statusBadge = '<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-md">Berakhir</span>';
-                } else {
-                    statusBadge = '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-md">Aktif</span>';
-                }
-            }
-
-            const savedStatus = getLocalStatus(order.ID_Order);
-            const omzetVal = parseRupiah(order.Omzet);
-            const profitVal = parseRupiah(order.Profit);
-            const modalVal = omzetVal - profitVal;
-            
-            const omzetFmt = "Rp" + omzetVal.toLocaleString('id-ID');
-            const profitFmt = "Rp" + profitVal.toLocaleString('id-ID');
-            const modalFmt = "Rp" + modalVal.toLocaleString('id-ID');
-
-            container.innerHTML += `
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[11px] font-bold text-violet-600 tracking-wider block mb-1">${order.ID_Order || 'No ID'}</span>
-                        <div class="flex gap-2">
-                            ${statusBadge}
-                            <select onchange="updateLocalStatus('${order.ID_Order}', this.value)" class="text-[10px] font-bold bg-slate-50 text-slate-600 rounded-md px-2 py-1 outline-none border border-slate-200 cursor-pointer hover:bg-slate-100 transition">
-                                <option value="Aman" ${savedStatus==='Aman'?'selected':''}>✅ Aman</option>
-                                <option value="Bermasalah" ${savedStatus==='Bermasalah'?'selected':''}>⚠️ Bermasalah</option>
-                                <option value="Perpanjangan" ${savedStatus==='Perpanjangan'?'selected':''}>🔄 Perpanjang</option>
-                            </select>
-                        </div>
-                    </div>
-                    <h3 class="font-bold text-slate-800 text-lg mb-0.5">${order.Nama_Pelanggan} <span class="text-slate-500 font-normal text-sm">· ${order.Layanan}</span></h3>
-                    <p class="text-sm text-slate-500 mb-4">${order.No_WA || '-'}</p>
-                    
-                    <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <div>
-                            <p class="text-slate-500 mb-1">Berakhir pada</p>
-                            <p class="font-bold text-slate-800 text-sm">${tglTampil}</p>
-                        </div>
-                        <div>
-                            <p class="text-slate-500 mb-1">Harga / Modal</p>
-                            <p class="font-bold text-slate-800 text-sm">${omzetFmt} / ${modalFmt}</p>
-                        </div>
-                        <div class="col-span-2 mt-2 pt-2 border-t border-slate-200">
-                            <p class="text-slate-500 mb-1">Profit Bersih</p>
-                            <p class="font-bold text-emerald-600 text-sm">${profitFmt}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 pt-3 border-t border-slate-100 mt-auto">
-                    <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
-                        📋 Salin
-                    </button>
-                    <button onclick="editOrder(${index})" class="px-3 bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-2 rounded-xl text-xs transition" title="Edit Order">
-                        ✏️ Edit
-                    </button>
-                    <button onclick="hapusOrder(${index})" class="px-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 rounded-xl text-xs transition" title="Hapus Order">
-                        🗑️ Hapus
-                    </button>
-                </div>
-            </div>
-            `;
-        });
-    }
-
-    async function submitOrder(e) {
-       e.preventDefault();
-       const btn = document.getElementById('btnSubmit');
-       const editIdx = document.getElementById('editIndex').value;
-       
-       btn.innerText = "Menyimpan..."; btn.disabled = true;
-
-       const payloadData = {
-          ID_Order: editIdx !== "" ? globalOrders[editIdx].ID_Order : "RZT-" + Math.floor(1000 + Math.random() * 9000),
-          Nama_Pelanggan: document.getElementById('inputNama').value,
-          Layanan: document.getElementById('inputLayanan').value,
-          Tgl_Berakhir: document.getElementById('resBerakhir').innerText, 
-          No_WA: document.getElementById('inputWA').value,
-          Omzet: document.getElementById('hargaJual').value,
-          Profit: document.getElementById('hargaJual').value - document.getElementById('modal').value
-       };
-
-       if (editIdx !== "") {
-           globalOrders[editIdx] = payloadData;
-           playSound('success');
-           document.getElementById('formOrder').reset();
-           document.getElementById('modalOrder').classList.add('hidden');
-           renderAllOrders(globalOrders);
-           alert("✅ Perubahan berhasil disimpan!");
-       } else {
-           const payload = { action: 'add', data: payloadData };
-           try {
-              const response = await fetch(SCRIPT_URL, {
-                 method: 'POST',
-                 body: JSON.stringify(payload)
-              });
-              const result = await response.json();
-              playSound('success'); 
-              document.getElementById('formOrder').reset();
-              document.getElementById('modalOrder').classList.add('hidden');
-              fetchData(); 
-           } catch (error) {
-              playSound('success'); 
-              document.getElementById('formOrder').reset();
-              document.getElementById('modalOrder').classList.add('hidden');
-              fetchData(); 
-           }
-       }
-       
-       btn.innerText = "Simpan Order"; btn.disabled = false;
-    }
-
-    fetchData(); 
-  </script>
-</body>
-</html>
+      reminders.forEach
