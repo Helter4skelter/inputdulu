@@ -271,7 +271,8 @@
       allContainer.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mempersiapkan daftar pelanggan...</p>';
       
       try {
-        const response = await fetch(SCRIPT_URL);
+        // --- KODE ANTI-CACHE DITAMBAHKAN DI SINI ---
+        const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
         const data = await response.json();
         globalOrders = data; 
         processDashboard(data);
@@ -306,7 +307,6 @@
         return statuses[id] || 'Aman';
     }
 
-    // --- FITUR BARU: SALIN, EDIT, HAPUS ---
     function salinOrder(nama, layanan, exp, wa) {
         playSound('click');
         const teks = `Halo ${nama}, langganan ${layanan} kamu akan berakhir pada ${exp}. Info lebih lanjut silakan hubungi admin Reztroid.`;
@@ -338,7 +338,7 @@
         if (confirm("Apakah kamu yakin ingin menghapus data orderan ini?")) {
             globalOrders.splice(index, 1);
             renderAllOrders(globalOrders);
-            alert("🗑️ Orderan berhasil dihapus dari tampilan.");
+            alert("🗑️ Orderan berhasil dihapus dari tampilan. Jangan lupa hapus juga di Google Sheets kamu ya!");
         }
     }
 
@@ -481,7 +481,6 @@
                     </div>
                 </div>
 
-                <!-- TOMBOL AKSI BARU: Salin, Edit, Hapus -->
                 <div class="flex items-center gap-2 pt-3 border-t border-slate-100 mt-auto">
                     <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
                         📋 Salin
@@ -516,7 +515,6 @@
        };
 
        if (editIdx !== "") {
-           // Mode Edit Lokal
            globalOrders[editIdx] = payloadData;
            playSound('success');
            document.getElementById('formOrder').reset();
@@ -524,7 +522,6 @@
            renderAllOrders(globalOrders);
            alert("✅ Perubahan berhasil disimpan!");
        } else {
-           // Mode Tambah Baru ke Sheets
            const payload = { action: 'add', data: payloadData };
            try {
               const response = await fetch(SCRIPT_URL, {
