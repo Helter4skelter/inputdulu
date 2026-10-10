@@ -23,7 +23,7 @@
            <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
         </div>
      </div>
-     <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
+     <button onclick="fetchData()" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
         🔄 Refresh Data
      </button>
   </nav>
@@ -53,7 +53,7 @@
        </div>
     </div>
 
-    <!-- PENGINGAT HARI INI -->
+    <!-- PENGINGAT HARI INI (H-2) -->
     <div>
        <div class="flex justify-between items-end mb-6">
           <div>
@@ -65,6 +65,23 @@
        <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <p class="text-slate-400 text-sm col-span-full">Menyinkronkan data dari Google Sheets...</p>
        </div>
+    </div>
+
+    <!-- SEMUA STATUS DAFTAR ORDER -->
+    <div class="pt-8 border-t border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <h3 class="text-xl font-bold text-slate-800">Semua Order <span id="total-orders-count" class="text-sm font-normal text-slate-500 ml-2">(0)</span></h3>
+            
+            <!-- Fitur Search Bar Adjustable -->
+            <div class="w-full sm:w-auto relative">
+                <input type="text" id="searchOrder" onkeyup="filterAllOrders()" placeholder="🔍 Cari nama, produk, ID..." class="w-full sm:w-72 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 shadow-sm transition">
+            </div>
+        </div>
+        
+        <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Data semua pelanggan akan dimuat di sini secara otomatis -->
+            <p class="text-slate-400 text-sm col-span-full">Mengambil daftar pelanggan...</p>
+        </div>
     </div>
 
   </div>
@@ -125,16 +142,15 @@
 
            <div class="grid grid-cols-2 gap-4">
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Harga Jual (Rp) *</label>
-                 <input type="number" id="hargaJual" value="39000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="39000">
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Harga Jual / Omzet (Rp) *</label>
+                 <input type="number" id="hargaJual" value="39000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
               </div>
               <div>
                  <label class="block text-xs font-bold text-slate-500 mb-1">Modal (Rp) *</label>
-                 <input type="number" id="modal" value="31000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="31000">
+                 <input type="number" id="modal" value="31000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500">
               </div>
            </div>
            
-           <!-- Kalkulasi Otomatis -->
            <div class="grid grid-cols-2 gap-y-4 gap-x-2 pt-4 border-t border-slate-100 mt-4">
                 <div>
                     <p class="text-[10px] font-bold text-slate-400">Berakhir</p>
@@ -162,15 +178,14 @@
   </div>
 
   <script>
-    // INI LINK GOOGLE SHEETS KAMU (SUDAH TERSAMBUNG)
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
-    // Set Tanggal Hari Ini di Form
+    // Set Tanggal Hari Ini
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
-    // --- FITUR HITUNG OTOMATIS ---
+    // Hitung Otomatis Tanggal & Margin
     function setDurasi(hari, el) {
         document.getElementById('durasi').value = hari;
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
@@ -188,7 +203,7 @@
             let start = new Date(tglMulai);
             let end = new Date(start);
             end.setDate(start.getDate() + durasi);
-            document.getElementById('resBerakhir').innerText = end.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            document.getElementById('resBerakhir').innerText = end.toISOString().split('T')[0];
             
             let h2 = new Date(end);
             h2.setDate(end.getDate() - 2);
@@ -203,17 +218,25 @@
     }
     hitungSemua();
 
-    // --- FITUR SINKRONISASI KE GOOGLE SHEETS ---
+    // VARIABEL GLOBAL UNTUK MENYIMPAN SEMUA DATA DARI SHEETS
+    let globalOrders = [];
+
+    // Fungsi mengambil data dari Sheets
     async function fetchData() {
-      const container = document.getElementById('reminder-list');
-      container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Menarik data dari Google Sheets...</p>';
+      const h2Container = document.getElementById('reminder-list');
+      const allContainer = document.getElementById('all-orders-list');
+      
+      h2Container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Menarik data dari Google Sheets...</p>';
+      allContainer.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mempersiapkan daftar pelanggan...</p>';
       
       try {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
+        globalOrders = data; // Simpan semua data
         processDashboard(data);
       } catch (error) {
-        container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal. Cek jaringan atau script Google.</p>`;
+        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal. Cek jaringan atau script Google.</p>`;
+        allContainer.innerHTML = '';
       }
     }
 
@@ -222,16 +245,27 @@
         return Number(String(str).replace(/[^0-9]/g, '')) || 0;
     }
 
+    // Fungsi Format Tanggal agar lebih cantik (Contoh: 11 Okt 2026)
+    function formatTglDisplay(dateStr) {
+        if (!dateStr || dateStr === '-') return '-';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr; // kembalikan asli jika gagal format
+        const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
     function processDashboard(orders) {
       let totalOmzet = 0;
       let totalProfit = 0;
-      let allReminders = [];
+      let h2Reminders = [];
 
       orders.forEach(order => {
         if(order.Omzet) totalOmzet += parseRupiah(order.Omzet);
         if(order.Profit) totalProfit += parseRupiah(order.Profit);
+        
+        // Cek jika statusnya butuh diingatkan (H-2)
         if (order.Status_H2 && String(order.Status_H2).includes("H-2")) {
-             allReminders.push(order);
+             h2Reminders.push(order);
         }
       });
 
@@ -239,39 +273,44 @@
       document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
       document.getElementById('ui-profit').innerText = formatRp(totalProfit);
       
-      document.getElementById('ui-reminder-count').innerText = allReminders.length;
-      renderReminders(allReminders);
+      document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
+      
+      // Render Daftar H-2
+      renderH2Reminders(h2Reminders);
+      
+      // Render Semua Order
+      renderAllOrders(globalOrders);
     }
 
-    function renderReminders(reminders) {
+    function renderH2Reminders(reminders) {
       const container = document.getElementById('reminder-list');
       if (reminders.length === 0) {
-        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500">Aman! Tidak ada antrian H-2 hari ini.</p></div>`;
+        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100 shadow-sm"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500 font-bold">Aman! Tidak ada antrian H-2 hari ini.</p></div>`;
         return;
       }
 
       container.innerHTML = '';
       reminders.forEach(order => {
         const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
-        const tgl = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
+        const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
 
         container.innerHTML += `
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col relative group">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col relative group">
             <div class="flex justify-between items-start mb-4">
                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm">
                   ${order.Layanan ? order.Layanan.charAt(0) : 'R'}
                </div>
                <div class="text-right">
                   <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
-                  <p class="text-xs font-bold text-red-500">${tgl}</p>
+                  <p class="text-xs font-bold text-red-500">${tglBerakhir}</p>
                </div>
             </div>
-            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan} <span class="text-slate-500 font-normal text-sm">· ${order.Layanan}</span></h4>
-            <p class="text-[11px] font-bold text-violet-500 tracking-wider mb-4">${order.ID_Order}</p>
+            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1">${order.Nama_Pelanggan}</h4>
+            <p class="text-xs text-slate-500 font-medium mb-4">${order.Layanan} • ${order.ID_Order}</p>
             
             <div class="grid grid-cols-1 gap-2 mt-auto">
-               <a href="${waLink}" target="_blank" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1">
-                  Kirim WhatsApp
+               <a href="${waLink}" target="_blank" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs hover:bg-[#1ebd5b] transition flex items-center justify-center gap-1 shadow-sm">
+                  💬 Kirim WhatsApp
                </a>
             </div>
           </div>
@@ -279,6 +318,86 @@
       });
     }
 
+    // Fungsi Filter Adjustable 
+    function filterAllOrders() {
+        const query = document.getElementById('searchOrder').value.toLowerCase();
+        
+        const filtered = globalOrders.filter(o => 
+            (o.Nama_Pelanggan && o.Nama_Pelanggan.toLowerCase().includes(query)) ||
+            (o.Layanan && o.Layanan.toLowerCase().includes(query)) ||
+            (o.ID_Order && o.ID_Order.toLowerCase().includes(query)) ||
+            (o.No_WA && String(o.No_WA).includes(query))
+        );
+        
+        renderAllOrders(filtered);
+    }
+
+    function renderAllOrders(ordersList) {
+        const container = document.getElementById('all-orders-list');
+        document.getElementById('total-orders-count').innerText = `(${ordersList.length})`;
+        
+        if (ordersList.length === 0) {
+            container.innerHTML = `<div class="col-span-full text-center p-8 text-slate-500 bg-white rounded-2xl border border-slate-100">Tidak ada pelanggan ditemukan.</div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        const hariIni = new Date();
+        hariIni.setHours(0,0,0,0); // Set waktu ke 00:00 untuk perbandingan akurat
+
+        ordersList.forEach(order => {
+            const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
+            const tglTampil = formatTglDisplay(expString);
+            
+            // Hitung Status Aktif/Berakhir
+            let statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md">Unknown</span>';
+            if(expString !== '-') {
+                const expDate = new Date(expString);
+                if(expDate < hariIni) {
+                    statusBadge = '<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-md">Berakhir</span>';
+                } else {
+                    statusBadge = '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-md">Aktif</span>';
+                }
+            }
+
+            // Hitung Modal manual jika kolom Modal tidak ada (Modal = Omzet - Profit)
+            const omzetVal = parseRupiah(order.Omzet);
+            const profitVal = parseRupiah(order.Profit);
+            const modalVal = omzetVal - profitVal;
+            
+            const omzetFmt = "Rp" + omzetVal.toLocaleString('id-ID');
+            const profitFmt = "Rp" + profitVal.toLocaleString('id-ID');
+            const modalFmt = "Rp" + modalVal.toLocaleString('id-ID');
+
+            container.innerHTML += `
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-200">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[11px] font-bold text-violet-600 tracking-wider block mb-1">${order.ID_Order || 'No ID'}</span>
+                    ${statusBadge}
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg mb-0.5">${order.Nama_Pelanggan} <span class="text-slate-500 font-normal text-sm">· ${order.Layanan}</span></h3>
+                <p class="text-sm text-slate-500 mb-4">${order.No_WA || '-'}</p>
+                
+                <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <div>
+                        <p class="text-slate-500 mb-1">Berakhir</p>
+                        <p class="font-bold text-slate-800 text-sm">${tglTampil}</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 mb-1">Harga / Modal</p>
+                        <p class="font-bold text-slate-800 text-sm">${omzetFmt} / ${modalFmt}</p>
+                    </div>
+                    <div class="col-span-2 mt-2 pt-2 border-t border-slate-200">
+                        <p class="text-slate-500 mb-1">Profit Bersih</p>
+                        <p class="font-bold text-emerald-600 text-sm">${profitFmt}</p>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+    }
+
+    // Proses Pengiriman Data Ke Google Sheets
     async function submitOrder(e) {
        e.preventDefault();
        const btn = document.getElementById('btnSubmit');
@@ -306,13 +425,12 @@
           if(result.success || result.status) {
              document.getElementById('formOrder').reset();
              document.getElementById('modalOrder').classList.add('hidden');
-             fetchData(); // Muat ulang data biar langsung update
+             fetchData(); // Muat ulang data biar langsung update di list
           }
        } catch (error) {
-          // Tetap tutup modal dan refresh karena seringkali data sukses masuk walau ada error CORS
           document.getElementById('formOrder').reset();
           document.getElementById('modalOrder').classList.add('hidden');
-          fetchData();
+          fetchData(); 
        }
        
        btn.innerText = "Simpan Order"; btn.disabled = false;
