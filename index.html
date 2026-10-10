@@ -221,7 +221,7 @@
     function openModalForAdd() {
         playSound('click');
         document.getElementById('modalTitle').innerText = "Order Baru";
-        document.getElementById('editId').value = ""; // Bersihkan ID Edit
+        document.getElementById('editId').value = ""; 
         document.getElementById('formOrder').reset();
         document.getElementById('tglOrder').value = today;
         document.getElementById('tglMulai').value = today;
@@ -272,13 +272,12 @@
       allContainer.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mempersiapkan daftar pelanggan...</p>';
       
       try {
-        // PERBAIKAN: Mengembalikan ke bentuk asli agar tidak ditolak CORS Google
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
         globalOrders = data; 
         processDashboard(data);
       } catch (error) {
-        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal. Silakan coba lagi.</p>`;
+        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Koneksi gagal.</p>`;
         allContainer.innerHTML = '';
       }
     }
