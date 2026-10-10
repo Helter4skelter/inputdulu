@@ -6,14 +6,13 @@
   <title>Reztroid Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #f8fafc; font-family: sans-serif; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
   </style>
 </head>
 <body class="text-slate-800">
 
-  <!-- Navbar -->
-  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
      <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold">R</div>
         <div class="flex items-center gap-2">
@@ -28,7 +27,6 @@
 
   <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
     
-    <!-- Banner Statistik -->
     <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-lg shadow-indigo-200 relative overflow-hidden items-center gap-8">
        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl"></div>
        <div class="relative z-10 w-full md:w-1/2">
@@ -51,7 +49,6 @@
        </div>
     </div>
 
-    <!-- Filter & Daftar Pengingat -->
     <div>
        <div class="flex justify-between items-end mb-6">
           <div>
@@ -68,13 +65,11 @@
           </select>
        </div>
        <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <p class="text-slate-400 text-sm col-span-full">Memuat data dari Google Sheets...</p>
+          <p class="text-slate-400 text-sm col-span-full">Mengambil data dari server...</p>
        </div>
     </div>
-
   </div>
 
-  <!-- Modal Tambah Order -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
      <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-xl relative max-h-[90vh] overflow-y-auto">
         <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-xl font-bold">×</button>
@@ -121,22 +116,33 @@
   </div>
 
   <script>
-    // Link sudah dipasang otomatis di sini!
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
+    // MASUKKAN LINK APPS SCRIPT BARU KAMU DI BAWAH INI (JANGAN LUPA TANDA KUTIP)
+    const SCRIPT_URL = 'TARUH_LINK_BARU_DI_SINI';
     
     let allReminders = [];
 
     async function fetchData() {
       const container = document.getElementById('reminder-list');
-      container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mensinkronkan data...</p>';
+      container.innerHTML = '<p class="text-slate-400 text-sm col-span-full animate-pulse">Mensinkronkan data dengan Google Sheets...</p>';
       
       try {
-        const response = await fetch(SCRIPT_URL);
+        const response = await fetch(SCRIPT_URL, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
         const data = await response.json();
         processDashboard(data);
       } catch (error) {
-        container.innerHTML = `<p class="text-red-500 text-sm col-span-full">Gagal memuat data. Coba refresh halaman.</p>`;
+        container.innerHTML = `<p class="text-red-500 text-sm col-span-full font-bold">Gagal memuat data: Google memblokir koneksi atau link salah. Coba refresh.</p>`;
+        console.error("Error Fetch:", error);
       }
+    }
+
+    function parseRupiah(str) {
+        if (!str) return 0;
+        let num = String(str).replace(/[^0-9]/g, '');
+        return Number(num) || 0;
     }
 
     function processDashboard(orders) {
@@ -148,15 +154,11 @@
       hariIni.setHours(0,0,0,0);
 
       orders.forEach(order => {
-        totalOmzet += Number(order.Omzet) || 0;
-        totalProfit += Number(order.Profit) || 0;
+        if(order.Omzet) totalOmzet += parseRupiah(order.Omzet);
+        if(order.Profit) totalProfit += parseRupiah(order.Profit);
 
-        if (order.Tgl_Berakhir) {
-           const tglBerakhir = new Date(order.Tgl_Berakhir);
-           const selisihHari = Math.ceil((tglBerakhir.getTime() - hariIni.getTime()) / (1000 * 3600 * 24));
-           if (selisihHari >= 0 && selisihHari <= 2) {
+        if (order.Status_H2 && String(order.Status_H2).includes("H-2")) {
              allReminders.push(order);
-           }
         }
       });
 
@@ -172,7 +174,7 @@
        let filteredData = allReminders;
        
        if (filterValue !== 'Semua') {
-          filteredData = allReminders.filter(order => order.Layanan.toLowerCase().includes(filterValue.toLowerCase()));
+          filteredData = allReminders.filter(order => order.Layanan && order.Layanan.toLowerCase().includes(filterValue.toLowerCase()));
        }
        
        document.getElementById('ui-reminder-count').innerText = filteredData.length;
@@ -182,17 +184,14 @@
     function renderReminders(reminders) {
       const container = document.getElementById('reminder-list');
       if (reminders.length === 0) {
-        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500">Aman! Tidak ada antrian H-2 untuk filter ini.</p></div>`;
+        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-10 bg-white rounded-2xl border border-slate-100 shadow-sm"><span class="text-4xl mb-3">🎉</span><p class="text-sm text-slate-500 font-bold">Aman! Tidak ada antrian H-2 hari ini.</p></div>`;
         return;
       }
 
       container.innerHTML = '';
       reminders.forEach(order => {
-        const tglBerakhir = new Date(order.Tgl_Berakhir);
-        const tglString = tglBerakhir.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-        
-        const templatePesan = `Halo Kak ${order.Nama_Pelanggan} 👋\nMau mengingatkan masa aktif ${order.Layanan} akan berakhir pada ${tglString}.\nJika ingin diperpanjang, boleh balas chat ini ya Kak ✨`;
-        const waLink = `https://wa.me/${order.No_WA}?text=${encodeURIComponent(templatePesan)}`;
+        const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
+        const tglBerakhir = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split(' ')[0] : '-';
 
         container.innerHTML += `
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col relative group">
@@ -202,18 +201,15 @@
                </div>
                <div class="text-right">
                   <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
-                  <p class="text-xs font-bold text-red-500">${tglString}</p>
+                  <p class="text-xs font-bold text-red-500">${tglBerakhir}</p>
                </div>
             </div>
             <h4 class="font-bold text-slate-800 text-lg line-clamp-1">${order.Nama_Pelanggan}</h4>
             <p class="text-xs text-slate-500 mb-6">${order.Layanan} • ${order.ID_Order}</p>
             
             <div class="flex gap-2 mt-auto">
-               <button onclick="extendOrder('${order.ID_Order}')" class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center hover:bg-green-100 transition" title="Tandai Sudah Perpanjang">
-                  ✓
-               </button>
                <a href="${waLink}" target="_blank" class="flex-1 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-slate-800 transition flex items-center justify-center">
-                  Kirim WA
+                  💬 Kirim WA
                </a>
             </div>
           </div>
@@ -224,26 +220,52 @@
     async function submitOrder(e) {
        e.preventDefault();
        const btn = document.getElementById('btnSubmit');
-       btn.innerText = "Menyimpan..."; btn.disabled = true;
+       btn.innerText = "Menyimpan ke Sheets..."; btn.disabled = true;
 
        const idOrder = "RZT-" + Math.floor(1000 + Math.random() * 9000);
-       const tglBerakhir = new Date();
-       tglBerakhir.setMonth(tglBerakhir.getMonth() + 1); 
+       
+       // Format Tanggal 1 Bulan ke Depan
+       const tgl = new Date();
+       tgl.setMonth(tgl.getMonth() + 1); 
+       const dd = String(tgl.getDate()).padStart(2, '0');
+       const mm = String(tgl.getMonth() + 1).padStart(2, '0'); 
+       const yyyy = tgl.getFullYear();
+       const tglBerakhir = dd + '/' + mm + '/' + yyyy;
        
        const payload = {
           action: 'add',
           data: {
              ID_Order: idOrder,
              Nama_Pelanggan: document.getElementById('inputNama').value,
-             Layanan: documentMantap! 🎉 Kamu berhasil mendapatkan link-nya! Berarti sistem backend-nya sudah aktif 100%.
+             Layanan: document.getElementById('inputLayanan').value,
+             Tgl_Berakhir: tglBerakhir,
+             No_WA: document.getElementById('inputWA').value,
+             Omzet: document.getElementById('inputOmzet').value,
+             Profit: document.getElementById('inputProfit').value
+          }
+       };
 
-Sekarang kita masuk ke **LANGKAH TERAKHIR**:
+       try {
+          const response = await fetch(SCRIPT_URL, {
+             method: 'POST',
+             body: JSON.stringify(payload)
+             // Sengaja tidak pakai headers Content-Type agar tembus CORS Google
+          });
+          const result = await response.json();
+          if(result.success) {
+             document.getElementById('formOrder').reset();
+             document.getElementById('modalOrder').classList.add('hidden');
+             fetchData(); // Refresh UI langsung
+          }
+       } catch (error) {
+          alert("Gagal menyimpan ke Sheets. Periksa koneksi atau link SCRIPT_URL.");
+       }
+       
+       btn.innerText = "Simpan Data"; btn.disabled = false;
+    }
 
-1. Buka file kode Web (HTML) kamu di GitHub.
-2. Cari tulisan ini (ada di bagian agak bawah):
-   `const SCRIPT_URL = 'TARUH_LINK_ANDA_DI_SINI';`
-3. **Ganti** tulisan `TARUH_LINK_ANDA_DI_SINI` dengan link yang barusan kamu kirim. Pastikan tanda kutip tunggalnya (`' '`) tidak ikut terhapus ya.
-
-Nanti bentuknya jadi persis seperti ini:
-```javascript
-const SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbyGP6zPq3LC9HQi0X1-JA1TlmCkkcTrqIRpYSYfTlLRuyKaawLN2GJoA-xqpej9Z550/exec](https://script.google.com/macros/s/AKfycbyGP6zPq3LC9HQi0X1-JA1TlmCkkcTrqIRpYSYfTlLRuyKaawLN2GJoA-xqpej9Z550/exec)';
+    // Panggil data pertama kali
+    fetchData();
+  </script>
+</body>
+</html>
