@@ -317,9 +317,9 @@
 
     function salinOrder(nama, layanan, exp) {
         playSound('click');
-        const teks = `Halo ${nama}, langganan ${layanan} kamu akan berakhir pada ${exp}. Info lebih lanjut silakan hubungi admin Reztroid.`;
+        const teks = `Halo Kak ${nama} 👋\n\nMau mengingatkan bahwa masa aktif ${layanan} kakak akan berakhir pada *${exp}*.\n\nJika ingin diperpanjang, boleh langsung balas chat ini ya Kak, supaya akses premiumnya tetap aman dan keseruannya nggak berhenti di tengah jalan! ✨\n\n— Admin Reztroid`;
         navigator.clipboard.writeText(teks).then(() => {
-            alert("📋 Berhasil menyalin teks orderan!");
+            alert("📋 Berhasil menyalin pesan WhatsApp!");
         });
     }
 
@@ -386,8 +386,16 @@
 
       container.innerHTML = '';
       reminders.forEach((order, index) => {
-        const waLink = order.Link_WA || `https://wa.me/${order.No_WA}`;
         const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
+        
+        // Memformat Pesan Khusus dan Nomor WA
+        const pesanWA = `Halo Kak ${order.Nama_Pelanggan} 👋\n\nMau mengingatkan bahwa masa aktif ${order.Layanan} kakak akan berakhir pada *${tglBerakhir}*.\n\nJika ingin diperpanjang, boleh langsung balas chat ini ya Kak, supaya akses premiumnya tetap aman dan keseruannya nggak berhenti di tengah jalan! ✨\n\n— Admin Reztroid`;
+        
+        // Membersihkan awalan "0" menjadi "62" agar format WA berfungsi
+        let cleanWA = order.No_WA ? String(order.No_WA).replace(/\D/g, '') : '';
+        if (cleanWA.startsWith('0')) { cleanWA = '62' + cleanWA.substring(1); }
+        
+        const waLink = cleanWA ? `https://wa.me/${cleanWA}?text=${encodeURIComponent(pesanWA)}` : '#';
 
         container.innerHTML += `
           <div class="animate-card bg-white rounded-[1.25rem] sm:rounded-[1.5rem] p-5 sm:p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:shadow-xl hover:border-violet-300 hover:-translate-y-1.5 transition-all duration-300" style="animation-delay: ${index * 0.1}s">
