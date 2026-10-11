@@ -92,8 +92,10 @@
   </div>
 
   <!-- Modal Tambah / Edit Order -->
-  <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity">
-     <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[95vh] overflow-y-auto border border-slate-100 transform transition-transform animate-card">
+  <!-- PERUBAHAN: Menambahkan py-12 agar form tidak mentok atas bawah di mobile -->
+  <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 py-12 sm:p-6 transition-opacity">
+     <!-- PERUBAHAN: Mengubah max-h-[95vh] menjadi max-h-[85vh] agar punya jarak aman di HP -->
+     <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[85vh] sm:max-h-[90vh] overflow-y-auto border border-slate-100 transform transition-transform animate-card">
         <button onclick="playSound('click'); document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-4 sm:top-6 right-4 sm:right-6 text-slate-400 hover:text-slate-800 hover:rotate-90 transition-all duration-300 text-2xl font-bold">×</button>
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-2">
             <h3 class="text-xl sm:text-2xl font-bold text-slate-800" id="modalTitle">Order Baru</h3>
@@ -388,10 +390,8 @@
       reminders.forEach((order, index) => {
         const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
         
-        // Memformat Pesan Khusus dan Nomor WA
         const pesanWA = `Halo Kak ${order.Nama_Pelanggan} 👋\n\nMau mengingatkan bahwa masa aktif ${order.Layanan} kakak akan berakhir pada *${tglBerakhir}*.\n\nJika ingin diperpanjang, boleh langsung balas chat ini ya Kak, supaya akses premiumnya tetap aman dan keseruannya nggak berhenti di tengah jalan! ✨\n\n— Admin Reztroid`;
         
-        // Membersihkan awalan "0" menjadi "62" agar format WA berfungsi
         let cleanWA = order.No_WA ? String(order.No_WA).replace(/\D/g, '') : '';
         if (cleanWA.startsWith('0')) { cleanWA = '62' + cleanWA.substring(1); }
         
