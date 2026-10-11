@@ -12,7 +12,6 @@
     .pill:hover { transform: translateY(-2px); border-color: #c4b5fd; }
     .pill.active { background-color: #7c3aed; color: #ffffff; font-weight: bold; border-color: #7c3aed; transform: scale(1.05); }
     
-    /* Animasi Masuk Super Halus */
     @keyframes fadeInUp {
         0% { opacity: 0; transform: translateY(15px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -23,69 +22,69 @@
 <body class="text-slate-800">
 
   <!-- Navbar -->
-  <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/90">
-     <div class="flex items-center gap-3 hover:scale-105 transition-transform duration-300 cursor-pointer">
-        <div class="w-8 h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold shadow-md shadow-violet-200">R</div>
-        <div class="flex items-center gap-2">
-           <span class="font-bold text-xl tracking-tight">reztroid<span class="text-xs align-top text-slate-400 font-normal ml-1">®</span></span>
-           <span class="px-2 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full tracking-wide">ADMIN DASHBOARD</span>
+  <nav class="bg-white border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/90">
+     <div class="flex items-center gap-2 sm:gap-3 hover:scale-105 transition-transform duration-300 cursor-pointer">
+        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold shadow-md shadow-violet-200 text-sm sm:text-base">R</div>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+           <span class="font-bold text-lg sm:text-xl tracking-tight">reztroid<span class="text-[10px] sm:text-xs align-top text-slate-400 font-normal ml-0.5 sm:ml-1">®</span></span>
+           <span class="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-violet-50 text-violet-600 text-[8px] sm:text-[10px] font-bold rounded-full tracking-wide whitespace-nowrap">ADMIN DASHBOARD</span>
         </div>
      </div>
-     <button onclick="playSound('click'); fetchData();" class="px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-100 hover:shadow-md active:scale-95 transition-all duration-200 flex items-center gap-2">
-        🔄 Refresh Data
+     <button onclick="playSound('click'); fetchData();" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-full text-xs sm:text-sm font-bold hover:bg-slate-100 hover:shadow-md active:scale-95 transition-all duration-200 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+        🔄 <span class="hidden sm:inline">Refresh Data</span><span class="sm:hidden">Refresh</span>
      </button>
   </nav>
 
-  <div class="max-w-6xl mx-auto p-6 space-y-10 mt-4">
+  <div class="max-w-6xl mx-auto p-4 sm:p-6 space-y-8 sm:space-y-10 mt-2 sm:mt-4">
     
     <!-- Banner Statistik -->
-    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-xl shadow-violet-200 relative overflow-hidden items-center gap-8 transform hover:-translate-y-1 transition-transform duration-500">
+    <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 md:p-10 text-white flex flex-col md:flex-row justify-between shadow-xl shadow-violet-200 relative overflow-hidden items-center gap-6 sm:gap-8 transform hover:-translate-y-1 transition-transform duration-500">
        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl animate-pulse"></div>
        <div class="relative z-10 w-full md:w-1/2">
-          <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 rounded-full text-xs font-bold mb-6 backdrop-blur-sm border border-white/10">📊 RINGKASAN PENJUALAN</span>
-          <h2 class="text-3xl font-extrabold mb-2 leading-tight">Pantau Keuangan &<br>Perpanjangan Aktif.</h2>
-          <p class="text-indigo-100 text-sm mb-6 max-w-sm">Data langsung tersinkronisasi ke Google Sheets Anda secara real-time.</p>
-          <button onclick="openModalForAdd()" class="px-6 py-3 bg-[#beff3b] text-slate-900 text-sm font-bold rounded-full hover:bg-[#a6e62e] hover:shadow-lg hover:shadow-[#beff3b]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 bg-white/20 rounded-full text-[10px] sm:text-xs font-bold mb-4 sm:mb-6 backdrop-blur-sm border border-white/10 whitespace-nowrap">📊 RINGKASAN PENJUALAN</span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 sm:mb-3 leading-tight sm:leading-tight">Pantau Keuangan & <br class="hidden sm:block">Perpanjangan Aktif.</h2>
+          <p class="text-indigo-100 text-xs sm:text-sm mb-5 sm:mb-6 max-w-sm">Data tersinkronisasi ke Google Sheets secara real-time.</p>
+          <button onclick="openModalForAdd()" class="w-full sm:w-auto px-5 py-3 sm:px-6 sm:py-3 bg-[#beff3b] text-slate-900 text-xs sm:text-sm font-bold rounded-full hover:bg-[#a6e62e] hover:shadow-lg hover:shadow-[#beff3b]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
              + Tambah Order Baru
           </button>
        </div>
-       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-6 bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors duration-300">
+       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-4 sm:gap-6 bg-white/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors duration-300">
           <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
-             <p class="text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
+             <p class="text-[10px] sm:text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Omzet</p>
+             <p class="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight" id="ui-omzet">Rp0</p>
           </div>
           <div>
-             <p class="text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
-             <p class="text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight drop-shadow-sm" id="ui-profit">Rp0</p>
+             <p class="text-[10px] sm:text-xs text-indigo-200 font-medium mb-1 uppercase tracking-wider">Total Profit</p>
+             <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-lime-300 tracking-tight drop-shadow-sm" id="ui-profit">Rp0</p>
           </div>
        </div>
     </div>
 
     <!-- PENGINGAT HARI INI (H-2) -->
     <div>
-       <div class="flex justify-between items-end mb-6">
+       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 sm:mb-6 gap-2">
           <div>
-             <h3 class="text-xl font-bold text-slate-800 mb-1">Daftar Pelanggan H-2</h3>
-             <p class="text-sm text-slate-500">Perlu Diingatkan: <span id="ui-reminder-count" class="font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-md">0</span> Pelanggan</p>
+             <h3 class="text-lg sm:text-xl font-bold text-slate-800 mb-1">Daftar Pelanggan H-2</h3>
+             <p class="text-xs sm:text-sm text-slate-500">Perlu Diingatkan: <span id="ui-reminder-count" class="font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-md">0</span> Pelanggan</p>
           </div>
        </div>
        
-       <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+       <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           <p class="text-slate-400 text-sm col-span-full animate-pulse">Menyinkronkan data dari Google Sheets...</p>
        </div>
     </div>
 
     <!-- SEMUA STATUS DAFTAR ORDER -->
-    <div class="pt-8 border-t border-slate-200">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h3 class="text-xl font-bold text-slate-800">Semua Order <span id="total-orders-count" class="text-sm font-normal text-slate-500 ml-2">(0)</span></h3>
+    <div class="pt-6 sm:pt-8 border-t border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-4">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-800">Semua Order <span id="total-orders-count" class="text-xs sm:text-sm font-normal text-slate-500 ml-1 sm:ml-2">(0)</span></h3>
             
             <div class="w-full sm:w-auto relative group">
-                <input type="text" id="searchOrder" onkeyup="filterAllOrders()" placeholder="🔍 Cari nama, produk, ID..." class="w-full sm:w-72 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 hover:border-violet-300 shadow-sm transition-all duration-300">
+                <input type="text" id="searchOrder" onkeyup="filterAllOrders()" placeholder="🔍 Cari nama, produk, ID..." class="w-full sm:w-72 px-4 py-2 sm:py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 hover:border-violet-300 shadow-sm transition-all duration-300">
             </div>
         </div>
         
-        <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             <p class="text-slate-400 text-sm col-span-full animate-pulse">Mengambil daftar pelanggan...</p>
         </div>
     </div>
@@ -94,28 +93,28 @@
 
   <!-- Modal Tambah / Edit Order -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity">
-     <div class="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto border border-slate-100 transform transition-transform animate-card">
-        <button onclick="playSound('click'); document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800 hover:rotate-90 transition-all duration-300 text-2xl font-bold">×</button>
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-bold text-slate-800" id="modalTitle">Order Baru</h3>
-            <span class="text-violet-600 text-[10px] font-bold tracking-widest uppercase bg-violet-50 px-2 py-1 rounded-md border border-violet-100">✨ Hitung Otomatis</span>
+     <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[95vh] overflow-y-auto border border-slate-100 transform transition-transform animate-card">
+        <button onclick="playSound('click'); document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-4 sm:top-6 right-4 sm:right-6 text-slate-400 hover:text-slate-800 hover:rotate-90 transition-all duration-300 text-2xl font-bold">×</button>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-2">
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-800" id="modalTitle">Order Baru</h3>
+            <span class="text-violet-600 text-[9px] sm:text-[10px] font-bold tracking-widest uppercase bg-violet-50 px-2 py-1 rounded-md border border-violet-100 whitespace-nowrap">✨ Hitung Otomatis</span>
         </div>
         
-        <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-4">
+        <form id="formOrder" onsubmit="submitOrder(event)" class="space-y-3 sm:space-y-4">
            <input type="hidden" id="editId" value="">
            <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
-              <input type="text" id="inputNama" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="Misal: Ayu">
+              <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
+              <input type="text" id="inputNama" required class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="Misal: Ayu">
            </div>
            
            <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Nomor WhatsApp</label>
-              <input type="number" id="inputWA" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="628xxxxxxxxxx">
+              <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Nomor WhatsApp</label>
+              <input type="number" id="inputWA" required class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="628xxxxxxxxxx">
            </div>
 
            <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Layanan / Produk *</label>
-              <input list="listLayanan" id="inputLayanan" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="Ketik atau pilih layanan...">
+              <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Layanan / Produk *</label>
+              <input list="listLayanan" id="inputLayanan" required class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors" placeholder="Ketik atau pilih layanan...">
               <datalist id="listLayanan">
                   <option value="Netflix">
                   <option value="Spotify">
@@ -125,21 +124,21 @@
               </datalist>
            </div>
 
-           <div class="grid grid-cols-2 gap-4">
+           <div class="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal order *</label>
-                 <input type="date" id="tglOrder" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
+                 <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Tanggal order *</label>
+                 <input type="date" id="tglOrder" required class="w-full px-2 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
               </div>
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal mulai *</label>
-                 <input type="date" id="tglMulai" onchange="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
+                 <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Tanggal mulai *</label>
+                 <input type="date" id="tglMulai" onchange="hitungSemua()" required class="w-full px-2 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
               </div>
            </div>
 
            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari) *</label>
-                <input type="number" id="durasi" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 mb-3 focus:bg-white transition-colors" value="30" oninput="hitungSemua()" required>
-                <div class="flex flex-wrap gap-2">
+                <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Durasi (hari) *</label>
+                <input type="number" id="durasi" class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 mb-2 sm:mb-3 focus:bg-white transition-colors" value="30" oninput="hitungSemua()" required>
+                <div class="flex flex-wrap gap-1.5 sm:gap-2">
                     <div class="pill" onclick="playSound('click'); setDurasi(27, this)">27</div>
                     <div class="pill" onclick="playSound('click'); setDurasi(28, this)">28</div>
                     <div class="pill active" onclick="playSound('click'); setDurasi(30, this)">30</div>
@@ -148,39 +147,39 @@
                 </div>
            </div>
 
-           <div class="grid grid-cols-2 gap-4">
+           <div class="grid grid-cols-2 gap-3 sm:gap-4">
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Harga Jual / Omzet (Rp) *</label>
-                 <input type="number" id="hargaJual" value="39000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
+                 <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Harga / Omzet (Rp) *</label>
+                 <input type="number" id="hargaJual" value="39000" oninput="hitungSemua()" required class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
               </div>
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Modal (Rp) *</label>
-                 <input type="number" id="modal" value="31000" oninput="hitungSemua()" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
+                 <label class="block text-[11px] sm:text-xs font-bold text-slate-500 mb-1">Modal (Rp) *</label>
+                 <input type="number" id="modal" value="31000" oninput="hitungSemua()" required class="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white transition-colors">
               </div>
            </div>
            
-           <div class="grid grid-cols-2 gap-y-4 gap-x-2 pt-4 border-t border-slate-100 mt-4 bg-slate-50/50 p-4 rounded-xl border">
+           <div class="grid grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-2 pt-3 sm:pt-4 border-t border-slate-100 mt-3 sm:mt-4 bg-slate-50/50 p-3 sm:p-4 rounded-xl border">
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400">Berakhir</p>
-                    <p class="font-bold text-slate-800 text-sm mt-1" id="resBerakhir">-</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400">Berakhir</p>
+                    <p class="font-bold text-slate-800 text-xs sm:text-sm mt-0.5 sm:mt-1" id="resBerakhir">-</p>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400">Pengingat H-2</p>
-                    <p class="font-bold text-red-500 text-sm mt-1 flex items-center gap-1" id="resH2">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400">Pengingat H-2</p>
+                    <p class="font-bold text-red-500 text-xs sm:text-sm mt-0.5 sm:mt-1 flex items-center gap-1" id="resH2">
                        -
                     </p>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400">Profit</p>
-                    <p class="font-bold text-emerald-500 text-sm mt-1" id="resProfit">Rp0</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400">Profit</p>
+                    <p class="font-bold text-emerald-500 text-xs sm:text-sm mt-0.5 sm:mt-1" id="resProfit">Rp0</p>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-slate-400">Margin</p>
-                    <p class="font-bold text-violet-600 text-sm mt-1 bg-violet-100 w-max px-2 py-0.5 rounded" id="resMargin">0.0%</p>
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-400">Margin</p>
+                    <p class="font-bold text-violet-600 text-xs sm:text-sm mt-0.5 sm:mt-1 bg-violet-100 w-max px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded" id="resMargin">0.0%</p>
                 </div>
             </div>
 
-           <button type="submit" id="btnSubmit" class="w-full py-3 mt-6 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-200 hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
+           <button type="submit" id="btnSubmit" class="w-full py-2.5 sm:py-3 mt-4 sm:mt-6 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-700 hover:shadow-lg hover:shadow-violet-200 hover:-translate-y-0.5 active:scale-95 transition-all duration-300">
               Simpan Order
            </button>
         </form>
@@ -286,7 +285,7 @@
         globalOrders = data; 
         processDashboard(data);
       } catch (error) {
-        h2Container.innerHTML = `<p class="text-red-500 text-sm col-span-full bg-red-50 p-4 rounded-xl border border-red-100">Koneksi gagal. Silakan coba lagi.</p>`;
+        h2Container.innerHTML = `<p class="text-red-500 text-xs sm:text-sm col-span-full bg-red-50 p-4 rounded-xl border border-red-100">Koneksi gagal. Silakan coba lagi.</p>`;
         allContainer.innerHTML = '';
       }
     }
@@ -381,7 +380,7 @@
     function renderH2Reminders(reminders) {
       const container = document.getElementById('reminder-list');
       if (reminders.length === 0) {
-        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-[2rem] border border-slate-100 shadow-sm animate-card"><span class="text-5xl mb-4 hover:scale-110 transition-transform cursor-pointer" onclick="playSound('success')">🎉</span><p class="text-slate-500 font-bold">Yeay! Tidak ada antrian H-2 hari ini.</p></div>`;
+        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center p-8 sm:p-12 bg-white rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 shadow-sm animate-card"><span class="text-4xl sm:text-5xl mb-3 sm:mb-4 hover:scale-110 transition-transform cursor-pointer" onclick="playSound('success')">🎉</span><p class="text-xs sm:text-sm text-slate-500 font-bold">Yeay! Tidak ada antrian H-2 hari ini.</p></div>`;
         return;
       }
 
@@ -391,21 +390,21 @@
         const tglBerakhir = formatTglDisplay(order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-');
 
         container.innerHTML += `
-          <div class="animate-card bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:shadow-xl hover:border-violet-300 hover:-translate-y-1.5 transition-all duration-300" style="animation-delay: ${index * 0.1}s">
-            <div class="flex justify-between items-start mb-4">
-               <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-sm shadow-inner">
+          <div class="animate-card bg-white rounded-[1.25rem] sm:rounded-[1.5rem] p-5 sm:p-6 shadow-sm border border-slate-200 flex flex-col relative group hover:shadow-xl hover:border-violet-300 hover:-translate-y-1.5 transition-all duration-300" style="animation-delay: ${index * 0.1}s">
+            <div class="flex justify-between items-start mb-3 sm:mb-4">
+               <div class="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm shadow-inner">
                   ${order.Layanan ? order.Layanan.charAt(0) : 'R'}
                </div>
                <div class="text-right">
-                  <p class="text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
-                  <p class="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded mt-0.5">${tglBerakhir}</p>
+                  <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Berakhir</p>
+                  <p class="text-[11px] sm:text-xs font-bold text-red-500 bg-red-50 px-1.5 sm:px-2 py-0.5 rounded mt-0.5">${tglBerakhir}</p>
                </div>
             </div>
-            <h4 class="font-bold text-slate-800 text-lg mb-1 line-clamp-1 group-hover:text-violet-600 transition-colors">${order.Nama_Pelanggan}</h4>
-            <p class="text-xs text-slate-500 font-medium mb-5 bg-slate-50 w-max px-2 py-1 rounded-md">${order.Layanan} • ${order.ID_Order}</p>
+            <h4 class="font-bold text-slate-800 text-base sm:text-lg mb-1 line-clamp-1 group-hover:text-violet-600 transition-colors">${order.Nama_Pelanggan}</h4>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium mb-4 sm:mb-5 bg-slate-50 w-max px-2 py-1 rounded-md">${order.Layanan} • ${order.ID_Order}</p>
             
             <div class="grid grid-cols-1 gap-2 mt-auto">
-               <a href="${waLink}" target="_blank" onclick="playSound('click')" class="bg-[#25D366] text-white font-bold py-3 rounded-xl text-xs hover:bg-[#1ebd5b] hover:shadow-lg hover:shadow-[#25D366]/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+               <a href="${waLink}" target="_blank" onclick="playSound('click')" class="bg-[#25D366] text-white font-bold py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-xs hover:bg-[#1ebd5b] hover:shadow-lg hover:shadow-[#25D366]/30 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
                   💬 Kirim WhatsApp
                </a>
             </div>
@@ -430,7 +429,7 @@
         document.getElementById('total-orders-count').innerText = `(${ordersList.length})`;
         
         if (ordersList.length === 0) {
-            container.innerHTML = `<div class="col-span-full text-center p-8 text-slate-500 bg-white rounded-[2rem] border border-slate-100 shadow-sm animate-card">🔍 Tidak ada pelanggan ditemukan.</div>`;
+            container.innerHTML = `<div class="col-span-full text-center p-6 sm:p-8 text-slate-500 text-sm bg-white rounded-[1.5rem] sm:rounded-[2rem] border border-slate-100 shadow-sm animate-card">🔍 Tidak ada pelanggan ditemukan.</div>`;
             return;
         }
 
@@ -442,13 +441,13 @@
             const expString = order.Tgl_Berakhir ? String(order.Tgl_Berakhir).split('T')[0] : '-';
             const tglTampil = formatTglDisplay(expString);
             
-            let statusBadge = '<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-md">Unknown</span>';
+            let statusBadge = '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-slate-100 text-slate-600 text-[9px] sm:text-[10px] font-bold rounded-md">Unknown</span>';
             if(expString !== '-') {
                 const expDate = new Date(expString);
                 if(expDate < hariIni) {
-                    statusBadge = '<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-bold rounded-md">Berakhir</span>';
+                    statusBadge = '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-100 text-red-600 text-[9px] sm:text-[10px] font-bold rounded-md">Berakhir</span>';
                 } else {
-                    statusBadge = '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-md shadow-sm shadow-green-100">Aktif</span>';
+                    statusBadge = '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-100 text-green-700 text-[9px] sm:text-[10px] font-bold rounded-md shadow-sm shadow-green-100">Aktif</span>';
                 }
             }
 
@@ -462,46 +461,46 @@
             const modalFmt = "Rp" + modalVal.toLocaleString('id-ID');
 
             container.innerHTML += `
-            <div class="animate-card bg-white border border-slate-200 rounded-[1.5rem] p-5 shadow-sm hover:shadow-lg hover:border-violet-300 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between" style="animation-delay: ${Math.min(index * 0.05, 0.5)}s">
+            <div class="animate-card bg-white border border-slate-200 rounded-[1.25rem] sm:rounded-[1.5rem] p-4 sm:p-5 shadow-sm hover:shadow-lg hover:border-violet-300 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between" style="animation-delay: ${Math.min(index * 0.05, 0.5)}s">
                 <div>
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-[11px] font-bold text-violet-600 tracking-wider block mb-1 bg-violet-50 px-2 py-0.5 rounded">${order.ID_Order || 'No ID'}</span>
-                        <div class="flex gap-2">
+                        <span class="text-[10px] sm:text-[11px] font-bold text-violet-600 tracking-wider block mb-1 bg-violet-50 px-1.5 sm:px-2 py-0.5 rounded">${order.ID_Order || 'No ID'}</span>
+                        <div class="flex gap-1.5 sm:gap-2">
                             ${statusBadge}
-                            <select onchange="updateLocalStatus('${order.ID_Order}', this.value)" class="text-[10px] font-bold bg-slate-50 text-slate-600 rounded-md px-2 py-1 outline-none border border-slate-200 cursor-pointer hover:bg-slate-100 hover:shadow-sm transition-all focus:ring-2 focus:ring-violet-300">
+                            <select onchange="updateLocalStatus('${order.ID_Order}', this.value)" class="text-[9px] sm:text-[10px] font-bold bg-slate-50 text-slate-600 rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 outline-none border border-slate-200 cursor-pointer hover:bg-slate-100 hover:shadow-sm transition-all focus:ring-2 focus:ring-violet-300">
                                 <option value="Aman" ${savedStatus==='Aman'?'selected':''}>✅ Aman</option>
                                 <option value="Bermasalah" ${savedStatus==='Bermasalah'?'selected':''}>⚠️ Bermasalah</option>
                                 <option value="Perpanjangan" ${savedStatus==='Perpanjangan'?'selected':''}>🔄 Perpanjang</option>
                             </select>
                         </div>
                     </div>
-                    <h3 class="font-bold text-slate-800 text-lg mb-0.5 group-hover:text-violet-600 transition-colors">${order.Nama_Pelanggan} <span class="text-slate-400 font-normal text-sm">· ${order.Layanan}</span></h3>
-                    <p class="text-sm text-slate-500 mb-4">${order.No_WA || '-'}</p>
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg mb-0.5 group-hover:text-violet-600 transition-colors">${order.Nama_Pelanggan} <span class="text-slate-400 font-normal text-xs sm:text-sm">· ${order.Layanan}</span></h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-3 sm:mb-4">${order.No_WA || '-'}</p>
                     
-                    <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-xs mb-4 bg-slate-50 hover:bg-slate-100/50 transition-colors p-4 rounded-xl border border-slate-100">
+                    <div class="grid grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-2 text-[11px] sm:text-xs mb-3 sm:mb-4 bg-slate-50 hover:bg-slate-100/50 transition-colors p-3 sm:p-4 rounded-xl border border-slate-100">
                         <div>
                             <p class="text-slate-500 mb-1">Berakhir pada</p>
-                            <p class="font-bold text-slate-800 text-sm">${tglTampil}</p>
+                            <p class="font-bold text-slate-800 text-xs sm:text-sm">${tglTampil}</p>
                         </div>
                         <div>
                             <p class="text-slate-500 mb-1">Harga / Modal</p>
-                            <p class="font-bold text-slate-800 text-sm">${omzetFmt} / <span class="text-slate-500 font-normal">${modalFmt}</span></p>
+                            <p class="font-bold text-slate-800 text-xs sm:text-sm">${omzetFmt} / <span class="text-slate-500 font-normal">${modalFmt}</span></p>
                         </div>
-                        <div class="col-span-2 mt-2 pt-2 border-t border-slate-200/60">
+                        <div class="col-span-2 mt-1.5 sm:mt-2 pt-1.5 sm:pt-2 border-t border-slate-200/60">
                             <p class="text-slate-500 mb-1">Profit Bersih</p>
-                            <p class="font-bold text-emerald-600 text-sm flex items-center gap-1">↑ ${profitFmt}</p>
+                            <p class="font-bold text-emerald-600 text-xs sm:text-sm flex items-center gap-1">↑ ${profitFmt}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 pt-3 border-t border-slate-100 mt-auto">
-                    <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-1">
+                <div class="flex items-center gap-1.5 sm:gap-2 pt-2 sm:pt-3 border-t border-slate-100 mt-auto">
+                    <button onclick="salinOrder('${order.Nama_Pelanggan}', '${order.Layanan}', '${tglTampil}')" class="flex-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200 flex items-center justify-center gap-1">
                         📋 Salin
                     </button>
-                    <button onclick="editOrder('${order.ID_Order}')" class="px-3 bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-2 rounded-xl text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200" title="Edit Order">
+                    <button onclick="editOrder('${order.ID_Order}')" class="px-2.5 sm:px-3 bg-sky-50 hover:bg-sky-100 text-sky-600 font-bold py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200" title="Edit Order">
                         ✏️ Edit
                     </button>
-                    <button onclick="hapusOrder('${order.ID_Order}')" class="px-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 rounded-xl text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200" title="Hapus Order">
+                    <button onclick="hapusOrder('${order.ID_Order}')" class="px-2.5 sm:px-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs hover:-translate-y-0.5 active:scale-95 transition-all duration-200" title="Hapus Order">
                         🗑️ Hapus
                     </button>
                 </div>
