@@ -92,9 +92,7 @@
   </div>
 
   <!-- Modal Tambah / Edit Order -->
-  <!-- PERUBAHAN: Menambahkan py-12 agar form tidak mentok atas bawah di mobile -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 py-12 sm:p-6 transition-opacity">
-     <!-- PERUBAHAN: Mengubah max-h-[95vh] menjadi max-h-[85vh] agar punya jarak aman di HP -->
      <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[85vh] sm:max-h-[90vh] overflow-y-auto border border-slate-100 transform transition-transform animate-card">
         <button onclick="playSound('click'); document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-4 sm:top-6 right-4 sm:right-6 text-slate-400 hover:text-slate-800 hover:rotate-90 transition-all duration-300 text-2xl font-bold">×</button>
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-2">
@@ -299,8 +297,20 @@
 
     function formatTglDisplay(dateStr) {
         if (!dateStr || dateStr === '-') return '-';
-        const d = new Date(dateStr);
+        let d = new Date(dateStr);
+
+        if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+            const cleanStr = dateStr.split('T')[0];
+            const parts = cleanStr.split(/[-/]/); 
+            if (parts.length === 3) {
+                if (parts[2].length === 4) {
+                    d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); 
+                }
+            }
+        }
+
         if (isNaN(d.getTime())) return dateStr; 
+        
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
@@ -451,7 +461,14 @@
             
             let statusBadge = '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-slate-100 text-slate-600 text-[9px] sm:text-[10px] font-bold rounded-md">Unknown</span>';
             if(expString !== '-') {
-                const expDate = new Date(expString);
+                let expDate = new Date(expString);
+                if (isNaN(expDate.getTime())) {
+                    const parts = expString.split(/[-/]/);
+                    if (parts.length === 3 && parts[2].length === 4) {
+                        expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                    }
+                }
+                
                 if(expDate < hariIni) {
                     statusBadge = '<span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-100 text-red-600 text-[9px] sm:text-[10px] font-bold rounded-md">Berakhir</span>';
                 } else {
@@ -528,6 +545,8 @@
           ID_Order: targetId !== "" ? targetId : "RZT-" + Math.floor(1000 + Math.random() * 9000),
           Nama_Pelanggan: document.getElementById('inputNama').value,
           Layanan: document.getElementById('inputLayanan').value,
+          Tgl_Order: document.getElementById('tglOrder').value, 
+          Tgl_Mulai: document.getElementById('tglMulai').value, 
           Tgl_Berakhir: document.getElementById('resBerakhir').innerText, 
           No_WA: document.getElementById('inputWA').value,
           Omzet: document.getElementById('hargaJual').value,
@@ -544,27 +563,36 @@
            document.getElementById('modalOrder').classList.add('hidden');
            filterAllOrders(); 
            alert("✅ Perubahan berhasil disimpan (Secara Lokal)!");
+           btn.innerText = "Simpan Order"; btn.disabled = false;
        } else {
            const payload = { action: 'add', data: payloadData };
+           
+           // KODE ANTI-ERROR CORS (Pakai mode no-cors)
            try {
-              const response = await fetch(SCRIPT_URL, {
-                 method: 'POST',
-                 body: JSON.stringify(payload)
-              });
-              const result = await response.json();
-              playSound('success'); 
-              document.getElementById('formOrder').reset();
-              document.getElementById('modalOrder').classList.add('hidden');
-              fetchData(); 
-           } catch (error) {
-              playSound('success'); 
-              document.getElementById('formOrder').reset();
-              document.getElementById('modalOrder').classList.add('hidden');
-              fetchData(); 
+               await fetch(SCRIPT_URL, {
+                   method: 'POST',
+                   mode: 'no-cors',
+                   headers: {
+                       'Content-Type': 'application/json',
+                   },
+                   body: JSON.stringify(payload)
+               });
+           } catch (err) {
+               console.log(err);
            }
+
+           // Animasi Simpan Langsung Sukses Tanpa Nunggu Respon Ribet Google
+           playSound('success'); 
+           document.getElementById('formOrder').reset();
+           document.getElementById('modalOrder').classList.add('hidden');
+           
+           // Kasih Jeda 1.5 Detik biar Google Sheets Beres Ngetik Data
+           setTimeout(() => {
+               fetchData(); 
+               btn.innerText = "Simpan Order"; 
+               btn.disabled = false;
+           }, 1500);
        }
-       
-       btn.innerText = "Simpan Order"; btn.disabled = false;
     }
 
     fetchData(); 
