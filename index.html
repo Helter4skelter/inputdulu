@@ -93,20 +93,22 @@
         <!-- SMART PASTE BOX -->
         <div class="mb-4 bg-indigo-50 border border-indigo-100 p-4 rounded-2xl relative group">
            <h4 class="font-bold text-indigo-700 text-sm mb-1">✨ Smart Paste (Ekstrak Instan)</h4>
-           <p class="text-xs text-indigo-500 mb-3">Copy tabel/teks mentahan <b>(Nama | WA | Layanan | Durasi | Omzet | Modal)</b> dan paste di kotak ini. Sistem akan memecahnya jadi puluhan baris dalam 1 detik.</p>
+           <p class="text-xs text-indigo-500 mb-3">Copy tabel/teks mentahan <b>(Nama | WA | Layanan | Durasi | Omzet | Modal)</b> dan paste di kotak ini. Sistem otomatis memecahnya!</p>
            <textarea id="smartPasteInput" rows="2" class="w-full bg-white border border-indigo-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-indigo-400 outline-none transition" placeholder="Paste data dari AI atau Excel di sini..."></textarea>
         </div>
 
         <div class="overflow-x-auto border border-slate-200 rounded-xl mb-4">
-           <table class="w-full text-left text-xs min-w-[850px]">
+           <table class="w-full text-left text-xs min-w-[950px]">
               <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
                  <tr>
+                    <!-- DITAMBAHKAN: Kolom ID Order di Input Massal -->
+                    <th class="p-2.5 w-24">ID Order</th>
                     <th class="p-2.5">Nama Pelanggan</th>
                     <th class="p-2.5">No WhatsApp</th>
                     <th class="p-2.5">Layanan</th>
                     <th class="p-2.5">Tgl Order</th>
                     <th class="p-2.5">Tgl Mulai</th>
-                    <th class="p-2.5 w-20">Durasi</th>
+                    <th class="p-2.5 w-16">Durasi</th>
                     <th class="p-2.5">Omzet (Rp)</th>
                     <th class="p-2.5">Modal (Rp)</th>
                     <th class="p-2.5 w-10">Aksi</th>
@@ -131,6 +133,13 @@
         
         <form id="formOrder" onsubmit="submitSingleOrder(event)" class="space-y-3">
            <input type="hidden" id="editId" value="">
+           
+           <!-- DITAMBAHKAN: Field Input ID Order -->
+           <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">ID Order</label>
+              <input type="text" id="inputIdOrder" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500 disabled:opacity-50 disabled:bg-slate-100" placeholder="Otomatis (RZT-xxxx) jika kosong">
+           </div>
+
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
               <input type="text" id="inputNama" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500">
@@ -162,6 +171,7 @@
   </div>
 
   <script>
+    // PASTE URL WEB APP APPS SCRIPT BARU KAMU DI SINI:
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
     function playSound(type) {
@@ -197,7 +207,7 @@
 
         let added = 0;
         rows.forEach(row => {
-            const cols = row.split('\t'); // format Excel copy/paste
+            const cols = row.split('\t'); 
             if(cols.length > 1) { 
                 addBulkRow();
                 const tr = tbody.lastElementChild;
@@ -228,6 +238,7 @@
         const tr = document.createElement('tr');
         tr.className = "border-b border-slate-100 hover:bg-slate-50/50";
         tr.innerHTML = `
+           <td class="p-1"><input type="text" class="b-id w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Auto"></td>
            <td class="p-1"><input type="text" class="b-nama w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Nama"></td>
            <td class="p-1"><input type="number" class="b-wa w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="628..."></td>
            <td class="p-1"><input type="text" class="b-layanan w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Netflix"></td>
@@ -246,6 +257,7 @@
        let dataList = [];
 
        rows.forEach(tr => {
+          const id = tr.querySelector('.b-id').value.trim();
           const nama = tr.querySelector('.b-nama').value.trim();
           const wa = tr.querySelector('.b-wa').value.trim();
           const layanan = tr.querySelector('.b-layanan').value.trim();
@@ -264,9 +276,11 @@
              let h2Date = new Date(end);
              h2Date.setDate(end.getDate() - 2);
              let statusH2 = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
+             
+             const finalId = id !== "" ? id : "RZT-" + Math.floor(1000 + Math.random() * 9000);
 
              dataList.push({
-                ID_Order: "RZT-" + Math.floor(1000 + Math.random() * 9000),
+                ID_Order: finalId,
                 Nama_Pelanggan: nama,
                 Layanan: layanan,
                 Tgl_Order: tglOrder,
@@ -354,8 +368,14 @@
         const order = globalOrders.find(o => String(o.ID_Order) === String(id));
         if(!order) return;
         
-        document.getElementById('modalTitle').innerText = "Edit Order (" + id + ")";
+        document.getElementById('modalTitle').innerText = "Edit Order";
         document.getElementById('editId').value = id;
+        
+        // PENTING: Saat edit, ID dimasukkan tapi dilock (readonly) agar backend tidak kehilangan jejak data aslinya
+        const idField = document.getElementById('inputIdOrder');
+        idField.value = id;
+        idField.disabled = true;
+        
         document.getElementById('inputNama').value = order.Nama_Pelanggan || "";
         document.getElementById('inputWA').value = order.No_WA || "";
         document.getElementById('inputLayanan').value = order.Layanan || "";
@@ -376,9 +396,12 @@
        const tglBerakhir = end.toISOString().split('T')[0];
        const omzet = parseInt(document.getElementById('hargaJual').value);
        const modal = parseInt(document.getElementById('modal').value);
+       
+       const customId = document.getElementById('inputIdOrder').value.trim();
+       const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
 
        const payloadData = {
-          ID_Order: targetId !== "" ? targetId : "RZT-" + Math.floor(1000 + Math.random() * 9000),
+          ID_Order: finalId,
           Nama_Pelanggan: document.getElementById('inputNama').value,
           Layanan: document.getElementById('inputLayanan').value,
           Tgl_Order: document.getElementById('tglOrder').value,
@@ -409,6 +432,12 @@
         playSound('click');
         document.getElementById('modalTitle').innerText = "Order Baru";
         document.getElementById('editId').value = "";
+        
+        // Membuka lock input ID agar bisa diketik saat menambah data baru
+        const idField = document.getElementById('inputIdOrder');
+        idField.value = "";
+        idField.disabled = false;
+        
         document.getElementById('formOrder').reset();
         document.getElementById('tglOrder').value = today;
         document.getElementById('tglMulai').value = today;
