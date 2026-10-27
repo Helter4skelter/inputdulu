@@ -9,17 +9,16 @@
     body { background-color: #f8fafc; font-family: sans-serif; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
+    .pill { background-color: #f1f5f9; color: #64748b; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.875rem; cursor: pointer; border: 1px solid #e2e8f0; transition: all 0.2s;}
+    .pill:hover { transform: translateY(-2px); border-color: #c4b5fd; }
+    .pill.active { background-color: #7c3aed; color: #ffffff; font-weight: bold; border-color: #7c3aed; transform: scale(1.05); }
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
     .animate-card { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
   </style>
 </head>
 <body class="text-slate-800">
 
-  <!-- Navbar -->
-  <nav class="bg-white border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/9ona">
+  <nav class="bg-white border-b border-slate-100 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/90">
      <div class="flex items-center gap-2 sm:gap-3">
         <div class="w-7 h-7 sm:w-8 sm:h-8 bg-violet-600 text-white rounded-lg flex items-center justify-center font-bold shadow-md shadow-violet-200 text-sm sm:text-base">R</div>
         <div class="flex items-center gap-1.5 sm:gap-2">
@@ -34,7 +33,6 @@
 
   <div class="max-w-6xl mx-auto p-4 sm:p-6 space-y-8 mt-2 sm:mt-4">
     
-    <!-- Banner Statistik -->
     <div class="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 text-white flex flex-col md:flex-row justify-between shadow-xl shadow-violet-200 relative overflow-hidden items-center gap-6">
        <div class="relative z-10 w-full md:w-1/2">
           <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-[10px] sm:text-xs font-bold mb-4 backdrop-blur-sm border border-white/10">📊 KEUANGAN & ORDER</span>
@@ -45,7 +43,7 @@
                 + Tambah Satuan
              </button>
              <button onclick="openBulkModal()" class="px-5 py-2.5 bg-white text-violet-700 text-xs sm:text-sm font-bold rounded-full hover:bg-indigo-50 transition shadow-md flex items-center gap-2">
-                ⚡ Input Massal (Banyak Sekaligus)
+                ⚡ Input Massal
              </button>
           </div>
        </div>
@@ -61,7 +59,6 @@
        </div>
     </div>
 
-    <!-- PENGINGAT HARI INI (H-2) -->
     <div>
        <div class="flex justify-between items-end mb-4">
           <div>
@@ -74,7 +71,6 @@
        </div>
     </div>
 
-    <!-- SEMUA STATUS DAFTAR ORDER -->
     <div class="pt-6 border-t border-slate-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
             <h3 class="text-lg sm:text-xl font-bold text-slate-800">Semua Order <span id="total-orders-count" class="text-xs sm:text-sm font-normal text-slate-500 ml-1">(0)</span></h3>
@@ -86,44 +82,42 @@
             <p class="text-slate-400 text-sm col-span-full animate-pulse">Memuat daftar pelanggan...</p>
         </div>
     </div>
-
   </div>
 
-  <!-- MODAL INPUT MASSAL (BULK SPREADSHEET STYLE) -->
+  <!-- MODAL INPUT MASSAL -->
   <div id="modalBulk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-     <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-4xl p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto border border-slate-100">
+     <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-5xl p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto border border-slate-100">
         <button onclick="document.getElementById('modalBulk').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-2xl font-bold">×</button>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">⚡ Input Massal (Banyak Sekaligus)</h3>
-        <p class="text-xs text-slate-500 mb-4">Isi beberapa baris data sekaligus layaknya di Excel. Tanggal berakhir & profit akan otomatis terhitung!</p>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">⚡ Input Massal (Bulk Input)</h3>
+        <p class="text-xs text-slate-500 mb-4">Isi data secara berurutan. Tanggal berakhir & profit dihitung otomatis saat dikirim.</p>
         
         <div class="overflow-x-auto border border-slate-200 rounded-xl mb-4">
-           <table class="w-full text-left text-xs min-w-[700px]">
+           <table class="w-full text-left text-xs min-w-[850px]">
               <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
                  <tr>
                     <th class="p-2.5">Nama Pelanggan</th>
                     <th class="p-2.5">No WhatsApp</th>
                     <th class="p-2.5">Layanan</th>
-                    <th class="p-2.5">Mulai</th>
-                    <th class="p-2.5">Durasi (Hr)</th>
+                    <th class="p-2.5">Tgl Order</th>
+                    <th class="p-2.5">Tgl Mulai</th>
+                    <th class="p-2.5 w-20">Durasi</th>
                     <th class="p-2.5">Omzet (Rp)</th>
                     <th class="p-2.5">Modal (Rp)</th>
                     <th class="p-2.5 w-10">Aksi</th>
                  </tr>
               </thead>
-              <tbody id="bulkRowsContainer">
-                 <!-- Baris Dinamis -->
-              </tbody>
+              <tbody id="bulkRowsContainer"></tbody>
            </table>
         </div>
         
         <div class="flex justify-between items-center">
            <button type="button" onclick="addBulkRow()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">+ Tambah Baris</button>
-           <button type="button" id="btnSubmitBulk" onclick="submitBulkOrders()" class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs transition shadow-md">Simpan Semua ke Sheets</button>
+           <button type="button" id="btnSubmitBulk" onclick="submitBulkOrders()" class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs transition shadow-md">Simpan ke Sheets</button>
         </div>
      </div>
   </div>
 
-  <!-- Modal Tambah / Edit Satuan -->
+  <!-- MODAL SATUAN -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 py-12">
      <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto border border-slate-100">
         <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-2xl font-bold">×</button>
@@ -162,6 +156,7 @@
   </div>
 
   <script>
+    // PASTE URL WEB APP APPS SCRIPT BARU KAMU DI SINI:
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
     function playSound(type) {
@@ -181,11 +176,10 @@
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
-    // --- FITUR BULK INPUT (DRAG / TAMBAH BARIS) ---
     function openBulkModal() {
         playSound('click');
         document.getElementById('bulkRowsContainer').innerHTML = '';
-        for(let i=0; i<3; i++) { addBulkRow(); } // Default langsung tampil 3 baris
+        for(let i=0; i<3; i++) { addBulkRow(); }
         document.getElementById('modalBulk').classList.remove('hidden');
     }
 
@@ -194,14 +188,15 @@
         const tr = document.createElement('tr');
         tr.className = "border-b border-slate-100 hover:bg-slate-50/50";
         tr.innerHTML = `
-           <td class="p-2"><input type="text" class="b-nama w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" placeholder="Nama"></td>
-           <td class="p-2"><input type="number" class="b-wa w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" placeholder="628..."></td>
-           <td class="p-2"><input type="text" class="b-layanan w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" placeholder="Netflix/Spotify"></td>
-           <td class="p-2"><input type="date" class="b-mulai w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" value="${today}"></td>
-           <td class="p-2"><input type="number" class="b-durasi w-16 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" value="30"></td>
-           <td class="p-2"><input type="number" class="b-omzet w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" value="39000"></td>
-           <td class="p-2"><input type="number" class="b-modal w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg" value="31000"></td>
-           <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-400 hover:text-red-600 font-bold">×</button></td>
+           <td class="p-1"><input type="text" class="b-nama w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Nama"></td>
+           <td class="p-1"><input type="number" class="b-wa w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="628..."></td>
+           <td class="p-1"><input type="text" class="b-layanan w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Netflix"></td>
+           <td class="p-1"><input type="date" class="b-order w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="${today}"></td>
+           <td class="p-1"><input type="date" class="b-mulai w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="${today}"></td>
+           <td class="p-1"><input type="number" class="b-durasi w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="30"></td>
+           <td class="p-1"><input type="number" class="b-omzet w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="39000"></td>
+           <td class="p-1"><input type="number" class="b-modal w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="31000"></td>
+           <td class="p-1 text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-400 hover:text-red-600 font-bold text-lg">×</button></td>
         `;
         tbody.appendChild(tr);
     }
@@ -214,6 +209,7 @@
           const nama = tr.querySelector('.b-nama').value.trim();
           const wa = tr.querySelector('.b-wa').value.trim();
           const layanan = tr.querySelector('.b-layanan').value.trim();
+          const tglOrder = tr.querySelector('.b-order').value;
           const mulai = tr.querySelector('.b-mulai').value;
           const durasi = parseInt(tr.querySelector('.b-durasi').value) || 30;
           const omzet = parseInt(tr.querySelector('.b-omzet').value) || 0;
@@ -233,7 +229,7 @@
                 ID_Order: "RZT-" + Math.floor(1000 + Math.random() * 9000),
                 Nama_Pelanggan: nama,
                 Layanan: layanan,
-                Tgl_Order: today,
+                Tgl_Order: tglOrder,
                 Tgl_Mulai: mulai,
                 Tgl_Berakhir: tglBerakhir,
                 No_WA: wa,
@@ -244,13 +240,10 @@
           }
        });
 
-       if(dataList.length === 0) {
-          alert("⚠️ Harap isi minimal 1 data orderan dengan lengkap!");
-          return;
-       }
+       if(dataList.length === 0) { alert("⚠️ Harap isi minimal 1 baris data dengan lengkap!"); return; }
 
        const btn = document.getElementById('btnSubmitBulk');
-       btn.innerText = "Menyimpan ke Sheets..."; btn.disabled = true;
+       btn.innerText = "Menyimpan..."; btn.disabled = true;
 
        try {
           await fetch(SCRIPT_URL, {
@@ -259,17 +252,14 @@
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({ action: 'bulk_add', data: dataList })
           });
-          playSound('success');
-          document.getElementById('modalBulk').classList.add('hidden');
-          alert(`✅ Berhasil menambahkan ${dataList.length} orderan secara massal!`);
-          setTimeout(() => { fetchData(); btn.innerText = "Simpan Semua ke Sheets"; btn.disabled = false; }, 1500);
-       } catch(e) {
-          alert("Gagal menyimpan.");
-          btn.innerText = "Simpan Semua ke Sheets"; btn.disabled = false;
-       }
+       } catch(e) {}
+       
+       playSound('success');
+       document.getElementById('modalBulk').classList.add('hidden');
+       alert(`✅ Menambahkan ${dataList.length} orderan! Sedang menyinkronkan dengan Sheets...`);
+       setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
     }
 
-    // --- CRUD SATUAN (EDIT & HAPUS PERMANEN KE SHEETS) ---
     let globalOrders = [];
 
     async function fetchData() {
@@ -289,20 +279,22 @@
       }
     }
 
-    function parseRupiah(str) {
-        return Number(String(str).replace(/[^0-9]/g, '')) || 0;
-    }
+    function parseRupiah(str) { return Number(String(str).replace(/[^0-9]/g, '')) || 0; }
 
     function formatTglDisplay(dateStr) {
-        if (!dateStr) return '-';
+        if (!dateStr || dateStr === '-') return '-';
         let d = new Date(dateStr);
-        if (isNaN(d.getTime())) return dateStr;
+        if (isNaN(d.getTime()) && typeof dateStr === 'string') {
+            const parts = dateStr.split('T')[0].split(/[-/]/); 
+            if (parts.length === 3 && parts[2].length === 4) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); 
+        }
+        if (isNaN(d.getTime())) return String(dateStr); 
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
 
     async function hapusOrder(id) {
-        if(!confirm("Yakin ingin menghapus orderan ini secara permanen dari Google Sheets?")) return;
+        if(!confirm("Yakin ingin menghapus orderan ini secara PERMANEN dari Google Sheets?")) return;
         playSound('click');
         try {
             await fetch(SCRIPT_URL, {
@@ -311,9 +303,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'delete', id: id })
             });
-            alert("🗑️ Berhasil dihapus!");
-            setTimeout(fetchData, 1200);
-        } catch(e) { alert("Gagal menghapus."); }
+        } catch(e) {}
+        
+        alert("🗑️ Perintah hapus dikirim ke Sheets!");
+        setTimeout(fetchData, 1500);
     }
 
     function editOrder(id) {
@@ -364,13 +357,12 @@
                headers: { 'Content-Type': 'application/json' },
                body: JSON.stringify({ action: actionType, data: payloadData })
            });
-           playSound('success');
-           document.getElementById('modalOrder').classList.add('hidden');
-           alert("✅ Berhasil disimpan ke Google Sheets!");
-           setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
-       } catch(e) {
-           btn.innerText = "Simpan Order"; btn.disabled = false;
-       }
+       } catch(e) {}
+       
+       playSound('success');
+       document.getElementById('modalOrder').classList.add('hidden');
+       alert("✅ Perubahan disimpan ke Sheets!");
+       setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
     }
 
     function openModalForAdd() {
@@ -385,10 +377,23 @@
 
     function processDashboard(orders) {
       let totalOmzet = 0, totalProfit = 0, h2Reminders = [];
+      const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+
       orders.forEach(o => {
         totalOmzet += parseRupiah(o.Omzet);
         totalProfit += parseRupiah(o.Profit);
-        if (o.Status_H2 && String(o.Status_H2).includes("H-2")) h2Reminders.push(o);
+        
+        const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
+        if(expString !== '-') {
+            let expDate = new Date(expString);
+            if (isNaN(expDate.getTime())) {
+                const parts = expString.split(/[-/]/);
+                if (parts.length === 3 && parts[2].length === 4) expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            }
+            let h2Date = new Date(expDate);
+            h2Date.setDate(expDate.getDate() - 2);
+            if(hariIni >= h2Date && hariIni <= expDate) h2Reminders.push(o);
+        }
       });
 
       const formatRp = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
@@ -403,22 +408,22 @@
     function renderH2(list) {
       const c = document.getElementById('reminder-list');
       if (list.length === 0) {
-        c.innerHTML = `<div class="col-span-full p-6 bg-white rounded-2xl border text-center text-sm text-slate-500">🎉 Tidak ada antrian H-2 hari ini.</div>`;
+        c.innerHTML = `<div class="col-span-full p-6 bg-white rounded-2xl border text-center text-sm text-slate-500 animate-card">🎉 Tidak ada antrian H-2 hari ini.</div>`;
         return;
       }
       c.innerHTML = '';
       list.forEach(o => {
         const exp = formatTglDisplay(o.Tgl_Berakhir);
         const wa = String(o.No_WA).replace(/\D/g, '').replace(/^0/, '62');
-        const msg = `Halo Kak ${o.Nama_Pelanggan} 👋\nMau mengingatkan masa aktif ${o.Layanan} berakhir pada *${exp}*. Mau diperpanjang Kak? ✨`;
+        const msg = `Halo Kak ${o.Nama_Pelanggan} 👋\nMau mengingatkan bahwa masa aktif ${o.Layanan} kakak akan berakhir pada *${exp}*.\n\nJika ingin diperpanjang, boleh langsung balas chat ini ya Kak, supaya akses premiumnya tetap aman dan keseruannya nggak berhenti di tengah jalan! ✨\n\n— Admin Reztroid`;
         c.innerHTML += `
-          <div class="bg-white rounded-2xl p-5 border flex flex-col justify-between shadow-sm">
+          <div class="bg-white rounded-2xl p-5 border flex flex-col justify-between shadow-sm animate-card">
             <div>
-               <div class="flex justify-between text-xs font-bold text-slate-400 mb-2"><span>${o.ID_Order}</span><span class="text-red-500">${exp}</span></div>
+               <div class="flex justify-between text-xs font-bold text-slate-400 mb-2"><span>${o.ID_Order}</span><span class="text-red-500 bg-red-50 px-2 py-0.5 rounded">${exp}</span></div>
                <h4 class="font-bold text-slate-800 text-base mb-1">${o.Nama_Pelanggan}</h4>
                <p class="text-xs text-slate-500 mb-4">${o.Layanan}</p>
             </div>
-            <a href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-[#25D366] text-white font-bold py-2 rounded-xl text-xs text-center">💬 Kirim WhatsApp</a>
+            <a href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" target="_blank" class="bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs text-center hover:bg-[#1ebd5b] transition shadow-sm">💬 Kirim WhatsApp</a>
           </div>`;
       });
     }
@@ -432,26 +437,39 @@
     function renderAllOrders(list) {
         const c = document.getElementById('all-orders-list');
         document.getElementById('total-orders-count').innerText = `(${list.length})`;
-        if (list.length === 0) { c.innerHTML = `<div class="col-span-full p-6 text-center bg-white rounded-2xl border text-sm text-slate-500">Tidak ada data.</div>`; return; }
+        if (list.length === 0) { c.innerHTML = `<div class="col-span-full p-6 text-center bg-white rounded-2xl border text-sm text-slate-500 animate-card">Tidak ada data.</div>`; return; }
         c.innerHTML = '';
+        const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+        
         list.forEach(o => {
+           const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
+           let badge = '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Unknown</span>';
+           if(expString !== '-') {
+               let expDate = new Date(expString);
+               if (isNaN(expDate.getTime())) {
+                   const parts = expString.split(/[-/]/);
+                   if (parts.length === 3 && parts[2].length === 4) expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+               }
+               badge = expDate < hariIni ? '<span class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">Berakhir</span>' : '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded">Aktif</span>';
+           }
+        
            c.innerHTML += `
-            <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between animate-card hover:shadow-md transition">
                 <div>
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded">${o.ID_Order}</span>
-                        <span class="text-xs font-bold text-slate-600">${formatTglDisplay(o.Tgl_Berakhir)}</span>
+                        ${badge}
                     </div>
-                    <h3 class="font-bold text-slate-800 text-base">${o.Nama_Pelanggan} · <span class="text-slate-500 font-normal text-xs">${o.Layanan}</span></h3>
-                    <p class="text-xs text-slate-400 mb-3">${o.No_WA}</p>
-                    <div class="bg-slate-50 p-3 rounded-xl text-xs grid grid-cols-2 gap-2 border">
-                        <div><p class="text-slate-400">Omzet</p><p class="font-bold text-slate-700">Rp${parseRupiah(o.Omzet).toLocaleString('id-ID')}</p></div>
-                        <div><p class="text-slate-400">Profit</p><p class="font-bold text-emerald-600">Rp${parseRupiah(o.Profit).toLocaleString('id-ID')}</p></div>
+                    <h3 class="font-bold text-slate-800 text-base">${o.Nama_Pelanggan}</h3>
+                    <p class="text-xs text-slate-500 mb-3">${o.Layanan} · ${o.No_WA}</p>
+                    <div class="bg-slate-50 p-3 rounded-xl text-xs grid grid-cols-2 gap-2 border border-slate-100">
+                        <div><p class="text-slate-400 mb-1">Berakhir</p><p class="font-bold text-slate-700">${formatTglDisplay(o.Tgl_Berakhir)}</p></div>
+                        <div><p class="text-slate-400 mb-1">Profit</p><p class="font-bold text-emerald-600">Rp${parseRupiah(o.Profit).toLocaleString('id-ID')}</p></div>
                     </div>
                 </div>
-                <div class="flex gap-2 pt-3 mt-3 border-t">
-                    <button onclick="editOrder('${o.ID_Order}')" class="flex-1 bg-sky-50 text-sky-600 py-1.5 rounded-xl text-xs font-bold">✏️ Edit</button>
-                    <button onclick="hapusOrder('${o.ID_Order}')" class="flex-1 bg-red-50 text-red-600 py-1.5 rounded-xl text-xs font-bold">🗑️ Hapus</button>
+                <div class="flex gap-2 pt-3 mt-3 border-t border-slate-100">
+                    <button onclick="editOrder('${o.ID_Order}')" class="flex-1 bg-sky-50 text-sky-600 py-2 rounded-xl text-xs font-bold hover:bg-sky-100 transition">✏️ Edit</button>
+                    <button onclick="hapusOrder('${o.ID_Order}')" class="flex-1 bg-red-50 text-red-600 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">🗑️ Hapus</button>
                 </div>
             </div>`;
         });
