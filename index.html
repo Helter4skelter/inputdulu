@@ -43,7 +43,7 @@
                 + Tambah Satuan
              </button>
              <button onclick="openBulkModal()" class="px-5 py-2.5 bg-white text-violet-700 text-xs sm:text-sm font-bold rounded-full hover:bg-indigo-50 transition shadow-md flex items-center gap-2">
-                ⚡ Input Massal
+                ⚡ Input Massal (Otomatis)
              </button>
           </div>
        </div>
@@ -84,13 +84,19 @@
     </div>
   </div>
 
-  <!-- MODAL INPUT MASSAL -->
+  <!-- MODAL INPUT MASSAL + SMART PASTE -->
   <div id="modalBulk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
      <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-5xl p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto border border-slate-100">
         <button onclick="document.getElementById('modalBulk').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-2xl font-bold">×</button>
         <h3 class="text-xl font-bold text-slate-800 mb-2">⚡ Input Massal (Bulk Input)</h3>
-        <p class="text-xs text-slate-500 mb-4">Isi data secara berurutan. Tanggal berakhir & profit dihitung otomatis saat dikirim.</p>
         
+        <!-- SMART PASTE BOX -->
+        <div class="mb-4 bg-indigo-50 border border-indigo-100 p-4 rounded-2xl relative group">
+           <h4 class="font-bold text-indigo-700 text-sm mb-1">✨ Smart Paste (Ekstrak Instan)</h4>
+           <p class="text-xs text-indigo-500 mb-3">Copy tabel/teks mentahan <b>(Nama | WA | Layanan | Durasi | Omzet | Modal)</b> dan paste di kotak ini. Sistem akan memecahnya jadi puluhan baris dalam 1 detik.</p>
+           <textarea id="smartPasteInput" rows="2" class="w-full bg-white border border-indigo-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-indigo-400 outline-none transition" placeholder="Paste data dari AI atau Excel di sini..."></textarea>
+        </div>
+
         <div class="overflow-x-auto border border-slate-200 rounded-xl mb-4">
            <table class="w-full text-left text-xs min-w-[850px]">
               <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
@@ -111,7 +117,7 @@
         </div>
         
         <div class="flex justify-between items-center">
-           <button type="button" onclick="addBulkRow()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">+ Tambah Baris</button>
+           <button type="button" onclick="addBulkRow()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">+ Tambah Baris Manual</button>
            <button type="button" id="btnSubmitBulk" onclick="submitBulkOrders()" class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-xs transition shadow-md">Simpan ke Sheets</button>
         </div>
      </div>
@@ -156,7 +162,6 @@
   </div>
 
   <script>
-    // PASTE URL WEB APP APPS SCRIPT BARU KAMU DI SINI:
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
     
     function playSound(type) {
@@ -175,6 +180,41 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
+
+    // EVENT SMART PASTE
+    document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        if(!text) return;
+        
+        const rows = text.split('\n');
+        const tbody = document.getElementById('bulkRowsContainer');
+        
+        // Bersihkan baris default kosong
+        if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') {
+            tbody.innerHTML = '';
+        }
+
+        let added = 0;
+        rows.forEach(row => {
+            const cols = row.split('\t'); // format Excel copy/paste
+            if(cols.length > 1) { 
+                addBulkRow();
+                const tr = tbody.lastElementChild;
+                if(cols[0]) tr.querySelector('.b-nama').value = cols[0].trim();
+                if(cols[1]) tr.querySelector('.b-wa').value = cols[1].replace(/\D/g, '');
+                if(cols[2]) tr.querySelector('.b-layanan').value = cols[2].trim();
+                if(cols[3]) tr.querySelector('.b-durasi').value = cols[3].replace(/\D/g, '') || 30;
+                if(cols[4]) tr.querySelector('.b-omzet').value = cols[4].replace(/\D/g, '');
+                if(cols[5]) tr.querySelector('.b-modal').value = cols[5].replace(/\D/g, '');
+                added++;
+            }
+        });
+        
+        playSound('success');
+        this.value = ''; 
+        if(added > 0) alert(`✅ Sihir berhasil! ${added} pesanan otomatis dipecah ke baris tabel.`);
+    });
 
     function openBulkModal() {
         playSound('click');
@@ -256,7 +296,7 @@
        
        playSound('success');
        document.getElementById('modalBulk').classList.add('hidden');
-       alert(`✅ Menambahkan ${dataList.length} orderan! Sedang menyinkronkan dengan Sheets...`);
+       alert(`✅ Menambahkan ${dataList.length} pesanan otomatis! Tunggu sinkronisasi dengan Sheets...`);
        setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
     }
 
