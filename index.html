@@ -105,7 +105,6 @@
                     <th class="p-2.5">Nama Pelanggan</th>
                     <th class="p-2.5">No WhatsApp</th>
                     <th class="p-2.5">Layanan</th>
-                    <th class="p-2.5">Tgl Order</th>
                     <th class="p-2.5">Tgl Mulai</th>
                     <th class="p-2.5 w-16">Durasi</th>
                     <th class="p-2.5">Omzet (Rp)</th>
@@ -151,26 +150,37 @@
               <input list="listLayanan" id="inputLayanan" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500">
               <datalist id="listLayanan"><option value="Netflix"><option value="Spotify"><option value="YouTube"><option value="Canva"><option value="Capcut"></datalist>
            </div>
+           
            <div class="grid grid-cols-2 gap-3">
-              <div><label class="block text-xs font-bold text-slate-500 mb-1">Tgl Order</label><input type="date" id="tglOrder" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
-              <div><label class="block text-xs font-bold text-slate-500 mb-1">Tgl Mulai</label><input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal mulai *</label>
+                 <input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
+              <div>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari)</label>
+                 <input type="number" id="durasi" value="30" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+              </div>
            </div>
-           <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari)</label>
-              <input type="number" id="durasi" value="30" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-           </div>
+
            <div class="grid grid-cols-2 gap-3">
               <div><label class="block text-xs font-bold text-slate-500 mb-1">Harga Jual (Rp)</label><input type="number" id="hargaJual" value="39000" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
               <div><label class="block text-xs font-bold text-slate-500 mb-1">Modal (Rp)</label><input type="number" id="modal" value="31000" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
            </div>
+           
+           <!-- Info Perhitungan Otomatis -->
+           <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 mt-2 text-[10px]">
+                <div class="text-slate-500">Berakhir: <span class="font-bold text-slate-800 ml-1" id="resBerakhir">-</span></div>
+                <div class="text-slate-500 text-right">Status H-2: <span class="font-bold text-slate-800 ml-1" id="resH2">-</span></div>
+           </div>
+
            <button type="submit" id="btnSubmitSingle" class="w-full py-2.5 mt-4 bg-violet-600 text-white font-bold rounded-xl text-xs hover:bg-violet-700 transition shadow-md">Simpan Order</button>
         </form>
      </div>
   </div>
 
   <script>
-    // URL Web App BARU TELAH DIPASANG DI SINI
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzF5uaf3b7_dQx344eGK1hm4V-WV_6D04JPttRWjcDiljeNnpL97M3pIizRrnssZTGI/exec';
+    // URL WEB APP TERBARU KAMU
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBegS_E6f7nykVdewduk-ucUa1jfRW7Esqcg63-LMDYk4SfcTpy5m8reYKgJalE-dU/exec';
     
     function playSound(type) {
         try {
@@ -186,7 +196,6 @@
     }
 
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
     // EVENT SMART PASTE
@@ -240,7 +249,6 @@
            <td class="p-1"><input type="text" class="b-nama w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Nama"></td>
            <td class="p-1"><input type="number" class="b-wa w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="628..."></td>
            <td class="p-1"><input type="text" class="b-layanan w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" placeholder="Netflix"></td>
-           <td class="p-1"><input type="date" class="b-order w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="${today}"></td>
            <td class="p-1"><input type="date" class="b-mulai w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="${today}"></td>
            <td class="p-1"><input type="number" class="b-durasi w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="30"></td>
            <td class="p-1"><input type="number" class="b-omzet w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-md" value="39000"></td>
@@ -259,7 +267,6 @@
           const nama = tr.querySelector('.b-nama').value.trim();
           const wa = tr.querySelector('.b-wa').value.trim();
           const layanan = tr.querySelector('.b-layanan').value.trim();
-          const tglOrder = tr.querySelector('.b-order').value;
           const mulai = tr.querySelector('.b-mulai').value;
           const durasi = parseInt(tr.querySelector('.b-durasi').value) || 30;
           const omzet = parseInt(tr.querySelector('.b-omzet').value) || 0;
@@ -281,8 +288,6 @@
                 ID_Order: finalId,
                 Nama_Pelanggan: nama,
                 Layanan: layanan,
-                Tgl_Order: tglOrder,
-                Tgl_Mulai: mulai,
                 Tgl_Berakhir: tglBerakhir,
                 No_WA: wa,
                 Omzet: omzet,
@@ -310,6 +315,21 @@
        document.getElementById('modalBulk').classList.add('hidden');
        alert(`✅ Menambahkan ${dataList.length} pesanan otomatis! Tunggu sinkronisasi dengan Sheets...`);
        setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
+    }
+
+    function hitungSatuan() {
+        const mulai = document.getElementById('tglMulai').value;
+        const durasi = parseInt(document.getElementById('durasi').value) || 0;
+        if(mulai && durasi > 0) {
+            let start = new Date(mulai);
+            let end = new Date(start);
+            end.setDate(start.getDate() + durasi);
+            document.getElementById('resBerakhir').innerText = end.toISOString().split('T')[0];
+            
+            let h2Date = new Date(end);
+            h2Date.setDate(end.getDate() - 2);
+            document.getElementById('resH2').innerText = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
+        }
     }
 
     let globalOrders = [];
@@ -379,6 +399,7 @@
         document.getElementById('hargaJual').value = parseRupiah(order.Omzet);
         document.getElementById('modal').value = parseRupiah(order.Omzet) - parseRupiah(order.Profit);
         document.getElementById('modalOrder').classList.remove('hidden');
+        hitungSatuan();
     }
 
     async function submitSingleOrder(e) {
@@ -391,6 +412,11 @@
        let end = new Date(start);
        end.setDate(start.getDate() + parseInt(document.getElementById('durasi').value));
        const tglBerakhir = end.toISOString().split('T')[0];
+       
+       let h2Date = new Date(end);
+       h2Date.setDate(end.getDate() - 2);
+       let statusH2 = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
+
        const omzet = parseInt(document.getElementById('hargaJual').value);
        const modal = parseInt(document.getElementById('modal').value);
        
@@ -401,12 +427,11 @@
           ID_Order: finalId,
           Nama_Pelanggan: document.getElementById('inputNama').value,
           Layanan: document.getElementById('inputLayanan').value,
-          Tgl_Order: document.getElementById('tglOrder').value,
-          Tgl_Mulai: document.getElementById('tglMulai').value,
           Tgl_Berakhir: tglBerakhir,
           No_WA: document.getElementById('inputWA').value,
           Omzet: omzet,
-          Profit: omzet - modal
+          Profit: omzet - modal,
+          Status_H2: statusH2
        };
 
        const actionType = targetId !== "" ? 'edit' : 'add';
@@ -435,9 +460,9 @@
         idField.disabled = false;
         
         document.getElementById('formOrder').reset();
-        document.getElementById('tglOrder').value = today;
         document.getElementById('tglMulai').value = today;
         document.getElementById('modalOrder').classList.remove('hidden');
+        hitungSatuan();
     }
 
     function processDashboard(orders) {
