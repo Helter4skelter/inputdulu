@@ -106,7 +106,7 @@
                     <th class="p-2.5">No WhatsApp</th>
                     <th class="p-2.5">Layanan</th>
                     <th class="p-2.5">Tgl Mulai</th>
-                    <th class="p-2.5 w-16">Durasi</th>
+                    <th class="p-2.5 w-20">Durasi (Hr)</th>
                     <th class="p-2.5">Omzet (Rp)</th>
                     <th class="p-2.5">Modal (Rp)</th>
                     <th class="p-2.5 w-10">Aksi</th>
@@ -153,21 +153,20 @@
            
            <div class="grid grid-cols-2 gap-3">
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal mulai *</label>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal Mulai *</label>
                  <input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
               </div>
               <div>
-                 <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari)</label>
+                 <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari) *</label>
                  <input type="number" id="durasi" value="30" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
               </div>
            </div>
 
            <div class="grid grid-cols-2 gap-3">
-              <div><label class="block text-xs font-bold text-slate-500 mb-1">Harga Jual (Rp)</label><input type="number" id="hargaJual" value="39000" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
+              <div><label class="block text-xs font-bold text-slate-500 mb-1">Omzet / Harga Jual (Rp)</label><input type="number" id="hargaJual" value="39000" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
               <div><label class="block text-xs font-bold text-slate-500 mb-1">Modal (Rp)</label><input type="number" id="modal" value="31000" oninput="hitungSatuan()" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
            </div>
            
-           <!-- Info Perhitungan Otomatis -->
            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 mt-2 text-[10px]">
                 <div class="text-slate-500">Berakhir: <span class="font-bold text-slate-800 ml-1" id="resBerakhir">-</span></div>
                 <div class="text-slate-500 text-right">Status H-2: <span class="font-bold text-slate-800 ml-1" id="resH2">-</span></div>
@@ -179,8 +178,8 @@
   </div>
 
   <script>
-    // URL WEB APP TERBARU KAMU
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBegS_E6f7nykVdewduk-ucUa1jfRW7Esqcg63-LMDYk4SfcTpy5m8reYKgJalE-dU/exec';
+    // URL WEB APP TERBARU
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNWzJoIgtL7dZA1xOlSwvnF4gWk7xlBqCx0AnNv7nnIK9z_zurM1MzzCj6iiPFhTuf/exec';
     
     function playSound(type) {
         try {
@@ -198,6 +197,20 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tglMulai').value = today;
 
+    function formatKeDDMMYYYY(yyyy_mm_dd) {
+        if (!yyyy_mm_dd) return '';
+        const parts = yyyy_mm_dd.split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return yyyy_mm_dd;
+    }
+
+    function formatLabelDurasi(hari) {
+        const d = parseInt(hari) || 30;
+        if (d % 30 === 0) return (d / 30) + " Bulan";
+        if (d % 7 === 0) return (d / 7) + " Minggu";
+        return d + " Hari";
+    }
+
     // EVENT SMART PASTE
     document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
         e.preventDefault();
@@ -207,7 +220,6 @@
         const rows = text.split('\n');
         const tbody = document.getElementById('bulkRowsContainer');
         
-        // Bersihkan baris default kosong
         if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') {
             tbody.innerHTML = '';
         }
@@ -230,7 +242,7 @@
         
         playSound('success');
         this.value = ''; 
-        if(added > 0) alert(`✅ Sihir berhasil! ${added} pesanan otomatis dipecah ke baris tabel.`);
+        if(added > 0) alert(`✅ Berhasil! ${added} pesanan otomatis dimasukkan ke baris tabel.`);
     });
 
     function openBulkModal() {
@@ -287,10 +299,13 @@
              dataList.push({
                 ID_Order: finalId,
                 Nama_Pelanggan: nama,
-                Layanan: layanan,
-                Tgl_Berakhir: tglBerakhir,
                 No_WA: wa,
+                Layanan: layanan,
+                Tgl_Mulai: formatKeDDMMYYYY(mulai),
+                Durasi: formatLabelDurasi(durasi),
+                Tgl_Berakhir: tglBerakhir,
                 Omzet: omzet,
+                Modal: modal,
                 Profit: omzet - modal,
                 Status_H2: statusH2
              });
@@ -313,7 +328,7 @@
        
        playSound('success');
        document.getElementById('modalBulk').classList.add('hidden');
-       alert(`✅ Menambahkan ${dataList.length} pesanan otomatis! Tunggu sinkronisasi dengan Sheets...`);
+       alert(`✅ Menambahkan ${dataList.length} pesanan! Menyinkronkan dengan Google Sheets...`);
        setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
     }
 
@@ -351,7 +366,7 @@
       }
     }
 
-    function parseRupiah(str) { return Number(String(str).replace(/[^0-9]/g, '')) || 0; }
+    function parseRupiah(str) { return Number(String(str).replace(/[^0-9-]/g, '')) || 0; }
 
     function formatTglDisplay(dateStr) {
         if (!dateStr || dateStr === '-') return '-';
@@ -396,8 +411,12 @@
         document.getElementById('inputNama').value = order.Nama_Pelanggan || "";
         document.getElementById('inputWA').value = order.No_WA || "";
         document.getElementById('inputLayanan').value = order.Layanan || "";
-        document.getElementById('hargaJual').value = parseRupiah(order.Omzet);
-        document.getElementById('modal').value = parseRupiah(order.Omzet) - parseRupiah(order.Profit);
+        
+        const omzetVal = parseRupiah(order.Omzet);
+        const modalVal = order.Modal !== undefined ? parseRupiah(order.Modal) : (omzetVal - parseRupiah(order.Profit));
+        document.getElementById('hargaJual').value = omzetVal;
+        document.getElementById('modal').value = modalVal;
+        
         document.getElementById('modalOrder').classList.remove('hidden');
         hitungSatuan();
     }
@@ -408,17 +427,20 @@
        const btn = document.getElementById('btnSubmitSingle');
        btn.innerText = "Menyimpan..."; btn.disabled = true;
 
-       let start = new Date(document.getElementById('tglMulai').value);
+       const mulaiVal = document.getElementById('tglMulai').value;
+       const durasiHari = parseInt(document.getElementById('durasi').value) || 30;
+
+       let start = new Date(mulaiVal);
        let end = new Date(start);
-       end.setDate(start.getDate() + parseInt(document.getElementById('durasi').value));
+       end.setDate(start.getDate() + durasiHari);
        const tglBerakhir = end.toISOString().split('T')[0];
        
        let h2Date = new Date(end);
        h2Date.setDate(end.getDate() - 2);
        let statusH2 = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
 
-       const omzet = parseInt(document.getElementById('hargaJual').value);
-       const modal = parseInt(document.getElementById('modal').value);
+       const omzet = parseInt(document.getElementById('hargaJual').value) || 0;
+       const modal = parseInt(document.getElementById('modal').value) || 0;
        
        const customId = document.getElementById('inputIdOrder').value.trim();
        const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
@@ -426,10 +448,13 @@
        const payloadData = {
           ID_Order: finalId,
           Nama_Pelanggan: document.getElementById('inputNama').value,
-          Layanan: document.getElementById('inputLayanan').value,
-          Tgl_Berakhir: tglBerakhir,
           No_WA: document.getElementById('inputWA').value,
+          Layanan: document.getElementById('inputLayanan').value,
+          Tgl_Mulai: formatKeDDMMYYYY(mulaiVal),
+          Durasi: formatLabelDurasi(durasiHari),
+          Tgl_Berakhir: tglBerakhir,
           Omzet: omzet,
+          Modal: modal,
           Profit: omzet - modal,
           Status_H2: statusH2
        };
@@ -446,7 +471,7 @@
        
        playSound('success');
        document.getElementById('modalOrder').classList.add('hidden');
-       alert("✅ Perubahan disimpan ke Sheets!");
+       alert("✅ Data disimpan ke Google Sheets!");
        setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
     }
 
