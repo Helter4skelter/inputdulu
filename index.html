@@ -101,7 +101,6 @@
            <table class="w-full text-left text-xs min-w-[950px]">
               <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
                  <tr>
-                    <!-- DITAMBAHKAN: Kolom ID Order di Input Massal -->
                     <th class="p-2.5 w-24">ID Order</th>
                     <th class="p-2.5">Nama Pelanggan</th>
                     <th class="p-2.5">No WhatsApp</th>
@@ -134,7 +133,6 @@
         <form id="formOrder" onsubmit="submitSingleOrder(event)" class="space-y-3">
            <input type="hidden" id="editId" value="">
            
-           <!-- DITAMBAHKAN: Field Input ID Order -->
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">ID Order</label>
               <input type="text" id="inputIdOrder" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500 disabled:opacity-50 disabled:bg-slate-100" placeholder="Otomatis (RZT-xxxx) jika kosong">
@@ -171,8 +169,8 @@
   </div>
 
   <script>
-    // PASTE URL WEB APP APPS SCRIPT BARU KAMU DI SINI:
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5BuvJC8CHiccKpfq6bJNKJMQ6KS42cuAi5KOkgPPzSG1gbHqm9g6Ps69Sbmj-fUXf/exec';
+    // URL Web App BARU TELAH DIPASANG DI SINI
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzF5uaf3b7_dQx344eGK1hm4V-WV_6D04JPttRWjcDiljeNnpL97M3pIizRrnssZTGI/exec';
     
     function playSound(type) {
         try {
@@ -371,7 +369,6 @@
         document.getElementById('modalTitle').innerText = "Edit Order";
         document.getElementById('editId').value = id;
         
-        // PENTING: Saat edit, ID dimasukkan tapi dilock (readonly) agar backend tidak kehilangan jejak data aslinya
         const idField = document.getElementById('inputIdOrder');
         idField.value = id;
         idField.disabled = true;
@@ -433,7 +430,6 @@
         document.getElementById('modalTitle').innerText = "Order Baru";
         document.getElementById('editId').value = "";
         
-        // Membuka lock input ID agar bisa diketik saat menambah data baru
         const idField = document.getElementById('inputIdOrder');
         idField.value = "";
         idField.disabled = false;
