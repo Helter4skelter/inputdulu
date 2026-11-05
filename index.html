@@ -632,7 +632,8 @@
 
     function processDashboard(orders) {
       let totalOmzet = 0, totalProfit = 0, h2Reminders = [];
-      const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+      const hariIni = new Date(); 
+      hariIni.setHours(0,0,0,0);
       
       globalOrders = [];
 
@@ -651,8 +652,39 @@
            Modal: raw['Modal'] || raw['modal'] || raw.Modal || 0,
            Tgl_Berakhir: raw['Tgl Berakhir'] || raw['Tgl_Berakhir'] || raw['tgl berakhir'] || raw.Tgl_Berakhir || ''
         };
-        o.Profit = raw['Profit'] || raw['profit'] || raw.Profit || (parseRupiah(o.Omzet) - parseRupiah(o.Modal));
         
+        // PERBAIKAN: Hitung Tgl_Berakhir otomatis jika kosong, dan baca format tanggal dengan aman
+        if (!o.Tgl_Berakhir && o.Tgl_Mulai) {
+            let parsedMulai = new Date(o.Tgl_Mulai);
+            if (isNaN(parsedMulai.getTime()) && typeof o.Tgl_Mulai === 'string') {
+                const parts = o.Tgl_Mulai.split(/[-/]/);
+                if (parts.length === 3) {
+                    if (parts[0].length <= 2 && parseInt(parts[0]) <= 31) {
+                        parsedMulai = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // Format DD/MM/YYYY
+                    } else {
+                        parsedMulai = new Date(o.Tgl_Mulai); // Format YYYY/MM/DD
+                    }
+                }
+            }
+            
+            if (!isNaN(parsedMulai.getTime())) {
+                let numDays = 30; // Default
+                let durStr = String(o.Durasi).toLowerCase();
+                let match = durStr.match(/\d+/);
+                if (match) {
+                    let num = parseInt(match[0]);
+                    if (durStr.includes('bulan')) numDays = num * 30;
+                    else if (durStr.includes('minggu')) numDays = num * 7;
+                    else if (durStr.includes('tahun')) numDays = num * 365;
+                    else numDays = num;
+                }
+                let endD = new Date(parsedMulai);
+                endD.setDate(parsedMulai.getDate() + numDays);
+                o.Tgl_Berakhir = endD.toISOString().split('T')[0];
+            }
+        }
+
+        o.Profit = raw['Profit'] || raw['profit'] || raw.Profit || (parseRupiah(o.Omzet) - parseRupiah(o.Modal));
         globalOrders.push(o);
 
         totalOmzet += parseRupiah(o.Omzet);
@@ -661,13 +693,24 @@
         const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
         if(expString !== '-') {
             let expDate = new Date(expString);
+            
+            // Perbaikan membaca format tanggal berakhir
             if (isNaN(expDate.getTime())) {
                 const parts = expString.split(/[-/]/);
-                if (parts.length === 3 && parts[2].length === 4) expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                if (parts.length === 3) {
+                    if (parts[0].length <= 2 && parseInt(parts[0]) <= 31) {
+                         expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                    }
+                }
             }
-            let h2Date = new Date(expDate);
-            h2Date.setDate(expDate.getDate() - 2);
-            if(hariIni >= h2Date && hariIni <= expDate) h2Reminders.push(o);
+            
+            if (!isNaN(expDate.getTime())) {
+                let h2Date = new Date(expDate);
+                h2Date.setDate(expDate.getDate() - 2);
+                if(hariIni >= h2Date && hariIni <= expDate) {
+                    h2Reminders.push(o);
+                }
+            }
         }
       });
 
