@@ -1,57 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">// EVENT SMART PASTE (VERSI UPGRADE - BISA BACA DATABASE EXCEL/SHEETS)
-    document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
-        e.preventDefault();
-        const text = (e.clipboardData || window.clipboardData).getData('text');
-        if(!text) return;
-        
-        const rows = text.split('\n');
-        const tbody = document.getElementById('bulkRowsContainer');
-        
-        // Bersihkan baris default kosong
-        if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') {
-            tbody.innerHTML = '';
-        }
-
-        let added = 0;
-        rows.forEach(row => {
-            const cols = row.split('\t'); 
-            
-            // Minimal ada 4 data terisi agar dianggap baris valid
-            if(cols.length >= 4) { 
-                addBulkRow();
-                const tr = tbody.lastElementChild;
-                
-                // SKENARIO 1: Copy langsung dari Database Sheets (Ada 8-9 Kolom: ID, Nama, WA, Layanan, dst)
-                if (cols.length >= 8 && (cols[0].toLowerCase().includes('rzt') || cols[0].trim() === '')) {
-                    tr.querySelector('.b-id').value = cols[0].trim();
-                    tr.querySelector('.b-nama').value = cols[1] ? cols[1].trim() : '';
-                    tr.querySelector('.b-wa').value = cols[2] ? cols[2].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-layanan').value = cols[3] ? cols[3].trim() : '';
-                    // Durasi ada di kolom ke-6 (index 5)
-                    tr.querySelector('.b-durasi').value = cols[5] ? cols[5].replace(/\D/g, '') || 30 : 30;
-                    tr.querySelector('.b-omzet').value = cols[6] ? cols[6].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-modal').value = cols[7] ? cols[7].replace(/\D/g, '') : '';
-                } 
-                // SKENARIO 2: Copy dari format mentahan simpel (6 Kolom: Nama, WA, Layanan, Durasi, Omzet, Modal)
-                else {
-                    tr.querySelector('.b-nama').value = cols[0] ? cols[0].trim() : '';
-                    tr.querySelector('.b-wa').value = cols[1] ? cols[1].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-layanan').value = cols[2] ? cols[2].trim() : '';
-                    tr.querySelector('.b-durasi').value = cols[3] ? cols[3].replace(/\D/g, '') || 30 : 30;
-                    tr.querySelector('.b-omzet').value = cols[4] ? cols[4].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-modal').value = cols[5] ? cols[5].replace(/\D/g, '') : '';
-                }
-                added++;
-            }
-        });
-        
-        playSound('success');
-        this.value = ''; 
-        if(added > 0) alert(`✅ Berhasil! ${added} pesanan dari Excel otomatis dipecah ke tabel.`);
-    });
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reztroid Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -263,7 +213,7 @@
   </div>
 
   <script>
-    // PASTE URL WEB APP BARU DI SINI
+    // URL WEB APP SUDAH TERPASANG, JANGAN DIUBAH
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziwtRfeZkKltbzhZUrn-pqpMIDS6xLCT7tJTkwzktkC_I8LllYp_18etUGFLhxQrYt/exec';
     
     function playSound(type) {
@@ -297,13 +247,15 @@
         return d + " Hari";
     }
 
- // EVENT SMART PASTE (VERSI UPGRADE - BISA BACA DATABASE EXCEL/SHEETS)
+    // EVENT SMART PASTE (VERSI UPGRADE TAHAN EXCEL/SHEETS)
     document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text');
         if(!text) return;
         
-        const rows = text.split('\n');
+        // Memisahkan baris dengan aman (termasuk format Enter dari Excel)
+        const rows = text.split(/\r?\n/).filter(r => r.trim() !== '');
+        
         const tbody = document.getElementById('bulkRowsContainer');
         
         // Bersihkan baris default kosong
@@ -320,18 +272,17 @@
                 addBulkRow();
                 const tr = tbody.lastElementChild;
                 
-                // SKENARIO 1: Copy langsung dari Database Sheets (Ada 8-9 Kolom: ID, Nama, WA, Layanan, dst)
+                // SKENARIO 1: Copy langsung dari Database Sheets (Ada 8-9 Kolom)
                 if (cols.length >= 8 && (cols[0].toLowerCase().includes('rzt') || cols[0].trim() === '')) {
                     tr.querySelector('.b-id').value = cols[0].trim();
                     tr.querySelector('.b-nama').value = cols[1] ? cols[1].trim() : '';
                     tr.querySelector('.b-wa').value = cols[2] ? cols[2].replace(/\D/g, '') : '';
                     tr.querySelector('.b-layanan').value = cols[3] ? cols[3].trim() : '';
-                    // Durasi ada di kolom ke-6 (index 5)
                     tr.querySelector('.b-durasi').value = cols[5] ? cols[5].replace(/\D/g, '') || 30 : 30;
                     tr.querySelector('.b-omzet').value = cols[6] ? cols[6].replace(/\D/g, '') : '';
                     tr.querySelector('.b-modal').value = cols[7] ? cols[7].replace(/\D/g, '') : '';
                 } 
-                // SKENARIO 2: Copy dari format mentahan simpel (6 Kolom: Nama, WA, Layanan, Durasi, Omzet, Modal)
+                // SKENARIO 2: Copy dari format mentahan simpel (6 Kolom)
                 else {
                     tr.querySelector('.b-nama').value = cols[0] ? cols[0].trim() : '';
                     tr.querySelector('.b-wa').value = cols[1] ? cols[1].replace(/\D/g, '') : '';
@@ -346,7 +297,7 @@
         
         playSound('success');
         this.value = ''; 
-        if(added > 0) alert(`✅ Berhasil! ${added} pesanan dari Excel otomatis dipecah ke tabel.`);
+        if(added > 0) alert(`✅ Berhasil! ${added} pesanan otomatis dipecah ke tabel.`);
     });
     
     function openBulkModal() {
