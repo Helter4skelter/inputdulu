@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reztroid Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- LIBRARY SHEETJS UNTUK MEMBACA EXCEL -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <style>
     body { background-color: #f8fafc; font-family: sans-serif; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -84,17 +87,23 @@
     </div>
   </div>
 
-  <!-- MODAL INPUT MASSAL + SMART PASTE -->
+  <!-- MODAL INPUT MASSAL + DRAG AND DROP EXCEL -->
   <div id="modalBulk" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
      <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-5xl p-5 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto border border-slate-100">
         <button onclick="document.getElementById('modalBulk').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-2xl font-bold">×</button>
-        <h3 class="text-xl font-bold text-slate-800 mb-2">⚡ Input Massal (Bulk Input)</h3>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">⚡ Input Massal & Upload Excel</h3>
         
-        <!-- SMART PASTE BOX -->
-        <div class="mb-4 bg-indigo-50 border border-indigo-100 p-4 rounded-2xl relative group">
-           <h4 class="font-bold text-indigo-700 text-sm mb-1">✨ Smart Paste (Ekstrak Instan)</h4>
-           <p class="text-xs text-indigo-500 mb-3">Copy tabel/teks mentahan <b>(Nama | WA | Layanan | Durasi | Omzet | Modal)</b> dan paste di kotak ini.</p>
-           <textarea id="smartPasteInput" rows="2" class="w-full bg-white border border-indigo-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-indigo-400 outline-none transition" placeholder="Paste data dari AI atau Excel di sini..."></textarea>
+        <!-- DRAG AND DROP ZONE -->
+        <div id="dropZone" class="mb-4 bg-indigo-50 border-2 border-dashed border-indigo-300 hover:border-indigo-500 hover:bg-indigo-100 p-6 rounded-2xl relative text-center transition cursor-pointer flex flex-col items-center justify-center min-h-[120px]">
+           <div class="text-3xl mb-2">📊</div>
+           <h4 class="font-bold text-indigo-700 text-sm mb-1">Drag & Drop file .xlsx ke sini</h4>
+           <p class="text-xs text-indigo-500 mb-3">atau klik area ini untuk memilih file dari perangkatmu.</p>
+           <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="hidden">
+           
+           <div class="w-full border-t border-indigo-200 mt-2 pt-3">
+               <p class="text-[10px] text-indigo-400 font-bold uppercase mb-1">Atau Paste Manual</p>
+               <textarea id="smartPasteInput" rows="1" class="w-full bg-white/70 border border-indigo-200 rounded-lg p-2 text-xs focus:ring-2 focus:ring-indigo-400 outline-none transition text-center" placeholder="Paste (Ctrl+V) tabel mentahan di sini..."></textarea>
+           </div>
         </div>
 
         <div class="overflow-x-auto border border-slate-200 rounded-xl mb-4">
@@ -123,7 +132,7 @@
      </div>
   </div>
 
-  <!-- MODAL SATUAN (DENGAN UI KALKULASI OTOMATIS) -->
+  <!-- MODAL SATUAN -->
   <div id="modalOrder" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 py-12">
      <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[85vh] overflow-y-auto border border-slate-100">
         <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-2xl font-bold">×</button>
@@ -136,23 +145,19 @@
               <label class="block text-xs font-bold text-slate-500 mb-1">ID Order</label>
               <input type="text" id="inputIdOrder" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500 disabled:opacity-50 disabled:bg-slate-100" placeholder="Otomatis (RZT-xxxx) jika kosong">
            </div>
-
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Nama Pelanggan *</label>
               <input type="text" id="inputNama" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500">
            </div>
-           
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Nomor WhatsApp *</label>
               <input type="number" id="inputWA" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500" placeholder="628xxxxxxxxxx">
            </div>
-           
            <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Layanan / Produk *</label>
               <input list="listLayanan" id="inputLayanan" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500" placeholder="Ketik atau pilih layanan...">
               <datalist id="listLayanan"><option value="Netflix"><option value="Spotify"><option value="YouTube"><option value="Canva"><option value="Capcut"></datalist>
            </div>
-           
            <div class="grid grid-cols-2 gap-3">
               <div>
                  <label class="block text-xs font-bold text-slate-500 mb-1">Tanggal order *</label>
@@ -163,7 +168,6 @@
                  <input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm">
               </div>
            </div>
-
            <div>
                 <label class="block text-xs font-bold text-slate-500 mb-1">Durasi (hari) *</label>
                 <input type="number" id="durasi" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500 mb-2" value="30" oninput="hitungSatuan()" required>
@@ -175,7 +179,6 @@
                     <div class="pill" onclick="playSound('click'); setDurasi(180, this)">180</div>
                 </div>
            </div>
-
            <div class="grid grid-cols-2 gap-3">
               <div>
                   <label class="block text-xs font-bold text-slate-500 mb-1">Harga / Omzet (Rp) *</label>
@@ -187,24 +190,11 @@
               </div>
            </div>
            
-           <!-- KOTAK REKAPITULASI OTOMATIS -->
            <div class="grid grid-cols-2 gap-y-3 gap-x-2 pt-3 border-t border-slate-100 mt-3 bg-slate-50/50 p-4 rounded-xl border">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400">Berakhir</p>
-                    <p class="font-bold text-slate-800 text-sm mt-1" id="resBerakhir">-</p>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400">Pengingat H-2</p>
-                    <p class="font-bold text-red-500 text-sm mt-1 flex items-center gap-1" id="resH2">-</p>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400">Profit</p>
-                    <p class="font-bold text-emerald-500 text-sm mt-1" id="resProfit">Rp0</p>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400">Margin</p>
-                    <p class="font-bold text-violet-600 text-sm mt-1 bg-violet-100 w-max px-2 py-0.5 rounded" id="resMargin">0.0%</p>
-                </div>
+                <div><p class="text-[10px] font-bold text-slate-400">Berakhir</p><p class="font-bold text-slate-800 text-sm mt-1" id="resBerakhir">-</p></div>
+                <div><p class="text-[10px] font-bold text-slate-400">Pengingat H-2</p><p class="font-bold text-red-500 text-sm mt-1 flex items-center gap-1" id="resH2">-</p></div>
+                <div><p class="text-[10px] font-bold text-slate-400">Profit</p><p class="font-bold text-emerald-500 text-sm mt-1" id="resProfit">Rp0</p></div>
+                <div><p class="text-[10px] font-bold text-slate-400">Margin</p><p class="font-bold text-violet-600 text-sm mt-1 bg-violet-100 w-max px-2 py-0.5 rounded" id="resMargin">0.0%</p></div>
             </div>
 
            <button type="submit" id="btnSubmitSingle" class="w-full py-3 mt-4 bg-violet-600 text-white font-bold rounded-xl text-sm hover:bg-violet-700 transition shadow-md">Simpan Order</button>
@@ -213,7 +203,7 @@
   </div>
 
   <script>
-    // URL WEB APP SUDAH TERPASANG, JANGAN DIUBAH
+    // URL WEB APP
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziwtRfeZkKltbzhZUrn-pqpMIDS6xLCT7tJTkwzktkC_I8LllYp_18etUGFLhxQrYt/exec';
     
     function playSound(type) {
@@ -247,58 +237,124 @@
         return d + " Hari";
     }
 
-    // EVENT SMART PASTE (VERSI UPGRADE TAHAN EXCEL/SHEETS)
+    // ==========================================
+    // SISTEM DRAG & DROP EXCEL FILE + SMART PASTE
+    // ==========================================
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('excelFileInput');
+
+    // Memicu pencarian file saat diklik
+    dropZone.addEventListener('click', (e) => {
+        if (e.target.id !== 'smartPasteInput') fileInput.click();
+    });
+
+    // Menangani Drag Events
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('bg-indigo-200', 'border-indigo-500');
+    });
+
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('bg-indigo-200', 'border-indigo-500');
+    });
+
+    // Saat File di Drop
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('bg-indigo-200', 'border-indigo-500');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) readExcelFile(files[0]);
+    });
+
+    // Saat file dipilih dari klik
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) readExcelFile(e.target.files[0]);
+        e.target.value = ''; // Reset
+    });
+
+    // Membaca file menggunakan SheetJS
+    function readExcelFile(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            try {
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                // Ekstrak data sebagai Array dari Array
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
+                processExtractedArray(jsonData);
+            } catch (err) {
+                alert("Gagal membaca file Excel. Pastikan file tidak corrupt.");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Smart Paste Manual Backup (Ctrl+V)
     document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text');
         if(!text) return;
         
-        // Memisahkan baris dengan aman (termasuk format Enter dari Excel)
+        // Pisahkan teks hasil copy dengan aman
         const rows = text.split(/\r?\n/).filter(r => r.trim() !== '');
-        
+        const arrayData = rows.map(r => r.split('\t'));
+        processExtractedArray(arrayData);
+        this.value = ''; 
+    });
+
+    // Mesin Pemroses Data yang Mengeksekusi baik dari Excel File maupun Paste Teks
+    function processExtractedArray(rowsArray) {
         const tbody = document.getElementById('bulkRowsContainer');
         
-        // Bersihkan baris default kosong
+        // Bersihkan baris default jika masih kosong
         if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') {
             tbody.innerHTML = '';
         }
 
         let added = 0;
-        rows.forEach(row => {
-            const cols = row.split('\t'); 
-            
-            // Minimal ada 4 data terisi agar dianggap baris valid
-            if(cols.length >= 4) { 
+        rowsArray.forEach((cols, index) => {
+            // Abaikan baris header (jika baris pertama mengandung kata kunci)
+            if (index === 0 && (String(cols[0]).toLowerCase().includes('id') || String(cols[1]).toLowerCase().includes('nama'))) return;
+
+            // Minimal ada 4 data terisi agar baris diolah
+            if(cols.length >= 4 && cols.some(val => String(val).trim() !== '')) { 
                 addBulkRow();
                 const tr = tbody.lastElementChild;
+                const col0 = String(cols[0] || '').trim();
                 
-                // SKENARIO 1: Copy langsung dari Database Sheets (Ada 8-9 Kolom)
-                if (cols.length >= 8 && (cols[0].toLowerCase().includes('rzt') || cols[0].trim() === '')) {
-                    tr.querySelector('.b-id').value = cols[0].trim();
-                    tr.querySelector('.b-nama').value = cols[1] ? cols[1].trim() : '';
-                    tr.querySelector('.b-wa').value = cols[2] ? cols[2].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-layanan').value = cols[3] ? cols[3].trim() : '';
-                    tr.querySelector('.b-durasi').value = cols[5] ? cols[5].replace(/\D/g, '') || 30 : 30;
-                    tr.querySelector('.b-omzet').value = cols[6] ? cols[6].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-modal').value = cols[7] ? cols[7].replace(/\D/g, '') : '';
+                // SKENARIO 1: Tabel lengkap dari Sheets (8-9 Kolom: ID, Nama, WA, Layanan, dst)
+                if (cols.length >= 7 && (col0.toLowerCase().includes('rzt') || col0 === '')) {
+                    tr.querySelector('.b-id').value = col0;
+                    tr.querySelector('.b-nama').value = String(cols[1] || '').trim();
+                    tr.querySelector('.b-wa').value = String(cols[2] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-layanan').value = String(cols[3] || '').trim();
+                    // Tanggal mulai diabaikan, ambil durasi dari indeks 5
+                    tr.querySelector('.b-durasi').value = String(cols[5] || '').replace(/\D/g, '') || 30;
+                    tr.querySelector('.b-omzet').value = String(cols[6] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-modal').value = String(cols[7] || '').replace(/\D/g, '');
                 } 
-                // SKENARIO 2: Copy dari format mentahan simpel (6 Kolom)
+                // SKENARIO 2: Paste Format Mentahan Simpel (6 Kolom: Nama, WA, Layanan, Durasi, Omzet, Modal)
                 else {
-                    tr.querySelector('.b-nama').value = cols[0] ? cols[0].trim() : '';
-                    tr.querySelector('.b-wa').value = cols[1] ? cols[1].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-layanan').value = cols[2] ? cols[2].trim() : '';
-                    tr.querySelector('.b-durasi').value = cols[3] ? cols[3].replace(/\D/g, '') || 30 : 30;
-                    tr.querySelector('.b-omzet').value = cols[4] ? cols[4].replace(/\D/g, '') : '';
-                    tr.querySelector('.b-modal').value = cols[5] ? cols[5].replace(/\D/g, '') : '';
+                    tr.querySelector('.b-nama').value = col0;
+                    tr.querySelector('.b-wa').value = String(cols[1] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-layanan').value = String(cols[2] || '').trim();
+                    tr.querySelector('.b-durasi').value = String(cols[3] || '').replace(/\D/g, '') || 30;
+                    tr.querySelector('.b-omzet').value = String(cols[4] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-modal').value = String(cols[5] || '').replace(/\D/g, '');
                 }
                 added++;
             }
         });
         
-        playSound('success');
-        this.value = ''; 
-        if(added > 0) alert(`✅ Berhasil! ${added} pesanan otomatis dipecah ke tabel.`);
-    });
+        if(added > 0) {
+            playSound('success');
+            alert(`✅ Berhasil! ${added} baris pesanan otomatis diekstrak ke dalam tabel.`);
+        }
+    }
+    // ==========================================
     
     function openBulkModal() {
         playSound('click');
