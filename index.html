@@ -46,7 +46,7 @@
                 + Tambah Satuan
              </button>
              <button onclick="openBulkModal()" class="px-5 py-2.5 bg-white text-violet-700 text-xs sm:text-sm font-bold rounded-full hover:bg-indigo-50 transition shadow-md flex items-center gap-2">
-                ⚡ Input Massal (Otomatis)
+                ⚡ Input Massal & Excel
              </button>
           </div>
        </div>
@@ -203,7 +203,7 @@
   </div>
 
   <script>
-    // URL WEB APP
+    // URL WEB APP TERBARU
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziwtRfeZkKltbzhZUrn-pqpMIDS6xLCT7tJTkwzktkC_I8LllYp_18etUGFLhxQrYt/exec';
     
     function playSound(type) {
@@ -223,6 +223,53 @@
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
+    // FUNGSI PINTAR MEMBACA TANGGAL (KEBAL FORMAT)
+    function parseDateSafe(dateStr) {
+        if (!dateStr) return new Date();
+        let parts = String(dateStr).split('T')[0].split(/[-/]/);
+        if (parts.length === 3) {
+            if (parts[0].length === 4) return new Date(parts[0], parts[1]-1, parts[2]); // YYYY-MM-DD
+            if (parts[2].length === 4) return new Date(parts[2], parts[1]-1, parts[0]); // DD-MM-YYYY
+        }
+        let d = new Date(dateStr);
+        return isNaN(d.getTime()) ? new Date() : d;
+    }
+
+    function toYYYYMMDD(dateObj) {
+        let y = dateObj.getFullYear();
+        let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        let d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    // FUNGSI PINTAR MENGHITUNG DURASI
+    // 30, 90, 180 dihitung sebagai "Bulan" bukan Hari, supaya H-2 akurat di kalender.
+    function calculateEndDate(startDateStr, durationValue) {
+        let start = parseDateSafe(startDateStr);
+        let end = new Date(start);
+        
+        let durStr = String(durationValue).toLowerCase();
+        let match = durStr.match(/\d+/);
+        let num = match ? parseInt(match[0]) : 30;
+
+        function addSafeMonth(dateObj, months) {
+            let d = dateObj.getDate();
+            dateObj.setMonth(dateObj.getMonth() + months);
+            if (dateObj.getDate() !== d) dateObj.setDate(0); // Atasi bulan yang nggak ada tgl 31
+        }
+
+        if (durStr.includes('bulan')) addSafeMonth(end, num);
+        else if (durStr.includes('minggu')) end.setDate(end.getDate() + (num * 7));
+        else if (durStr.includes('tahun')) end.setFullYear(end.getFullYear() + num);
+        else {
+            if (num === 30) addSafeMonth(end, 1);
+            else if (num === 90) addSafeMonth(end, 3);
+            else if (num === 180) addSafeMonth(end, 6);
+            else end.setDate(end.getDate() + num); // Angka murni sisa spt 27, 28, 7 hari
+        }
+        return end;
+    }
+
     function formatKeDDMMYYYY(yyyy_mm_dd) {
         if (!yyyy_mm_dd) return '';
         const parts = yyyy_mm_dd.split('-');
@@ -232,7 +279,9 @@
 
     function formatLabelDurasi(hari) {
         const d = parseInt(hari) || 30;
-        if (d % 30 === 0) return (d / 30) + " Bulan";
+        if (d === 30) return "1 Bulan";
+        if (d === 90) return "3 Bulan";
+        if (d === 180) return "6 Bulan";
         if (d % 7 === 0) return (d / 7) + " Minggu";
         return d + " Hari";
     }
@@ -243,37 +292,18 @@
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('excelFileInput');
 
-    // Memicu pencarian file saat diklik
-    dropZone.addEventListener('click', (e) => {
-        if (e.target.id !== 'smartPasteInput') fileInput.click();
-    });
-
-    // Menangani Drag Events
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('bg-indigo-200', 'border-indigo-500');
-    });
-
-    dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('bg-indigo-200', 'border-indigo-500');
-    });
-
-    // Saat File di Drop
+    dropZone.addEventListener('click', (e) => { if (e.target.id !== 'smartPasteInput') fileInput.click(); });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-indigo-200', 'border-indigo-500'); });
+    dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('bg-indigo-200', 'border-indigo-500'); });
     dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('bg-indigo-200', 'border-indigo-500');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) readExcelFile(files[0]);
+        e.preventDefault(); dropZone.classList.remove('bg-indigo-200', 'border-indigo-500');
+        if (e.dataTransfer.files.length > 0) readExcelFile(e.dataTransfer.files[0]);
     });
-
-    // Saat file dipilih dari klik
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) readExcelFile(e.target.files[0]);
-        e.target.value = ''; // Reset
+        e.target.value = '';
     });
 
-    // Membaca file menggunakan SheetJS
     function readExcelFile(file) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -282,86 +312,50 @@
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                // Ekstrak data sebagai Array dari Array
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
                 processExtractedArray(jsonData);
-            } catch (err) {
-                alert("Gagal membaca file Excel. Pastikan file tidak corrupt.");
-            }
+            } catch (err) { alert("Gagal membaca file Excel. Pastikan file tidak corrupt."); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // Smart Paste Manual Backup (Ctrl+V)
     document.getElementById('smartPasteInput').addEventListener('paste', function(e) {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text');
         if(!text) return;
-        
-        // Pisahkan teks hasil copy dengan aman
         const rows = text.split(/\r?\n/).filter(r => r.trim() !== '');
         const arrayData = rows.map(r => r.split('\t'));
         processExtractedArray(arrayData);
         this.value = ''; 
     });
 
-    // Mesin Pemroses Data yang Mengeksekusi baik dari Excel File maupun Paste Teks
     function processExtractedArray(rowsArray) {
         const tbody = document.getElementById('bulkRowsContainer');
-        
-        // Bersihkan baris default jika masih kosong
-        if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') {
-            tbody.innerHTML = '';
-        }
-
+        if(tbody.children.length > 0 && tbody.firstElementChild.querySelector('.b-nama').value === '') { tbody.innerHTML = ''; }
         let added = 0;
         rowsArray.forEach((cols, index) => {
-            // Abaikan baris header (jika baris pertama mengandung kata kunci)
             if (index === 0 && (String(cols[0]).toLowerCase().includes('id') || String(cols[1]).toLowerCase().includes('nama'))) return;
-
-            // Minimal ada 4 data terisi agar baris diolah
             if(cols.length >= 4 && cols.some(val => String(val).trim() !== '')) { 
-                addBulkRow();
-                const tr = tbody.lastElementChild;
-                const col0 = String(cols[0] || '').trim();
-                
-                // SKENARIO 1: Tabel lengkap dari Sheets (8-9 Kolom: ID, Nama, WA, Layanan, dst)
+                addBulkRow(); const tr = tbody.lastElementChild; const col0 = String(cols[0] || '').trim();
                 if (cols.length >= 7 && (col0.toLowerCase().includes('rzt') || col0 === '')) {
-                    tr.querySelector('.b-id').value = col0;
-                    tr.querySelector('.b-nama').value = String(cols[1] || '').trim();
-                    tr.querySelector('.b-wa').value = String(cols[2] || '').replace(/\D/g, '');
-                    tr.querySelector('.b-layanan').value = String(cols[3] || '').trim();
-                    // Tanggal mulai diabaikan, ambil durasi dari indeks 5
+                    tr.querySelector('.b-id').value = col0; tr.querySelector('.b-nama').value = String(cols[1] || '').trim();
+                    tr.querySelector('.b-wa').value = String(cols[2] || '').replace(/\D/g, ''); tr.querySelector('.b-layanan').value = String(cols[3] || '').trim();
                     tr.querySelector('.b-durasi').value = String(cols[5] || '').replace(/\D/g, '') || 30;
-                    tr.querySelector('.b-omzet').value = String(cols[6] || '').replace(/\D/g, '');
-                    tr.querySelector('.b-modal').value = String(cols[7] || '').replace(/\D/g, '');
-                } 
-                // SKENARIO 2: Paste Format Mentahan Simpel (6 Kolom: Nama, WA, Layanan, Durasi, Omzet, Modal)
-                else {
-                    tr.querySelector('.b-nama').value = col0;
-                    tr.querySelector('.b-wa').value = String(cols[1] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-omzet').value = String(cols[6] || '').replace(/\D/g, ''); tr.querySelector('.b-modal').value = String(cols[7] || '').replace(/\D/g, '');
+                } else {
+                    tr.querySelector('.b-nama').value = col0; tr.querySelector('.b-wa').value = String(cols[1] || '').replace(/\D/g, '');
                     tr.querySelector('.b-layanan').value = String(cols[2] || '').trim();
                     tr.querySelector('.b-durasi').value = String(cols[3] || '').replace(/\D/g, '') || 30;
-                    tr.querySelector('.b-omzet').value = String(cols[4] || '').replace(/\D/g, '');
-                    tr.querySelector('.b-modal').value = String(cols[5] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-omzet').value = String(cols[4] || '').replace(/\D/g, ''); tr.querySelector('.b-modal').value = String(cols[5] || '').replace(/\D/g, '');
                 }
                 added++;
             }
         });
-        
-        if(added > 0) {
-            playSound('success');
-            alert(`✅ Berhasil! ${added} baris pesanan otomatis diekstrak ke dalam tabel.`);
-        }
+        if(added > 0) { playSound('success'); alert(`✅ Berhasil! ${added} baris pesanan otomatis diekstrak.`); }
     }
     // ==========================================
     
-    function openBulkModal() {
-        playSound('click');
-        document.getElementById('bulkRowsContainer').innerHTML = '';
-        for(let i=0; i<3; i++) { addBulkRow(); }
-        document.getElementById('modalBulk').classList.remove('hidden');
-    }
+    function openBulkModal() { playSound('click'); document.getElementById('bulkRowsContainer').innerHTML = ''; for(let i=0; i<3; i++) { addBulkRow(); } document.getElementById('modalBulk').classList.remove('hidden'); }
 
     function addBulkRow() {
         const tbody = document.getElementById('bulkRowsContainer');
@@ -391,111 +385,77 @@
           const wa = tr.querySelector('.b-wa').value.trim();
           const layanan = tr.querySelector('.b-layanan').value.trim();
           const mulai = tr.querySelector('.b-mulai').value;
-          const durasi = parseInt(tr.querySelector('.b-durasi').value) || 30;
+          const durasi = tr.querySelector('.b-durasi').value || 30;
           const omzet = parseInt(tr.querySelector('.b-omzet').value) || 0;
           const modal = parseInt(tr.querySelector('.b-modal').value) || 0;
 
           if(nama && wa && layanan && mulai) {
-             let start = new Date(mulai);
-             let end = new Date(start);
-             end.setDate(start.getDate() + durasi);
-             const tglBerakhir = end.toISOString().split('T')[0];
+             let end = calculateEndDate(mulai, durasi);
+             const tglBerakhir = toYYYYMMDD(end);
              
              let h2Date = new Date(end);
              h2Date.setDate(end.getDate() - 2);
-             let statusH2 = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
+             let todayDate = new Date(); todayDate.setHours(0,0,0,0);
+             let statusH2 = (todayDate >= h2Date) ? "⚠️ H-2" : "Aman";
              
              const finalId = id !== "" ? id : "RZT-" + Math.floor(1000 + Math.random() * 9000);
 
              dataList.push({
-                ID_Order: finalId,
-                Nama_Pelanggan: nama,
-                No_WA: wa,
-                Layanan: layanan,
-                Tgl_Mulai: formatKeDDMMYYYY(mulai),
-                Durasi: formatLabelDurasi(durasi),
-                Tgl_Berakhir: tglBerakhir,
-                Omzet: omzet,
-                Modal: modal,
-                Profit: omzet - modal,
-                Status_H2: statusH2
+                ID_Order: finalId, Nama_Pelanggan: nama, No_WA: wa, Layanan: layanan,
+                Tgl_Mulai: formatKeDDMMYYYY(mulai), Durasi: formatLabelDurasi(durasi), Tgl_Berakhir: tglBerakhir,
+                Omzet: omzet, Modal: modal, Profit: omzet - modal, Status_H2: statusH2
              });
           }
        });
 
        if(dataList.length === 0) { alert("⚠️ Harap isi minimal 1 baris data dengan lengkap!"); return; }
+       const btn = document.getElementById('btnSubmitBulk'); btn.innerText = "Menyimpan..."; btn.disabled = true;
 
-       const btn = document.getElementById('btnSubmitBulk');
-       btn.innerText = "Menyimpan..."; btn.disabled = true;
-
-       try {
-          await fetch(SCRIPT_URL, {
-             method: 'POST',
-             mode: 'no-cors',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({ action: 'bulk_add', data: dataList })
-          });
-       } catch(e) {}
-       
-       playSound('success');
-       document.getElementById('modalBulk').classList.add('hidden');
-       alert(`✅ Menambahkan ${dataList.length} pesanan otomatis! Tunggu sinkronisasi dengan Sheets...`);
-       setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
+       try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'bulk_add', data: dataList }) }); } catch(e) {}
+       playSound('success'); document.getElementById('modalBulk').classList.add('hidden');
+       alert(`✅ Menambahkan ${dataList.length} pesanan! Tunggu sinkronisasi dengan Sheets...`); setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
     }
 
     // FUNGSI HITUNG UI SATUAN
     function setDurasi(hari, el) {
         document.getElementById('durasi').value = hari;
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-        el.classList.add('active');
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); el.classList.add('active');
         hitungSatuan();
     }
 
     function hitungSatuan() {
         const mulai = document.getElementById('tglMulai').value;
-        const durasi = parseInt(document.getElementById('durasi').value) || 0;
+        const durasi = document.getElementById('durasi').value || 30;
         const omzet = parseInt(document.getElementById('hargaJual').value) || 0;
         const modal = parseInt(document.getElementById('modal').value) || 0;
 
-        // Hitung Tanggal
-        if(mulai && durasi > 0) {
-            let start = new Date(mulai);
-            let end = new Date(start);
-            end.setDate(start.getDate() + durasi);
-            document.getElementById('resBerakhir').innerText = end.toISOString().split('T')[0];
+        if(mulai && durasi) {
+            let end = calculateEndDate(mulai, durasi);
+            document.getElementById('resBerakhir').innerText = toYYYYMMDD(end);
             
             let h2Date = new Date(end);
             h2Date.setDate(end.getDate() - 2);
-            document.getElementById('resH2').innerHTML = (new Date() >= h2Date) ? `⚠️ ${h2Date.toISOString().split('T')[0]}` : `✅ ${h2Date.toISOString().split('T')[0]}`;
+            let todayDate = new Date(); todayDate.setHours(0,0,0,0);
+            document.getElementById('resH2').innerHTML = (todayDate >= h2Date) ? `⚠️ ${toYYYYMMDD(h2Date)}` : `✅ ${toYYYYMMDD(h2Date)}`;
         }
 
-        // Hitung Profit & Margin
         const profit = omzet - modal;
         document.getElementById('resProfit').innerText = "Rp" + profit.toLocaleString('id-ID');
-        if (omzet > 0) {
-            document.getElementById('resMargin').innerText = ((profit / omzet) * 100).toFixed(1) + "%";
-        } else {
-            document.getElementById('resMargin').innerText = "0.0%";
-        }
+        document.getElementById('resMargin').innerText = omzet > 0 ? ((profit / omzet) * 100).toFixed(1) + "%" : "0.0%";
     }
 
     let globalOrders = [];
 
     async function fetchData() {
-      const h2Container = document.getElementById('reminder-list');
-      const allContainer = document.getElementById('all-orders-list');
+      const h2Container = document.getElementById('reminder-list'); const allContainer = document.getElementById('all-orders-list');
       h2Container.innerHTML = '<div class="col-span-full py-6 flex justify-center"><div class="w-6 h-6 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div></div>';
       allContainer.innerHTML = '<div class="col-span-full py-6 flex justify-center"><div class="w-6 h-6 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div></div>';
-      
       try {
         const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
         const data = await response.json();
-        
-        let rawOrders = Array.isArray(data) ? data : [];
-        processDashboard(rawOrders);
+        let rawOrders = Array.isArray(data) ? data : []; processDashboard(rawOrders);
       } catch (error) {
-        h2Container.innerHTML = `<p class="text-red-500 text-xs">Gagal memuat data dari Sheets.</p>`;
-        allContainer.innerHTML = '';
+        h2Container.innerHTML = `<p class="text-red-500 text-xs">Gagal memuat data dari Sheets.</p>`; allContainer.innerHTML = '';
       }
     }
 
@@ -503,12 +463,8 @@
 
     function formatTglDisplay(dateStr) {
         if (!dateStr || dateStr === '-') return '-';
-        let d = new Date(dateStr);
-        if (isNaN(d.getTime()) && typeof dateStr === 'string') {
-            const parts = dateStr.split('T')[0].split(/[-/]/); 
-            if (parts.length === 3 && parts[2].length === 4) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); 
-        }
-        if (isNaN(d.getTime())) return String(dateStr); 
+        let d = parseDateSafe(dateStr);
+        if (!d) return String(dateStr); 
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
     }
@@ -516,125 +472,61 @@
     async function hapusOrder(id) {
         if(!confirm("Yakin ingin menghapus orderan ini secara PERMANEN dari Google Sheets?")) return;
         playSound('click');
-        try {
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'delete', id: id })
-            });
-        } catch(e) {}
-        
-        alert("🗑️ Perintah hapus dikirim ke Sheets!");
-        setTimeout(fetchData, 1500);
+        try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', id: id }) }); } catch(e) {}
+        alert("🗑️ Perintah hapus dikirim ke Sheets!"); setTimeout(fetchData, 1500);
     }
 
     function editOrder(id) {
         playSound('click');
-        const order = globalOrders.find(o => String(o.ID_Order) === String(id));
-        if(!order) return;
-        
+        const order = globalOrders.find(o => String(o.ID_Order) === String(id)); if(!order) return;
         document.getElementById('modalTitle').innerText = "Edit Order";
         document.getElementById('editId').value = id;
+        const idField = document.getElementById('inputIdOrder'); idField.value = id; idField.disabled = true;
+        document.getElementById('inputNama').value = order.Nama_Pelanggan || ""; document.getElementById('inputWA').value = order.No_WA || ""; document.getElementById('inputLayanan').value = order.Layanan || "";
         
-        const idField = document.getElementById('inputIdOrder');
-        idField.value = id;
-        idField.disabled = true;
+        const omzetVal = parseRupiah(order.Omzet); const modalVal = order.Modal !== undefined ? parseRupiah(order.Modal) : (omzetVal - parseRupiah(order.Profit));
+        document.getElementById('hargaJual').value = omzetVal; document.getElementById('modal').value = modalVal;
         
-        document.getElementById('inputNama').value = order.Nama_Pelanggan || "";
-        document.getElementById('inputWA').value = order.No_WA || "";
-        document.getElementById('inputLayanan').value = order.Layanan || "";
-        
-        const omzetVal = parseRupiah(order.Omzet);
-        const modalVal = order.Modal !== undefined ? parseRupiah(order.Modal) : (omzetVal - parseRupiah(order.Profit));
-        
-        document.getElementById('hargaJual').value = omzetVal;
-        document.getElementById('modal').value = modalVal;
-        
-        document.getElementById('modalOrder').classList.remove('hidden');
-        hitungSatuan();
+        document.getElementById('modalOrder').classList.remove('hidden'); hitungSatuan();
     }
 
     async function submitSingleOrder(e) {
        e.preventDefault();
-       const targetId = document.getElementById('editId').value;
-       const btn = document.getElementById('btnSubmitSingle');
-       btn.innerText = "Menyimpan..."; btn.disabled = true;
+       const targetId = document.getElementById('editId').value; const btn = document.getElementById('btnSubmitSingle'); btn.innerText = "Menyimpan..."; btn.disabled = true;
 
-       const mulaiVal = document.getElementById('tglMulai').value;
-       const durasiHari = parseInt(document.getElementById('durasi').value) || 30;
+       const mulaiVal = document.getElementById('tglMulai').value; const durasiHari = document.getElementById('durasi').value || 30;
 
-       let start = new Date(mulaiVal);
-       let end = new Date(start);
-       end.setDate(start.getDate() + durasiHari);
-       const tglBerakhir = end.toISOString().split('T')[0];
+       let end = calculateEndDate(mulaiVal, durasiHari);
+       const tglBerakhir = toYYYYMMDD(end);
        
-       let h2Date = new Date(end);
-       h2Date.setDate(end.getDate() - 2);
-       let statusH2 = (new Date() >= h2Date) ? "⚠️ H-2" : "Aman";
+       let h2Date = new Date(end); h2Date.setDate(end.getDate() - 2);
+       let todayDate = new Date(); todayDate.setHours(0,0,0,0);
+       let statusH2 = (todayDate >= h2Date) ? "⚠️ H-2" : "Aman";
 
-       const omzet = parseInt(document.getElementById('hargaJual').value) || 0;
-       const modal = parseInt(document.getElementById('modal').value) || 0;
-       
-       const customId = document.getElementById('inputIdOrder').value.trim();
-       const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
+       const omzet = parseInt(document.getElementById('hargaJual').value) || 0; const modal = parseInt(document.getElementById('modal').value) || 0;
+       const customId = document.getElementById('inputIdOrder').value.trim(); const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
 
        const payloadData = {
-          ID_Order: finalId,
-          Nama_Pelanggan: document.getElementById('inputNama').value,
-          No_WA: document.getElementById('inputWA').value,
-          Layanan: document.getElementById('inputLayanan').value,
-          Tgl_Mulai: formatKeDDMMYYYY(mulaiVal),
-          Durasi: formatLabelDurasi(durasiHari),
-          Tgl_Berakhir: tglBerakhir,
-          Omzet: omzet,
-          Modal: modal,
-          Profit: omzet - modal,
-          Status_H2: statusH2
+          ID_Order: finalId, Nama_Pelanggan: document.getElementById('inputNama').value, No_WA: document.getElementById('inputWA').value,
+          Layanan: document.getElementById('inputLayanan').value, Tgl_Mulai: formatKeDDMMYYYY(mulaiVal), Durasi: formatLabelDurasi(durasiHari),
+          Tgl_Berakhir: tglBerakhir, Omzet: omzet, Modal: modal, Profit: omzet - modal, Status_H2: statusH2
        };
 
-       const actionType = targetId !== "" ? 'edit' : 'add';
-       try {
-           await fetch(SCRIPT_URL, {
-               method: 'POST',
-               mode: 'no-cors',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ action: actionType, data: payloadData })
-           });
-       } catch(e) {}
-       
-       playSound('success');
-       document.getElementById('modalOrder').classList.add('hidden');
-       alert("✅ Data disimpan ke Google Sheets!");
-       setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
+       try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: (targetId !== "" ? 'edit' : 'add'), data: payloadData }) }); } catch(e) {}
+       playSound('success'); document.getElementById('modalOrder').classList.add('hidden'); alert("✅ Data disimpan ke Google Sheets!"); setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
     }
 
     function openModalForAdd() {
-        playSound('click');
-        document.getElementById('modalTitle').innerText = "Order Baru";
-        document.getElementById('editId').value = "";
-        
-        const idField = document.getElementById('inputIdOrder');
-        idField.value = "";
-        idField.disabled = false;
-        
-        document.getElementById('formOrder').reset();
-        document.getElementById('tglOrder').value = today;
-        document.getElementById('tglMulai').value = today;
-        
-        // Reset Pill Active
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-        document.querySelector('.pill:nth-child(3)').classList.add('active'); // Default 30 hari
-
-        document.getElementById('modalOrder').classList.remove('hidden');
-        hitungSatuan();
+        playSound('click'); document.getElementById('modalTitle').innerText = "Order Baru"; document.getElementById('editId').value = "";
+        const idField = document.getElementById('inputIdOrder'); idField.value = ""; idField.disabled = false;
+        document.getElementById('formOrder').reset(); document.getElementById('tglOrder').value = today; document.getElementById('tglMulai').value = today;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); document.querySelector('.pill:nth-child(3)').classList.add('active'); // Default 30
+        document.getElementById('modalOrder').classList.remove('hidden'); hitungSatuan();
     }
 
     function processDashboard(orders) {
       let totalOmzet = 0, totalProfit = 0, h2Reminders = [];
-      const hariIni = new Date(); 
-      hariIni.setHours(0,0,0,0);
-      
+      const hariIni = new Date(); hariIni.setHours(0,0,0,0);
       globalOrders = [];
 
       orders.forEach(raw => {
@@ -642,8 +534,7 @@
         if (!id) return; 
 
         let o = {
-           ID_Order: id,
-           Nama_Pelanggan: raw['Nama Pelanggan'] || raw['Nama_Pelanggan'] || raw['nama pelanggan'] || raw.Nama_Pelanggan || '',
+           ID_Order: id, Nama_Pelanggan: raw['Nama Pelanggan'] || raw['Nama_Pelanggan'] || raw['nama pelanggan'] || raw.Nama_Pelanggan || '',
            No_WA: raw['No WA'] || raw['No_WA'] || raw['no wa'] || raw.No_WA || '',
            Layanan: raw['Layanan'] || raw['layanan'] || raw.Layanan || '',
            Tgl_Mulai: raw['Tgl Mulai'] || raw['Tgl_Mulai'] || raw['tgl mulai'] || raw.Tgl_Mulai || '',
@@ -653,87 +544,41 @@
            Tgl_Berakhir: raw['Tgl Berakhir'] || raw['Tgl_Berakhir'] || raw['tgl berakhir'] || raw.Tgl_Berakhir || ''
         };
         
-        // PERBAIKAN: Hitung Tgl_Berakhir otomatis jika kosong, dan baca format tanggal dengan aman
         if (!o.Tgl_Berakhir && o.Tgl_Mulai) {
-            let parsedMulai = new Date(o.Tgl_Mulai);
-            if (isNaN(parsedMulai.getTime()) && typeof o.Tgl_Mulai === 'string') {
-                const parts = o.Tgl_Mulai.split(/[-/]/);
-                if (parts.length === 3) {
-                    if (parts[0].length <= 2 && parseInt(parts[0]) <= 31) {
-                        parsedMulai = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // Format DD/MM/YYYY
-                    } else {
-                        parsedMulai = new Date(o.Tgl_Mulai); // Format YYYY/MM/DD
-                    }
-                }
-            }
-            
-            if (!isNaN(parsedMulai.getTime())) {
-                let numDays = 30; // Default
-                let durStr = String(o.Durasi).toLowerCase();
-                let match = durStr.match(/\d+/);
-                if (match) {
-                    let num = parseInt(match[0]);
-                    if (durStr.includes('bulan')) numDays = num * 30;
-                    else if (durStr.includes('minggu')) numDays = num * 7;
-                    else if (durStr.includes('tahun')) numDays = num * 365;
-                    else numDays = num;
-                }
-                let endD = new Date(parsedMulai);
-                endD.setDate(parsedMulai.getDate() + numDays);
-                o.Tgl_Berakhir = endD.toISOString().split('T')[0];
-            }
+            let endD = calculateEndDate(o.Tgl_Mulai, o.Durasi);
+            o.Tgl_Berakhir = toYYYYMMDD(endD);
         }
 
         o.Profit = raw['Profit'] || raw['profit'] || raw.Profit || (parseRupiah(o.Omzet) - parseRupiah(o.Modal));
         globalOrders.push(o);
-
-        totalOmzet += parseRupiah(o.Omzet);
-        totalProfit += parseRupiah(o.Profit);
+        totalOmzet += parseRupiah(o.Omzet); totalProfit += parseRupiah(o.Profit);
         
         const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
         if(expString !== '-') {
-            let expDate = new Date(expString);
-            
-            // Perbaikan membaca format tanggal berakhir
-            if (isNaN(expDate.getTime())) {
-                const parts = expString.split(/[-/]/);
-                if (parts.length === 3) {
-                    if (parts[0].length <= 2 && parseInt(parts[0]) <= 31) {
-                         expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-                    }
-                }
-            }
-            
-            if (!isNaN(expDate.getTime())) {
-                let h2Date = new Date(expDate);
-                h2Date.setDate(expDate.getDate() - 2);
-                if(hariIni >= h2Date && hariIni <= expDate) {
-                    h2Reminders.push(o);
-                }
+            let expDate = parseDateSafe(expString);
+            if (expDate) {
+                let h2Date = new Date(expDate); h2Date.setDate(expDate.getDate() - 2);
+                if(hariIni >= h2Date && hariIni <= expDate) h2Reminders.push(o);
             }
         }
       });
 
       const formatRp = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
-      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
-      document.getElementById('ui-profit').innerText = formatRp(totalProfit);
-      document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
-      
-      renderH2(h2Reminders);
-      filterAllOrders();
+      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet); document.getElementById('ui-profit').innerText = formatRp(totalProfit);
+      document.getElementById('ui-reminder-count').innerText = h2Reminders.length; renderH2(h2Reminders); filterAllOrders();
     }
 
     function renderH2(list) {
       const c = document.getElementById('reminder-list');
-      if (list.length === 0) {
-        c.innerHTML = `<div class="col-span-full p-6 bg-white rounded-2xl border text-center text-sm text-slate-500 animate-card">🎉 Tidak ada antrian H-2 hari ini.</div>`;
-        return;
-      }
+      if (list.length === 0) { c.innerHTML = `<div class="col-span-full p-6 bg-white rounded-2xl border text-center text-sm text-slate-500 animate-card">🎉 Tidak ada antrian H-2 hari ini.</div>`; return; }
       c.innerHTML = '';
       list.forEach(o => {
         const exp = formatTglDisplay(o.Tgl_Berakhir);
         const wa = String(o.No_WA).replace(/\D/g, '').replace(/^0/, '62');
-        const msg = `Halo Kak ${o.Nama_Pelanggan} 👋\nMau mengingatkan bahwa masa aktif ${o.Layanan} kakak akan berakhir pada *${exp}*.\n\nJika ingin diperpanjang, boleh langsung balas chat ini ya Kak, supaya akses premiumnya tetap aman dan keseruannya nggak berhenti di tengah jalan! ✨\n\n— Admin Reztroid`;
+        
+        // TEKS WHATSAPP BARU SUPER MENARIK
+        const msg = `Halo Kak ${o.Nama_Pelanggan}! 👋\nCuma mau ngingetin nih, masa aktif *${o.Layanan}* Kakak akan segera berakhir pada *${exp}*.\n\nBiar aktivitas Kakak tetep lancar dan fitur premiumnya nggak keputus, yuk perpanjang sekarang! 🚀\n\n*✨ PROMO KHUSUS PELANGGAN:*\nKarena Kakak udah mempercayakan layanannya di Reztroid, ada *Harga Spesial VIP* khusus buat perpanjangan hari ini loh!\n\nLangsung balas chat ini ya Kak buat klaim harganya. Jangan sampai kelewatan! 🎁\n— Admin Reztroid`;
+        
         c.innerHTML += `
           <div class="bg-white rounded-2xl p-5 border flex flex-col justify-between shadow-sm animate-card">
             <div>
@@ -748,47 +593,32 @@
 
     function filterAllOrders() {
         const q = document.getElementById('searchOrder').value.toLowerCase();
-        const res = globalOrders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(q)));
-        renderAllOrders(res);
+        const res = globalOrders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(q))); renderAllOrders(res);
     }
 
     function renderAllOrders(list) {
-        const c = document.getElementById('all-orders-list');
-        document.getElementById('total-orders-count').innerText = `(${list.length})`;
+        const c = document.getElementById('all-orders-list'); document.getElementById('total-orders-count').innerText = `(${list.length})`;
         if (list.length === 0) { c.innerHTML = `<div class="col-span-full p-6 text-center bg-white rounded-2xl border text-sm text-slate-500 animate-card">Tidak ada data.</div>`; return; }
-        c.innerHTML = '';
-        const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+        c.innerHTML = ''; const hariIni = new Date(); hariIni.setHours(0,0,0,0);
         
         list.forEach(o => {
            const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
            let badge = '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded">Unknown</span>';
            if(expString !== '-') {
-               let expDate = new Date(expString);
-               if (isNaN(expDate.getTime())) {
-                   const parts = expString.split(/[-/]/);
-                   if (parts.length === 3 && parts[2].length === 4) expDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-               }
-               badge = expDate < hariIni ? '<span class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">Berakhir</span>' : '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded">Aktif</span>';
+               let expDate = parseDateSafe(expString);
+               if (expDate) { badge = expDate < hariIni ? '<span class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">Berakhir</span>' : '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded">Aktif</span>'; }
            }
-        
            c.innerHTML += `
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between animate-card hover:shadow-md transition">
                 <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded">${o.ID_Order}</span>
-                        ${badge}
-                    </div>
-                    <h3 class="font-bold text-slate-800 text-base">${o.Nama_Pelanggan}</h3>
-                    <p class="text-xs text-slate-500 mb-3">${o.Layanan} · ${o.No_WA}</p>
+                    <div class="flex justify-between items-start mb-2"><span class="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded">${o.ID_Order}</span>${badge}</div>
+                    <h3 class="font-bold text-slate-800 text-base">${o.Nama_Pelanggan}</h3><p class="text-xs text-slate-500 mb-3">${o.Layanan} · ${o.No_WA}</p>
                     <div class="bg-slate-50 p-3 rounded-xl text-xs grid grid-cols-2 gap-2 border border-slate-100">
                         <div><p class="text-slate-400 mb-1">Berakhir</p><p class="font-bold text-slate-700">${formatTglDisplay(o.Tgl_Berakhir)}</p></div>
                         <div><p class="text-slate-400 mb-1">Profit</p><p class="font-bold text-emerald-600">Rp${parseRupiah(o.Profit).toLocaleString('id-ID')}</p></div>
                     </div>
                 </div>
-                <div class="flex gap-2 pt-3 mt-3 border-t border-slate-100">
-                    <button onclick="editOrder('${o.ID_Order}')" class="flex-1 bg-sky-50 text-sky-600 py-2 rounded-xl text-xs font-bold hover:bg-sky-100 transition">✏️ Edit</button>
-                    <button onclick="hapusOrder('${o.ID_Order}')" class="flex-1 bg-red-50 text-red-600 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">🗑️ Hapus</button>
-                </div>
+                <div class="flex gap-2 pt-3 mt-3 border-t border-slate-100"><button onclick="editOrder('${o.ID_Order}')" class="flex-1 bg-sky-50 text-sky-600 py-2 rounded-xl text-xs font-bold hover:bg-sky-100 transition">✏️ Edit</button><button onclick="hapusOrder('${o.ID_Order}')" class="flex-1 bg-red-50 text-red-600 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">🗑️ Hapus</button></div>
             </div>`;
         });
     }
