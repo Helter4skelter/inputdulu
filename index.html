@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reztroid Admin Dashboard</title>
+  <title>Reztroid SPARK - Admin Dashboard</title>
   
   <!-- Font: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,13 +42,13 @@
   </script>
 
   <style>
-    body { background-color: #F8FAFC; color: #0F172A; }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    body { background-color: #F8FAFC; color: #0F172A; font-family: 'Plus Jakarta Sans', sans-serif; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
     
     /* Tombol 3D Tactile ala Duolingo */
     .btn-3d {
-        transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
@@ -56,13 +56,14 @@
         font-weight: 800;
         border-radius: 1rem;
         padding: 0.75rem 1.5rem;
+        user-select: none;
     }
     .btn-3d:active {
         transform: translateY(4px);
         box-shadow: 0 0px 0 0 transparent !important;
     }
     
-    .btn-primary { background-color: #5338FF; color: white; border: 2px solid #5338FF; box-shadow: 0 4px 0 0 #3A22D6; }
+    .btn-primary { background-color: #5338FF; color: white; border: 2px solid #3A22D6; box-shadow: 0 4px 0 0 #3A22D6; }
     .btn-lime { background-color: #CCFF00; color: #0F172A; border: 2px solid #A8D600; box-shadow: 0 4px 0 0 #A8D600; }
     .btn-white { background-color: white; color: #5338FF; border: 2px solid #E2E8F0; box-shadow: 0 4px 0 0 #CBD5E1; }
     .btn-danger { background-color: #ef4444; color: white; border: 2px solid #dc2626; box-shadow: 0 4px 0 0 #b91c1c; }
@@ -70,7 +71,7 @@
     /* Pill Button (Durasi) */
     .pill { 
         background-color: white; color: #64748b; padding: 0.5rem 1rem; border-radius: 1rem; 
-        font-size: 0.875rem; font-weight: 700; cursor: pointer; border: 2px solid #E2E8F0; 
+        font-size: 0.875rem; font-weight: 800; cursor: pointer; border: 2px solid #E2E8F0; 
         box-shadow: 0 4px 0 0 #E2E8F0; transition: all 0.1s ease;
     }
     .pill:active { transform: translateY(4px); box-shadow: 0 0px 0 0 transparent; }
@@ -78,38 +79,30 @@
         background-color: #EEECFF; color: #5338FF; border-color: #5338FF; box-shadow: 0 4px 0 0 #3A22D6; 
     }
 
-    /* Kartu Konten */
+    /* Kartu Konten (Tanpa Opacity 0 agar anti-blank) */
     .duo-card {
         background-color: white;
         border: 2px solid #E2E8F0;
         border-radius: 1.5rem;
         box-shadow: 0 4px 0 0 #E2E8F0;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .duo-card:hover {
+        transform: translateY(-2px);
+        border-color: #CBD5E1;
     }
 
-    /* Animasi */
-    @keyframes bounceIn { 
-        0% { opacity: 0; transform: scale(0.9) translateY(10px); } 
-        60% { opacity: 1; transform: scale(1.02) translateY(-2px); }
-        100% { transform: scale(1) translateY(0); }
-    }
-    .animate-card { animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; }
-    
-    @keyframes wobble {
-        0%, 100% { transform: rotate(0deg); }
-        25% { transform: rotate(-10deg); }
-        75% { transform: rotate(10deg); }
-    }
-    .wobble-hover:hover { animation: wobble 0.4s ease-in-out; }
+    .d-label { display: block; font-size: 0.75rem; font-weight: 800; color: #64748b; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
   </style>
 </head>
-<body class="bg-brand-bg pb-12">
+<body class="bg-brand-bg pb-16">
 
   <!-- NAVBAR -->
-  <nav class="bg-white border-b-2 border-slate-200 px-4 py-3 sticky top-0 z-50 flex justify-between items-center">
+  <nav class="bg-white border-b-2 border-slate-200 px-4 sm:px-6 py-3.5 sticky top-0 z-40 flex justify-between items-center">
      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-brand-main text-white rounded-xl flex items-center justify-center font-black text-xl shadow-btn-main wobble-hover cursor-pointer">R</div>
+        <div class="w-10 h-10 bg-brand-main text-white rounded-xl flex items-center justify-center font-black text-xl shadow-btn-main">R</div>
         <div class="flex items-center gap-1.5">
-           <span class="font-black text-xl tracking-tight text-brand-main">Reztroid <span class="text-slate-800">SPARK</span></span>
+           <span class="font-black text-xl tracking-tight text-brand-main">Reztroid <span class="text-slate-900">SPARK</span></span>
         </div>
      </div>
      <button onclick="playSound('click'); fetchData();" class="btn-3d btn-white text-xs sm:text-sm px-4 py-2">
@@ -117,209 +110,192 @@
      </button>
   </nav>
 
-  <div class="max-w-6xl mx-auto p-4 sm:p-6 mt-4 space-y-8">
+  <!-- KONTEN UTAMA -->
+  <div class="max-w-6xl mx-auto p-4 sm:p-6 mt-2 space-y-8">
     
     <!-- BANNER UTAMA -->
-    <div class="bg-brand-main rounded-[2rem] p-6 sm:p-8 text-white flex flex-col md:flex-row justify-between relative overflow-hidden items-center gap-6 border-4 border-brand-dark shadow-btn-main">
-       <!-- Ornamen Latar -->
-       <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-20 -mt-20"></div>
-       <div class="absolute bottom-0 left-0 w-32 h-32 bg-brand-lime opacity-10 rounded-full -ml-10 -mb-10"></div>
-       
+    <div class="bg-[#5338FF] rounded-[2rem] p-6 sm:p-8 text-white flex flex-col md:flex-row justify-between relative overflow-hidden items-center gap-6 border-4 border-[#3A22D6] shadow-btn-main">
        <div class="relative z-10 w-full md:w-1/2">
-          <span class="inline-flex items-center px-3 py-1 bg-brand-light text-brand-main rounded-xl text-xs font-bold mb-4 border-2 border-white/20">📊 KEUANGAN & ORDER</span>
+          <span class="inline-flex items-center px-3 py-1 bg-[#EEECFF] text-[#5338FF] rounded-xl text-xs font-black mb-4">📊 KEUANGAN & ORDER</span>
           <h2 class="text-3xl sm:text-4xl font-black mb-2 leading-tight">Kelola Pelanggan<br>Lebih Cepat.</h2>
-          <p class="text-brand-light text-sm mb-6 font-medium">Sinkronisasi otomatis ke Google Sheets.</p>
+          <p class="text-[#EEECFF] text-sm mb-6 font-semibold">Sinkronisasi otomatis ke Google Sheets.</p>
           
           <div class="flex flex-wrap gap-3">
              <button onclick="openModalForAdd()" class="btn-3d btn-lime text-sm">
                 + Tambah Satuan
              </button>
              <button onclick="openBulkModal()" class="btn-3d btn-white text-sm">
-                ⚡ Input Massal
+                ⚡ Input Massal & Excel
              </button>
           </div>
        </div>
        
-       <div class="relative z-10 w-full md:w-1/2 flex gap-4">
-          <div class="flex-1 bg-white/10 p-5 rounded-2xl border-2 border-white/20 backdrop-blur-sm">
-             <p class="text-xs text-brand-light font-bold mb-1 uppercase tracking-wider">Total Omzet</p>
-             <p class="text-2xl sm:text-3xl font-black tracking-tight" id="ui-omzet">Rp0</p>
+       <div class="relative z-10 w-full md:w-1/2 grid grid-cols-2 gap-4">
+          <div class="bg-white/10 p-5 rounded-2xl border-2 border-white/20 backdrop-blur-sm">
+             <p class="text-xs text-[#EEECFF] font-extrabold mb-1 uppercase tracking-wider">Total Omzet</p>
+             <p class="text-xl sm:text-3xl font-black tracking-tight" id="ui-omzet">Rp0</p>
           </div>
-          <div class="flex-1 bg-brand-dark p-5 rounded-2xl border-2 border-brand-main">
-             <p class="text-xs text-brand-lime font-bold mb-1 uppercase tracking-wider">Total Profit</p>
-             <p class="text-2xl sm:text-3xl font-black text-brand-lime tracking-tight" id="ui-profit">Rp0</p>
+          <div class="bg-[#3A22D6] p-5 rounded-2xl border-2 border-white/20">
+             <p class="text-xs text-[#CCFF00] font-extrabold mb-1 uppercase tracking-wider">Total Profit</p>
+             <p class="text-xl sm:text-3xl font-black text-[#CCFF00] tracking-tight" id="ui-profit">Rp0</p>
           </div>
        </div>
     </div>
 
     <!-- SEKSI H-2 -->
     <div>
-       <div class="flex justify-between items-end mb-4 px-2">
+       <div class="flex justify-between items-end mb-4 px-1">
           <div>
-             <h3 class="text-xl font-black text-slate-800 mb-1">🔥 Daftar Pengingat H-2</h3>
-             <p class="text-sm text-slate-500 font-semibold">Harus di-follow up: <span id="ui-reminder-count" class="text-brand-main bg-brand-light px-2 py-0.5 rounded-lg border border-brand-main/20">0</span> orang</p>
+             <h3 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">🔥 Daftar Pengingat H-2</h3>
+             <p class="text-sm text-slate-500 font-bold">Harus di-follow up: <span id="ui-reminder-count" class="text-[#5338FF] bg-[#EEECFF] px-2.5 py-0.5 rounded-lg border border-[#5338FF]/30 font-black">0</span> orang</p>
           </div>
        </div>
        <div id="reminder-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <p class="text-slate-400 font-bold col-span-full text-center py-8">Menyinkronkan data...</p>
+          <div class="col-span-full py-8 text-center text-slate-400 font-bold">Menyinkronkan data...</div>
        </div>
     </div>
 
     <!-- SEKSI SEMUA ORDER -->
-    <div class="pt-6 mt-8 border-t-2 border-slate-200">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 px-2 gap-4">
-            <h3 class="text-xl font-black text-slate-800">📚 Semua Order <span id="total-orders-count" class="text-slate-500 ml-1">(0)</span></h3>
-            <div class="w-full sm:w-80 relative">
-                <input type="text" id="searchOrder" onkeyup="filterAllOrders()" placeholder="Cari nama, produk, ID..." class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-brand-main focus:ring-4 focus:ring-brand-light transition shadow-card">
+    <div class="pt-6 border-t-2 border-slate-200">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 px-1 gap-4">
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900">📚 Semua Order <span id="total-orders-count" class="text-slate-400 font-extrabold ml-1">(0)</span></h3>
+            <div class="w-full sm:w-80">
+                <input type="text" id="searchOrder" oninput="filterAllOrders()" placeholder="🔍 Cari nama, produk, ID..." class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#5338FF] shadow-card">
             </div>
         </div>
         <div id="all-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <p class="text-slate-400 font-bold col-span-full text-center py-8">Memuat daftar pelanggan...</p>
+            <div class="col-span-full py-8 text-center text-slate-400 font-bold">Memuat daftar pelanggan...</div>
         </div>
     </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- MODAL INPUT MASSAL & DRAG DROP                 -->
-  <!-- ============================================== -->
-  <div id="modalBulk" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
-     <div class="bg-white rounded-[2rem] border-4 border-slate-200 w-full max-w-5xl p-6 sm:p-8 shadow-2xl relative max-h-[95vh] overflow-y-auto">
-        <button onclick="document.getElementById('modalBulk').classList.add('hidden')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-800 text-2xl font-black w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200">×</button>
-        <h3 class="text-2xl font-black text-slate-800 mb-4">⚡ Input Massal</h3>
+  <!-- MODAL INPUT MASSAL & DRAG DROP -->
+  <div id="modalBulk" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+     <div class="bg-white rounded-[2rem] border-4 border-slate-200 w-full max-w-5xl p-6 sm:p-8 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+        <button onclick="document.getElementById('modalBulk').classList.add('hidden')" class="absolute top-5 right-5 text-slate-500 hover:text-slate-900 text-2xl font-black w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200">×</button>
+        <h3 class="text-2xl font-black text-slate-900 mb-4">⚡ Input Massal & Upload Excel</h3>
         
-        <!-- DRAG AND DROP ZONE -->
-        <div id="dropZone" class="mb-6 bg-brand-light border-4 border-dashed border-brand-main/40 hover:border-brand-main hover:bg-indigo-100 p-6 rounded-2xl relative text-center transition cursor-pointer flex flex-col items-center justify-center">
-           <div class="text-4xl mb-3">📊</div>
-           <h4 class="font-black text-brand-main text-lg mb-1">Tarik & Lepas File .xlsx ke Sini</h4>
-           <p class="text-sm font-semibold text-brand-dark/70 mb-4">Atau klik area ini untuk memilih file dari galeri/folder.</p>
+        <div id="dropZone" class="mb-6 bg-[#EEECFF] border-4 border-dashed border-[#5338FF]/40 hover:border-[#5338FF] p-6 rounded-2xl relative text-center transition cursor-pointer flex flex-col items-center justify-center">
+           <div class="text-4xl mb-2">📊</div>
+           <h4 class="font-black text-[#5338FF] text-lg mb-1">Tarik & Lepas File .xlsx ke Sini</h4>
+           <p class="text-xs font-bold text-slate-600 mb-4">Atau klik area ini untuk memilih file Excel dari perangkatmu.</p>
            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="hidden">
            
-           <div class="w-full max-w-lg border-t-2 border-brand-main/20 mt-2 pt-4">
-               <p class="text-xs text-brand-main font-black uppercase mb-2 tracking-wider">Atau Paste Manual (Ctrl+V)</p>
-               <textarea id="smartPasteInput" rows="1" class="w-full bg-white border-2 border-brand-main/30 rounded-xl p-3 text-sm font-bold focus:ring-4 focus:ring-brand-main/20 focus:border-brand-main outline-none transition text-center" placeholder="Paste data tabel mentahan di sini..."></textarea>
+           <div class="w-full max-w-lg border-t-2 border-[#5338FF]/20 mt-2 pt-3">
+               <p class="text-[11px] text-[#5338FF] font-black uppercase mb-2">Atau Paste Tabel Manual (Ctrl+V)</p>
+               <textarea id="smartPasteInput" rows="1" class="w-full bg-white border-2 border-[#5338FF]/30 rounded-xl p-2.5 text-xs font-bold outline-none text-center" placeholder="Paste baris dari Excel/Sheets di sini..."></textarea>
            </div>
         </div>
 
         <div class="overflow-x-auto border-2 border-slate-200 rounded-2xl mb-6 bg-slate-50">
-           <table class="w-full text-left text-sm min-w-[950px]">
-              <thead class="bg-slate-200 text-slate-700 font-black">
+           <table class="w-full text-left text-xs min-w-[900px]">
+              <thead class="bg-slate-200 text-slate-700 font-black uppercase">
                  <tr>
-                    <th class="p-3 w-24">ID Order</th>
+                    <th class="p-3 w-28">ID Order</th>
                     <th class="p-3">Nama Pelanggan</th>
                     <th class="p-3">No WhatsApp</th>
                     <th class="p-3">Layanan</th>
                     <th class="p-3">Tgl Mulai</th>
-                    <th class="p-3 w-24">Durasi</th>
-                    <th class="p-3">Omzet</th>
-                    <th class="p-3">Modal</th>
-                    <th class="p-3 w-12 text-center">Del</th>
+                    <th class="p-3 w-24">Durasi (Hr)</th>
+                    <th class="p-3">Omzet (Rp)</th>
+                    <th class="p-3">Modal (Rp)</th>
+                    <th class="p-3 w-12 text-center">Hapus</th>
                  </tr>
               </thead>
-              <tbody id="bulkRowsContainer" class="font-semibold"></tbody>
+              <tbody id="bulkRowsContainer" class="font-bold"></tbody>
            </table>
         </div>
         
         <div class="flex justify-between items-center">
-           <button type="button" onclick="addBulkRow()" class="btn-3d btn-white">➕ Baris Manual</button>
-           <button type="button" id="btnSubmitBulk" onclick="submitBulkOrders()" class="btn-3d btn-primary">Simpan ke Sheets</button>
+           <button type="button" onclick="addBulkRow()" class="btn-3d btn-white text-xs">➕ Tambah Baris</button>
+           <button type="button" id="btnSubmitBulk" onclick="submitBulkOrders()" class="btn-3d btn-primary text-xs">Simpan ke Sheets</button>
         </div>
      </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- MODAL SATUAN (FORM ORDER BARU / EDIT)          -->
-  <!-- ============================================== -->
-  <div id="modalOrder" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 py-8">
+  <!-- MODAL SATUAN -->
+  <div id="modalOrder" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
      <div class="bg-white rounded-[2rem] border-4 border-slate-200 w-full max-w-md p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-800 text-2xl font-black w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200">×</button>
+        <button onclick="document.getElementById('modalOrder').classList.add('hidden')" class="absolute top-5 right-5 text-slate-500 hover:text-slate-900 text-2xl font-black w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center border-2 border-slate-200">×</button>
         
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 bg-brand-lime rounded-xl flex items-center justify-center text-xl shadow-card border-2 border-slate-200">📝</div>
-            <h3 class="text-2xl font-black text-slate-800" id="modalTitle">Order Baru</h3>
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 bg-[#CCFF00] rounded-xl flex items-center justify-center text-xl border-2 border-[#A8D600]">📝</div>
+            <h3 class="text-2xl font-black text-slate-900" id="modalTitle">Order Baru</h3>
         </div>
         
         <form id="formOrder" onsubmit="submitSingleOrder(event)" class="space-y-4">
            <input type="hidden" id="editId" value="">
-           
-           <!-- Input Standar dengan Styling Duolingo -->
-           <style>
-               .d-input { w-full; px-4; py-3; bg-slate-50; border-2; border-slate-200; rounded-xl; font-semibold; text-sm; transition: all 0.2s; }
-               .d-input:focus { border-color: #5338FF; background-color: white; outline: none; box-shadow: 0 4px 0 0 #EEECFF; }
-               .d-label { display: block; font-size: 0.75rem; font-weight: 800; color: #64748b; margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
-           </style>
 
            <div class="grid grid-cols-2 gap-3">
                <div>
                   <label class="d-label">ID Order</label>
-                  <input type="text" id="inputIdOrder" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none disabled:opacity-50" placeholder="Auto">
+                  <input type="text" id="inputIdOrder" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none disabled:opacity-50" placeholder="Auto">
                </div>
                <div>
                   <label class="d-label">Tanggal Order</label>
-                  <input type="date" id="tglOrder" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none">
+                  <input type="date" id="tglOrder" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none">
                </div>
            </div>
 
            <div>
               <label class="d-label">Nama Pelanggan *</label>
-              <input type="text" id="inputNama" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none">
+              <input type="text" id="inputNama" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none">
            </div>
            
            <div>
               <label class="d-label">Nomor WhatsApp *</label>
-              <input type="number" id="inputWA" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none" placeholder="628xxxxxxxxxx">
+              <input type="text" id="inputWA" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none" placeholder="628xxxxxxxxxx">
            </div>
            
            <div>
               <label class="d-label">Layanan / Produk *</label>
-              <input list="listLayanan" id="inputLayanan" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none" placeholder="Ketik/pilih layanan...">
+              <input list="listLayanan" id="inputLayanan" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none" placeholder="Ketik atau pilih layanan...">
               <datalist id="listLayanan"><option value="Netflix"><option value="Spotify"><option value="YouTube"><option value="Canva"><option value="Capcut"></datalist>
            </div>
            
-           <div class="bg-brand-light/50 p-4 rounded-2xl border-2 border-brand-light mb-4">
+           <div class="bg-[#EEECFF]/60 p-4 rounded-2xl border-2 border-[#EEECFF] space-y-3">
                <div>
-                  <label class="d-label text-brand-main">Tanggal Mulai *</label>
-                  <input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main outline-none mb-3">
+                  <label class="d-label !text-[#5338FF]">Tanggal Mulai *</label>
+                  <input type="date" id="tglMulai" onchange="hitungSatuan()" required class="w-full px-3.5 py-2.5 bg-white border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none">
                </div>
 
                <div>
-                    <label class="d-label text-brand-main">Durasi (Hari) *</label>
-                    <div class="flex flex-wrap gap-2 mb-2">
+                    <label class="d-label !text-[#5338FF]">Durasi (Hari) *</label>
+                    <div class="flex flex-wrap gap-2 mb-2.5">
                         <div class="pill" onclick="playSound('click'); setDurasi(27, this)">27</div>
                         <div class="pill" onclick="playSound('click'); setDurasi(28, this)">28</div>
                         <div class="pill active" onclick="playSound('click'); setDurasi(30, this)">1 Bln</div>
                         <div class="pill" onclick="playSound('click'); setDurasi(90, this)">3 Bln</div>
                         <div class="pill" onclick="playSound('click'); setDurasi(180, this)">6 Bln</div>
                     </div>
-                    <input type="number" id="durasi" class="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main outline-none" value="30" oninput="hitungSatuan()" required>
+                    <input type="number" id="durasi" class="w-full px-3.5 py-2.5 bg-white border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none" value="30" oninput="hitungSatuan()" required>
                </div>
            </div>
 
            <div class="grid grid-cols-2 gap-3">
               <div>
-                  <label class="d-label">Harga Jual (Rp) *</label>
-                  <input type="number" id="hargaJual" value="39000" oninput="hitungSatuan()" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none">
+                  <label class="d-label">Harga / Omzet (Rp) *</label>
+                  <input type="number" id="hargaJual" value="39000" oninput="hitungSatuan()" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none">
               </div>
               <div>
                   <label class="d-label">Modal (Rp) *</label>
-                  <input type="number" id="modal" value="31000" oninput="hitungSatuan()" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-brand-main focus:bg-white outline-none">
+                  <input type="number" id="modal" value="31000" oninput="hitungSatuan()" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold text-sm focus:border-[#5338FF] outline-none">
               </div>
            </div>
            
-           <!-- KOTAK REKAPITULASI -->
-           <div class="grid grid-cols-2 gap-y-4 gap-x-3 pt-4 border-t-2 border-slate-100 mt-4 bg-slate-50 p-4 rounded-2xl">
-                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Berakhir</p><p class="font-black text-slate-800 text-sm mt-1" id="resBerakhir">-</p></div>
-                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pengingat H-2</p><p class="font-black text-red-500 text-sm mt-1" id="resH2">-</p></div>
-                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profit</p><p class="font-black text-brand-limedark text-sm mt-1 bg-brand-lime px-2 py-0.5 rounded-md inline-block border border-brand-limedark" id="resProfit">Rp0</p></div>
-                <div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Margin</p><p class="font-black text-brand-main text-sm mt-1 bg-brand-light w-max px-2 py-0.5 rounded-md border border-brand-main/20" id="resMargin">0.0%</p></div>
+           <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                <div><p class="text-[10px] font-black text-slate-400 uppercase">Berakhir</p><p class="font-black text-slate-800 text-sm mt-0.5" id="resBerakhir">-</p></div>
+                <div><p class="text-[10px] font-black text-slate-400 uppercase">Pengingat H-2</p><p class="font-black text-red-500 text-sm mt-0.5" id="resH2">-</p></div>
+                <div><p class="text-[10px] font-black text-slate-400 uppercase">Profit</p><p class="font-black text-slate-900 text-sm mt-0.5 bg-[#CCFF00] px-2 py-0.5 rounded-md inline-block border border-[#A8D600]" id="resProfit">Rp0</p></div>
+                <div><p class="text-[10px] font-black text-slate-400 uppercase">Margin</p><p class="font-black text-[#5338FF] text-sm mt-0.5 bg-[#EEECFF] w-max px-2 py-0.5 rounded-md border border-[#5338FF]/20" id="resMargin">0.0%</p></div>
             </div>
 
-           <button type="submit" id="btnSubmitSingle" class="btn-3d btn-primary w-full mt-6 text-lg py-4">Simpan Order</button>
+           <button type="submit" id="btnSubmitSingle" class="btn-3d btn-primary w-full text-base py-3.5">Simpan Order</button>
         </form>
      </div>
   </div>
 
   <script>
-    // URL WEB APP
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziwtRfeZkKltbzhZUrn-pqpMIDS6xLCT7tJTkwzktkC_I8LllYp_18etUGFLhxQrYt/exec';
     
     function playSound(type) {
@@ -329,14 +305,6 @@
             const gain = ctx.createGain();
             osc.connect(gain); gain.connect(ctx.destination);
             osc.frequency.setValueAtTime(type === 'success' ? 800 : 400, ctx.currentTime);
-            if (type === 'success') {
-                osc.type = 'sine';
-                setTimeout(() => {
-                    const osc2 = ctx.createOscillator(); osc2.connect(gain);
-                    osc2.frequency.setValueAtTime(1200, ctx.currentTime);
-                    osc2.start(); osc2.stop(ctx.currentTime + 0.1);
-                }, 100);
-            }
             gain.gain.setValueAtTime(0.05, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
             osc.start(); osc.stop(ctx.currentTime + 0.1);
@@ -347,31 +315,41 @@
     document.getElementById('tglOrder').value = today;
     document.getElementById('tglMulai').value = today;
 
-    // FUNGSI PINTAR MEMBACA TANGGAL
     function parseDateSafe(dateStr) {
-        if (!dateStr) return new Date();
-        let parts = String(dateStr).split('T')[0].split(/[-/]/);
+        if (!dateStr || dateStr === '-') return null;
+        let cleanStr = String(dateStr).trim().split('T')[0];
+        let parts = cleanStr.split(/[-/]/);
         if (parts.length === 3) {
-            if (parts[0].length === 4) return new Date(parts[0], parts[1]-1, parts[2]); 
-            if (parts[2].length === 4) return new Date(parts[2], parts[1]-1, parts[0]); 
+            if (parts[0].length === 4) {
+                let d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                d.setHours(0,0,0,0);
+                return isNaN(d.getTime()) ? null : d;
+            }
+            if (parts[2].length === 4) {
+                let d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                d.setHours(0,0,0,0);
+                return isNaN(d.getTime()) ? null : d;
+            }
         }
         let d = new Date(dateStr);
-        return isNaN(d.getTime()) ? new Date() : d;
+        if (isNaN(d.getTime())) return null;
+        d.setHours(0,0,0,0);
+        return d;
     }
 
     function toYYYYMMDD(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '-';
         let y = dateObj.getFullYear();
         let m = String(dateObj.getMonth() + 1).padStart(2, '0');
         let d = String(dateObj.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
     }
 
-    // FUNGSI PINTAR MENGHITUNG DURASI BULAN
     function calculateEndDate(startDateStr, durationValue) {
-        let start = parseDateSafe(startDateStr);
+        let start = parseDateSafe(startDateStr) || new Date();
         let end = new Date(start);
         
-        let durStr = String(durationValue).toLowerCase();
+        let durStr = String(durationValue || '30').toLowerCase();
         let match = durStr.match(/\d+/);
         let num = match ? parseInt(match[0]) : 30;
 
@@ -390,12 +368,13 @@
             else if (num === 180) addSafeMonth(end, 6);
             else end.setDate(end.getDate() + num); 
         }
+        end.setHours(0,0,0,0);
         return end;
     }
 
     function formatKeDDMMYYYY(yyyy_mm_dd) {
         if (!yyyy_mm_dd) return '';
-        const parts = yyyy_mm_dd.split('-');
+        const parts = String(yyyy_mm_dd).split('-');
         if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
         return yyyy_mm_dd;
     }
@@ -409,17 +388,15 @@
         return d + " Hari";
     }
 
-    // ==========================================
-    // SISTEM DRAG & DROP EXCEL FILE + SMART PASTE
-    // ==========================================
+    // DRAG & DROP EXCEL + SMART PASTE
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('excelFileInput');
 
     dropZone.addEventListener('click', (e) => { if (e.target.id !== 'smartPasteInput') fileInput.click(); });
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-brand-light', 'border-brand-main'); });
-    dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('bg-brand-light', 'border-brand-main'); });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-[#5338FF]'); });
+    dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('border-[#5338FF]'); });
     dropZone.addEventListener('drop', (e) => {
-        e.preventDefault(); dropZone.classList.remove('bg-brand-light', 'border-brand-main');
+        e.preventDefault();
         if (e.dataTransfer.files.length > 0) readExcelFile(e.dataTransfer.files[0]);
     });
     fileInput.addEventListener('change', (e) => {
@@ -433,11 +410,10 @@
             const data = new Uint8Array(e.target.result);
             try {
                 const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
                 processExtractedArray(jsonData);
-            } catch (err) { alert("Gagal membaca file Excel. Pastikan file tidak corrupt."); }
+            } catch (err) { alert("Gagal membaca file Excel."); }
         };
         reader.readAsArrayBuffer(file);
     }
@@ -459,21 +435,27 @@
         rowsArray.forEach((cols, index) => {
             if (index === 0 && (String(cols[0]).toLowerCase().includes('id') || String(cols[1]).toLowerCase().includes('nama'))) return;
             if(cols.length >= 4 && cols.some(val => String(val).trim() !== '')) { 
-                addBulkRow(); const tr = tbody.lastElementChild; const col0 = String(cols[0] || '').trim();
-                const dInput = 'w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg font-bold text-xs focus:border-brand-main outline-none';
-                
-                tr.querySelectorAll('input').forEach(inp => inp.className = dInput);
+                addBulkRow();
+                const tr = tbody.lastElementChild;
+                const col0 = String(cols[0] || '').trim();
                 
                 if (cols.length >= 7 && (col0.toLowerCase().includes('rzt') || col0 === '')) {
-                    tr.querySelector('.b-id').value = col0; tr.querySelector('.b-nama').value = String(cols[1] || '').trim();
-                    tr.querySelector('.b-wa').value = String(cols[2] || '').replace(/\D/g, ''); tr.querySelector('.b-layanan').value = String(cols[3] || '').trim();
+                    tr.querySelector('.b-id').value = col0;
+                    tr.querySelector('.b-nama').value = String(cols[1] || '').trim();
+                    tr.querySelector('.b-wa').value = String(cols[2] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-layanan').value = String(cols[3] || '').trim();
+                    let parsedStart = parseDateSafe(cols[4]);
+                    if (parsedStart) tr.querySelector('.b-mulai').value = toYYYYMMDD(parsedStart);
                     tr.querySelector('.b-durasi').value = String(cols[5] || '').replace(/\D/g, '') || 30;
-                    tr.querySelector('.b-omzet').value = String(cols[6] || '').replace(/\D/g, ''); tr.querySelector('.b-modal').value = String(cols[7] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-omzet').value = String(cols[6] || '').replace(/\D/g, '') || 0;
+                    tr.querySelector('.b-modal').value = String(cols[7] || '').replace(/\D/g, '') || 0;
                 } else {
-                    tr.querySelector('.b-nama').value = col0; tr.querySelector('.b-wa').value = String(cols[1] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-nama').value = col0;
+                    tr.querySelector('.b-wa').value = String(cols[1] || '').replace(/\D/g, '');
                     tr.querySelector('.b-layanan').value = String(cols[2] || '').trim();
                     tr.querySelector('.b-durasi').value = String(cols[3] || '').replace(/\D/g, '') || 30;
-                    tr.querySelector('.b-omzet').value = String(cols[4] || '').replace(/\D/g, ''); tr.querySelector('.b-modal').value = String(cols[5] || '').replace(/\D/g, '');
+                    tr.querySelector('.b-omzet').value = String(cols[4] || '').replace(/\D/g, '') || 0;
+                    tr.querySelector('.b-modal').value = String(cols[5] || '').replace(/\D/g, '') || 0;
                 }
                 added++;
             }
@@ -481,23 +463,28 @@
         if(added > 0) { playSound('success'); alert(`✅ Berhasil! ${added} baris pesanan diekstrak.`); }
     }
     
-    function openBulkModal() { playSound('click'); document.getElementById('bulkRowsContainer').innerHTML = ''; for(let i=0; i<3; i++) { addBulkRow(); } document.getElementById('modalBulk').classList.remove('hidden'); }
+    function openBulkModal() {
+        playSound('click');
+        document.getElementById('bulkRowsContainer').innerHTML = '';
+        for(let i=0; i<3; i++) addBulkRow();
+        document.getElementById('modalBulk').classList.remove('hidden');
+    }
 
     function addBulkRow() {
         const tbody = document.getElementById('bulkRowsContainer');
         const tr = document.createElement('tr');
-        tr.className = "border-b border-slate-200 hover:bg-slate-100 transition";
-        const inClass = "w-full px-3 py-2 bg-white border-2 border-slate-200 rounded-lg font-bold text-xs focus:border-brand-main outline-none";
+        tr.className = "border-b border-slate-200 hover:bg-slate-100";
+        const inClass = "w-full px-2.5 py-2 bg-white border-2 border-slate-200 rounded-lg font-bold text-xs focus:border-[#5338FF] outline-none";
         tr.innerHTML = `
            <td class="p-2"><input type="text" class="b-id ${inClass}" placeholder="Auto"></td>
            <td class="p-2"><input type="text" class="b-nama ${inClass}" placeholder="Nama"></td>
-           <td class="p-2"><input type="number" class="b-wa ${inClass}" placeholder="628..."></td>
+           <td class="p-2"><input type="text" class="b-wa ${inClass}" placeholder="628..."></td>
            <td class="p-2"><input type="text" class="b-layanan ${inClass}" placeholder="Layanan"></td>
            <td class="p-2"><input type="date" class="b-mulai ${inClass}" value="${today}"></td>
            <td class="p-2"><input type="number" class="b-durasi ${inClass}" value="30"></td>
            <td class="p-2"><input type="number" class="b-omzet ${inClass}" value="39000"></td>
            <td class="p-2"><input type="number" class="b-modal ${inClass}" value="31000"></td>
-           <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-500 hover:text-red-700 font-black text-xl bg-red-100 w-8 h-8 rounded-lg flex items-center justify-center border-2 border-red-200 mx-auto">×</button></td>
+           <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove()" class="text-red-500 font-black text-lg bg-red-100 w-8 h-8 rounded-lg flex items-center justify-center border border-red-200 mx-auto">×</button></td>
         `;
         tbody.appendChild(tr);
     }
@@ -507,19 +494,21 @@
        let dataList = [];
 
        rows.forEach(tr => {
-          const id = tr.querySelector('.b-id').value.trim(); const nama = tr.querySelector('.b-nama').value.trim();
-          const wa = tr.querySelector('.b-wa').value.trim(); const layanan = tr.querySelector('.b-layanan').value.trim();
-          const mulai = tr.querySelector('.b-mulai').value; const durasi = tr.querySelector('.b-durasi').value || 30;
-          const omzet = parseInt(tr.querySelector('.b-omzet').value) || 0; const modal = parseInt(tr.querySelector('.b-modal').value) || 0;
+          const id = tr.querySelector('.b-id').value.trim();
+          const nama = tr.querySelector('.b-nama').value.trim();
+          const wa = tr.querySelector('.b-wa').value.trim();
+          const layanan = tr.querySelector('.b-layanan').value.trim();
+          const mulai = tr.querySelector('.b-mulai').value;
+          const durasi = tr.querySelector('.b-durasi').value || 30;
+          const omzet = parseInt(tr.querySelector('.b-omzet').value) || 0;
+          const modal = parseInt(tr.querySelector('.b-modal').value) || 0;
 
-          if(nama && wa && layanan && mulai) {
+          if(nama && layanan && mulai) {
              let end = calculateEndDate(mulai, durasi);
              const tglBerakhir = toYYYYMMDD(end);
-             
              let h2Date = new Date(end); h2Date.setDate(end.getDate() - 2);
              let todayDate = new Date(); todayDate.setHours(0,0,0,0);
              let statusH2 = (todayDate >= h2Date && todayDate <= end) ? "⚠️ H-2" : "Aman";
-             
              const finalId = id !== "" ? id : "RZT-" + Math.floor(1000 + Math.random() * 9000);
 
              dataList.push({
@@ -530,18 +519,19 @@
           }
        });
 
-       if(dataList.length === 0) { alert("⚠️ Harap isi minimal 1 baris data dengan lengkap!"); return; }
+       if(dataList.length === 0) { alert("⚠️ Harap isi minimal 1 baris data!"); return; }
        const btn = document.getElementById('btnSubmitBulk'); btn.innerText = "Menyimpan..."; btn.disabled = true;
 
        try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'bulk_add', data: dataList }) }); } catch(e) {}
        playSound('success'); document.getElementById('modalBulk').classList.add('hidden');
-       alert(`✅ Menambahkan ${dataList.length} pesanan! Tunggu sinkronisasi dengan Sheets...`); setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
+       alert(`✅ Berhasil menyimpan ${dataList.length} pesanan!`);
+       setTimeout(() => { fetchData(); btn.innerText = "Simpan ke Sheets"; btn.disabled = false; }, 1500);
     }
 
-    // FUNGSI HITUNG UI SATUAN
     function setDurasi(hari, el) {
         document.getElementById('durasi').value = hari;
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); el.classList.add('active');
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
         hitungSatuan();
     }
 
@@ -554,19 +544,8 @@
         if(mulai && durasi) {
             let end = calculateEndDate(mulai, durasi);
             document.getElementById('resBerakhir').innerText = toYYYYMMDD(end);
-            
-            let h2Date = new Date(end);
-            h2Date.setDate(end.getDate() - 2);
-            let todayDate = new Date(); todayDate.setHours(0,0,0,0);
-            
-            let badgeH2 = document.getElementById('resH2');
-            if (todayDate >= h2Date && todayDate <= end) {
-                badgeH2.innerHTML = `⚠️ ${toYYYYMMDD(h2Date)}`;
-                badgeH2.className = "font-black text-red-500 text-sm mt-1 bg-red-100 px-2 py-0.5 rounded border border-red-200 inline-block";
-            } else {
-                badgeH2.innerHTML = `✅ ${toYYYYMMDD(h2Date)}`;
-                badgeH2.className = "font-black text-slate-500 text-sm mt-1 inline-block";
-            }
+            let h2Date = new Date(end); h2Date.setDate(end.getDate() - 2);
+            document.getElementById('resH2').innerHTML = `⚠️ ${toYYYYMMDD(h2Date)}`;
         }
 
         const profit = omzet - modal;
@@ -577,64 +556,82 @@
     let globalOrders = [];
 
     async function fetchData() {
-      const h2Container = document.getElementById('reminder-list'); const allContainer = document.getElementById('all-orders-list');
-      h2Container.innerHTML = '<div class="col-span-full py-6 flex justify-center"><div class="w-8 h-8 border-4 border-brand-light border-t-brand-main rounded-full animate-spin"></div></div>';
-      allContainer.innerHTML = '<div class="col-span-full py-6 flex justify-center"><div class="w-8 h-8 border-4 border-brand-light border-t-brand-main rounded-full animate-spin"></div></div>';
+      const h2Container = document.getElementById('reminder-list');
+      const allContainer = document.getElementById('all-orders-list');
+      h2Container.innerHTML = '<div class="col-span-full py-8 flex justify-center"><div class="w-8 h-8 border-4 border-[#EEECFF] border-t-[#5338FF] rounded-full animate-spin"></div></div>';
+      allContainer.innerHTML = '<div class="col-span-full py-8 flex justify-center"><div class="w-8 h-8 border-4 border-[#EEECFF] border-t-[#5338FF] rounded-full animate-spin"></div></div>';
       try {
         const response = await fetch(SCRIPT_URL + "?t=" + new Date().getTime());
         const data = await response.json();
-        let rawOrders = Array.isArray(data) ? data : []; processDashboard(rawOrders);
+        let rawOrders = Array.isArray(data) ? data : [];
+        processDashboard(rawOrders);
       } catch (error) {
-        h2Container.innerHTML = `<p class="text-red-500 font-bold text-sm">Gagal memuat data dari Sheets.</p>`; allContainer.innerHTML = '';
+        h2Container.innerHTML = `<div class="col-span-full p-6 bg-red-50 text-red-600 rounded-2xl border-2 border-red-200 font-bold text-center">Gagal memuat data dari Google Sheets. Pastikan koneksi internet aktif.</div>`;
+        allContainer.innerHTML = '';
       }
     }
 
-    function parseRupiah(str) { return Number(String(str).replace(/[^0-9-]/g, '')) || 0; }
+    function parseRupiah(str) { return Number(String(str || '0').replace(/[^0-9-]/g, '')) || 0; }
 
     function formatTglDisplay(dateStr) {
-        if (!dateStr || dateStr === '-') return '-';
         let d = parseDateSafe(dateStr);
-        if (!d) return String(dateStr); 
+        if (!d) return String(dateStr || '-'); 
         const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function escapeStr(str) {
+        return String(str || '').replace(/['"\\]/g, '');
     }
 
     async function hapusOrder(id) {
         if(!confirm("Yakin ingin menghapus orderan ini secara PERMANEN dari Google Sheets?")) return;
         playSound('click');
         try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', id: id }) }); } catch(e) {}
-        alert("🗑️ Perintah hapus dikirim ke Sheets!"); setTimeout(fetchData, 1500);
+        alert("🗑️ Perintah hapus dikirim!"); setTimeout(fetchData, 1500);
     }
 
     function editOrder(id) {
         playSound('click');
-        const order = globalOrders.find(o => String(o.ID_Order) === String(id)); if(!order) return;
+        const order = globalOrders.find(o => String(o.ID_Order) === String(id));
+        if(!order) return;
         document.getElementById('modalTitle').innerText = "Edit Order";
-        document.getElementById('editId').value = id;
-        const idField = document.getElementById('inputIdOrder'); idField.value = id; idField.disabled = true;
-        document.getElementById('inputNama').value = order.Nama_Pelanggan || ""; document.getElementById('inputWA').value = order.No_WA || ""; document.getElementById('inputLayanan').value = order.Layanan || "";
+        document.getElementById('editId').value = order.ID_Order;
+        const idField = document.getElementById('inputIdOrder'); idField.value = order.ID_Order; idField.disabled = true;
+        document.getElementById('inputNama').value = order.Nama_Pelanggan || "";
+        document.getElementById('inputWA').value = order.No_WA || "";
+        document.getElementById('inputLayanan').value = order.Layanan || "";
         
-        const omzetVal = parseRupiah(order.Omzet); const modalVal = order.Modal !== undefined ? parseRupiah(order.Modal) : (omzetVal - parseRupiah(order.Profit));
-        document.getElementById('hargaJual').value = omzetVal; document.getElementById('modal').value = modalVal;
+        let parsedMulai = parseDateSafe(order.Tgl_Mulai);
+        if (parsedMulai) document.getElementById('tglMulai').value = toYYYYMMDD(parsedMulai);
+
+        const omzetVal = parseRupiah(order.Omzet);
+        const modalVal = order.Modal !== undefined ? parseRupiah(order.Modal) : (omzetVal - parseRupiah(order.Profit));
+        document.getElementById('hargaJual').value = omzetVal;
+        document.getElementById('modal').value = modalVal;
         
-        document.getElementById('modalOrder').classList.remove('hidden'); hitungSatuan();
+        document.getElementById('modalOrder').classList.remove('hidden');
+        hitungSatuan();
     }
 
     async function submitSingleOrder(e) {
        e.preventDefault();
-       const targetId = document.getElementById('editId').value; const btn = document.getElementById('btnSubmitSingle'); btn.innerText = "Menyimpan..."; btn.disabled = true;
+       const targetId = document.getElementById('editId').value;
+       const btn = document.getElementById('btnSubmitSingle'); btn.innerText = "Menyimpan..."; btn.disabled = true;
 
-       const mulaiVal = document.getElementById('tglMulai').value; const durasiHari = document.getElementById('durasi').value || 30;
+       const mulaiVal = document.getElementById('tglMulai').value;
+       const durasiHari = document.getElementById('durasi').value || 30;
 
        let end = calculateEndDate(mulaiVal, durasiHari);
        const tglBerakhir = toYYYYMMDD(end);
-       
        let h2Date = new Date(end); h2Date.setDate(end.getDate() - 2);
        let todayDate = new Date(); todayDate.setHours(0,0,0,0);
        let statusH2 = (todayDate >= h2Date && todayDate <= end) ? "⚠️ H-2" : "Aman";
 
-       const omzet = parseInt(document.getElementById('hargaJual').value) || 0; const modal = parseInt(document.getElementById('modal').value) || 0;
-       const customId = document.getElementById('inputIdOrder').value.trim(); const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
+       const omzet = parseInt(document.getElementById('hargaJual').value) || 0;
+       const modal = parseInt(document.getElementById('modal').value) || 0;
+       const customId = document.getElementById('inputIdOrder').value.trim();
+       const finalId = targetId !== "" ? targetId : (customId !== "" ? customId : "RZT-" + Math.floor(1000 + Math.random() * 9000));
 
        const payloadData = {
           ID_Order: finalId, Nama_Pelanggan: document.getElementById('inputNama').value, No_WA: document.getElementById('inputWA').value,
@@ -643,15 +640,23 @@
        };
 
        try { await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: (targetId !== "" ? 'edit' : 'add'), data: payloadData }) }); } catch(e) {}
-       playSound('success'); document.getElementById('modalOrder').classList.add('hidden'); alert("✅ Data disimpan ke Google Sheets!"); setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
+       playSound('success'); document.getElementById('modalOrder').classList.add('hidden');
+       alert("✅ Data disimpan ke Google Sheets!");
+       setTimeout(() => { fetchData(); btn.innerText = "Simpan Order"; btn.disabled = false; }, 1500);
     }
 
     function openModalForAdd() {
-        playSound('click'); document.getElementById('modalTitle').innerText = "Order Baru"; document.getElementById('editId').value = "";
+        playSound('click');
+        document.getElementById('modalTitle').innerText = "Order Baru";
+        document.getElementById('editId').value = "";
         const idField = document.getElementById('inputIdOrder'); idField.value = ""; idField.disabled = false;
-        document.getElementById('formOrder').reset(); document.getElementById('tglOrder').value = today; document.getElementById('tglMulai').value = today;
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); document.querySelector('.pill:nth-child(3)').classList.add('active'); 
-        document.getElementById('modalOrder').classList.remove('hidden'); hitungSatuan();
+        document.getElementById('formOrder').reset();
+        document.getElementById('tglOrder').value = today;
+        document.getElementById('tglMulai').value = today;
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.pill')[2].classList.add('active'); 
+        document.getElementById('modalOrder').classList.remove('hidden');
+        hitungSatuan();
     }
 
     function processDashboard(orders) {
@@ -664,11 +669,12 @@
         if (!id) return; 
 
         let o = {
-           ID_Order: id, Nama_Pelanggan: raw['Nama Pelanggan'] || raw['Nama_Pelanggan'] || raw['nama pelanggan'] || raw.Nama_Pelanggan || '',
-           No_WA: raw['No WA'] || raw['No_WA'] || raw['no wa'] || raw.No_WA || '',
-           Layanan: raw['Layanan'] || raw['layanan'] || raw.Layanan || '',
+           ID_Order: String(id).trim(),
+           Nama_Pelanggan: raw['Nama Pelanggan'] || raw['Nama_Pelanggan'] || raw['nama pelanggan'] || raw.Nama_Pelanggan || '-',
+           No_WA: raw['No WA'] || raw['No_WA'] || raw['no wa'] || raw.No_WA || '-',
+           Layanan: raw['Layanan'] || raw['layanan'] || raw.Layanan || '-',
            Tgl_Mulai: raw['Tgl Mulai'] || raw['Tgl_Mulai'] || raw['tgl mulai'] || raw.Tgl_Mulai || '',
-           Durasi: raw['Durasi'] || raw['durasi'] || raw.Durasi || '',
+           Durasi: raw['Durasi'] || raw['durasi'] || raw.Durasi || '30',
            Omzet: raw['Omzet'] || raw['omzet'] || raw.Omzet || 0,
            Modal: raw['Modal'] || raw['modal'] || raw.Modal || 0,
            Tgl_Berakhir: raw['Tgl Berakhir'] || raw['Tgl_Berakhir'] || raw['tgl berakhir'] || raw.Tgl_Berakhir || ''
@@ -681,83 +687,104 @@
 
         o.Profit = raw['Profit'] || raw['profit'] || raw.Profit || (parseRupiah(o.Omzet) - parseRupiah(o.Modal));
         globalOrders.push(o);
-        totalOmzet += parseRupiah(o.Omzet); totalProfit += parseRupiah(o.Profit);
+        totalOmzet += parseRupiah(o.Omzet);
+        totalProfit += parseRupiah(o.Profit);
         
-        const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
-        if(expString !== '-') {
-            let expDate = parseDateSafe(expString);
-            if (expDate) {
-                let h2Date = new Date(expDate); h2Date.setDate(expDate.getDate() - 2);
-                if(hariIni >= h2Date && hariIni <= expDate) h2Reminders.push(o);
+        let expDate = parseDateSafe(o.Tgl_Berakhir);
+        if (expDate) {
+            let h2Date = new Date(expDate);
+            h2Date.setDate(expDate.getDate() - 2);
+            h2Date.setHours(0,0,0,0);
+            if(hariIni >= h2Date && hariIni <= expDate) {
+                h2Reminders.push(o);
             }
         }
       });
 
       const formatRp = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
-      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet); document.getElementById('ui-profit').innerText = formatRp(totalProfit);
-      document.getElementById('ui-reminder-count').innerText = h2Reminders.length; renderH2(h2Reminders); filterAllOrders();
+      document.getElementById('ui-omzet').innerText = formatRp(totalOmzet);
+      document.getElementById('ui-profit').innerText = formatRp(totalProfit);
+      document.getElementById('ui-reminder-count').innerText = h2Reminders.length;
+      
+      renderH2(h2Reminders);
+      filterAllOrders();
     }
 
     function renderH2(list) {
       const c = document.getElementById('reminder-list');
-      if (list.length === 0) { c.innerHTML = `<div class="col-span-full py-12 bg-white rounded-[2rem] border-4 border-slate-200 text-center animate-card"><span class="text-4xl">🎉</span><h4 class="font-black text-slate-800 text-lg mt-3">Semua Aman!</h4><p class="text-sm font-bold text-slate-400 mt-1">Tidak ada antrian H-2 hari ini.</p></div>`; return; }
-      c.innerHTML = '';
+      if (list.length === 0) {
+          c.innerHTML = `<div class="col-span-full py-10 bg-white rounded-[2rem] border-4 border-slate-200 text-center"><span class="text-4xl">🎉</span><h4 class="font-black text-slate-800 text-lg mt-2">Semua Aman!</h4><p class="text-sm font-bold text-slate-400">Tidak ada antrian H-2 hari ini.</p></div>`;
+          return;
+      }
+      let htmlContent = '';
       list.forEach(o => {
         const exp = formatTglDisplay(o.Tgl_Berakhir);
-        const wa = String(o.No_WA).replace(/\D/g, '').replace(/^0/, '62');
-        
+        const wa = String(o.No_WA || '').replace(/\D/g, '').replace(/^0/, '62');
         const msg = `Halo Kak ${o.Nama_Pelanggan}! 👋\nCuma mau ngingetin nih, masa aktif *${o.Layanan}* Kakak akan segera berakhir pada *${exp}*.\n\nBiar aktivitas Kakak tetep lancar dan fitur premiumnya nggak keputus, yuk perpanjang sekarang! 🚀\n\n*✨ PROMO KHUSUS PELANGGAN:*\nKarena Kakak udah mempercayakan layanannya di Reztroid, ada *Harga Spesial VIP* khusus buat perpanjangan hari ini loh!\n\nLangsung balas chat ini ya Kak buat klaim harganya. Jangan sampai kelewatan! 🎁\n— Admin Reztroid`;
         
-        c.innerHTML += `
-          <div class="duo-card p-6 flex flex-col justify-between animate-card wobble-hover">
+        htmlContent += `
+          <div class="duo-card p-6 flex flex-col justify-between">
             <div>
                <div class="flex justify-between items-center mb-3">
-                  <span class="text-[10px] font-black tracking-wider text-slate-400 uppercase bg-slate-100 px-2 py-1 rounded-md border-2 border-slate-200">${o.ID_Order}</span>
-                  <span class="text-[10px] font-black text-red-600 bg-red-100 px-2 py-1 rounded-md border-2 border-red-200 flex items-center gap-1">⚠️ ${exp}</span>
+                  <span class="text-[11px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border-2 border-slate-200">${o.ID_Order}</span>
+                  <span class="text-[11px] font-black text-red-600 bg-red-100 px-2.5 py-1 rounded-lg border-2 border-red-200">⚠️ ${exp}</span>
                </div>
-               <h4 class="font-black text-slate-800 text-lg mb-1">${o.Nama_Pelanggan}</h4>
-               <p class="text-sm font-bold text-slate-500 mb-6">${o.Layanan}</p>
+               <h4 class="font-black text-slate-900 text-lg mb-1">${o.Nama_Pelanggan}</h4>
+               <p class="text-sm font-bold text-slate-500 mb-5">${o.Layanan}</p>
             </div>
-            <a href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" target="_blank" class="btn-3d btn-lime w-full text-sm">💬 Kirim WhatsApp</a>
+            <a href="https://wa.me/${wa}?text=${encodeURIComponent(msg)}" target="_blank" class="btn-3d btn-lime w-full text-xs">💬 Kirim WhatsApp</a>
           </div>`;
       });
+      c.innerHTML = htmlContent;
     }
 
     function filterAllOrders() {
         const q = document.getElementById('searchOrder').value.toLowerCase();
-        const res = globalOrders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(q))); renderAllOrders(res);
+        const res = globalOrders.filter(o => Object.values(o).some(val => String(val).toLowerCase().includes(q)));
+        renderAllOrders(res);
     }
 
     function renderAllOrders(list) {
-        const c = document.getElementById('all-orders-list'); document.getElementById('total-orders-count').innerText = `(${list.length})`;
-        if (list.length === 0) { c.innerHTML = `<div class="col-span-full py-12 text-center bg-white rounded-[2rem] border-4 border-slate-200 text-slate-500 animate-card font-bold">Tidak ada data ditemukan.</div>`; return; }
-        c.innerHTML = ''; const hariIni = new Date(); hariIni.setHours(0,0,0,0);
+        const c = document.getElementById('all-orders-list');
+        document.getElementById('total-orders-count').innerText = `(${list.length})`;
+        if (list.length === 0) {
+            c.innerHTML = `<div class="col-span-full py-10 text-center bg-white rounded-[2rem] border-4 border-slate-200 text-slate-400 font-bold">Tidak ada data ditemukan.</div>`;
+            return;
+        }
+        let htmlContent = '';
+        const hariIni = new Date(); hariIni.setHours(0,0,0,0);
         
         list.forEach(o => {
-           const expString = o.Tgl_Berakhir ? String(o.Tgl_Berakhir).split('T')[0] : '-';
-           let badge = '<span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase rounded-md border-2 border-slate-200">Unknown</span>';
-           if(expString !== '-') {
-               let expDate = parseDateSafe(expString);
-               if (expDate) { badge = expDate < hariIni ? '<span class="px-2 py-1 bg-red-100 text-red-600 text-[10px] font-black uppercase rounded-md border-2 border-red-200">Berakhir</span>' : '<span class="px-2 py-1 bg-brand-lime text-brand-text text-[10px] font-black uppercase rounded-md border-2 border-brand-limedark">Aktif</span>'; }
+           let expDate = parseDateSafe(o.Tgl_Berakhir);
+           let badge = '<span class="px-2.5 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase rounded-lg border-2 border-slate-200">Unknown</span>';
+           if (expDate) {
+               badge = expDate < hariIni 
+                 ? '<span class="px-2.5 py-1 bg-red-100 text-red-600 text-[10px] font-black uppercase rounded-lg border-2 border-red-200">Berakhir</span>' 
+                 : '<span class="px-2.5 py-1 bg-[#CCFF00] text-slate-900 text-[10px] font-black uppercase rounded-lg border-2 border-[#A8D600]">Aktif</span>';
            }
-           c.innerHTML += `
-            <div class="duo-card p-5 flex flex-col justify-between animate-card">
+           const safeId = escapeStr(o.ID_Order);
+           htmlContent += `
+            <div class="duo-card p-5 flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-start mb-3"><span class="text-[10px] font-black tracking-wider text-brand-main bg-brand-light px-2 py-1 rounded-md border-2 border-brand-main/20">${o.ID_Order}</span>${badge}</div>
-                    <h3 class="font-black text-slate-800 text-lg mb-0.5">${o.Nama_Pelanggan}</h3>
-                    <p class="text-xs font-bold text-slate-500 mb-4">${o.Layanan} <span class="mx-1">•</span> ${o.No_WA}</p>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[11px] font-black text-[#5338FF] bg-[#EEECFF] px-2.5 py-1 rounded-lg border-2 border-[#5338FF]/20">${o.ID_Order}</span>
+                        ${badge}
+                    </div>
+                    <h3 class="font-black text-slate-900 text-lg mb-0.5">${o.Nama_Pelanggan}</h3>
+                    <p class="text-xs font-bold text-slate-500 mb-4">${o.Layanan} • ${o.No_WA}</p>
                     
-                    <div class="bg-slate-50 p-4 rounded-xl text-xs grid grid-cols-2 gap-3 border-2 border-slate-200">
-                        <div><p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Berakhir</p><p class="font-black text-slate-700 text-sm">${formatTglDisplay(o.Tgl_Berakhir)}</p></div>
-                        <div><p class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Profit</p><p class="font-black text-emerald-500 text-sm">Rp${parseRupiah(o.Profit).toLocaleString('id-ID')}</p></div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl text-xs grid grid-cols-2 gap-3 border-2 border-slate-200">
+                        <div><p class="text-[10px] font-black uppercase text-slate-400 mb-0.5">Berakhir</p><p class="font-black text-slate-800 text-sm">${formatTglDisplay(o.Tgl_Berakhir)}</p></div>
+                        <div><p class="text-[10px] font-black uppercase text-slate-400 mb-0.5">Profit</p><p class="font-black text-emerald-600 text-sm">Rp${parseRupiah(o.Profit).toLocaleString('id-ID')}</p></div>
                     </div>
                 </div>
                 <div class="flex gap-3 pt-4 mt-4 border-t-2 border-slate-100">
-                    <button onclick="editOrder('${o.ID_Order}')" class="flex-1 btn-3d btn-white !py-2 text-xs">✏️ Edit</button>
-                    <button onclick="hapusOrder('${o.ID_Order}')" class="flex-1 btn-3d btn-danger !py-2 text-xs">🗑️ Hapus</button>
+                    <button onclick="editOrder('${safeId}')" class="flex-1 btn-3d btn-white !py-2 text-xs">✏️ Edit</button>
+                    <button onclick="hapusOrder('${safeId}')" class="flex-1 btn-3d btn-danger !py-2 text-xs">🗑️ Hapus</button>
                 </div>
             </div>`;
         });
+        c.innerHTML = htmlContent;
     }
 
     fetchData();
